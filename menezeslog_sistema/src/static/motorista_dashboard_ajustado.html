@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Dashboard do Motorista</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --menezes-blue: #0046AD;
+            --menezes-yellow: #FFD100;
+        }
+        .bg-menezes-blue {
+            background-color: var(--menezes-blue);
+        }
+        .bg-menezes-yellow {
+            background-color: var(--menezes-yellow);
+        }
+        .text-menezes-blue {
+            color: var(--menezes-blue);
+        }
+        .text-menezes-yellow {
+            color: var(--menezes-yellow);
+        }
+        .border-menezes-blue {
+            border-color: var(--menezes-blue);
+        }
+        .border-menezes-yellow {
+            border-color: var(--menezes-yellow);
+        }
+        .btn-menezes-blue {
+            background-color: var(--menezes-blue);
+            color: white;
+        }
+        .btn-menezes-blue:hover {
+            background-color: #003a8e;
+        }
+        .btn-menezes-yellow {
+            background-color: var(--menezes-yellow);
+            color: var(--menezes-blue);
+        }
+        .btn-menezes-yellow:hover {
+            background-color: #e6bc00;
+        }
+        .sidebar {
+            background-color: var(--menezes-blue);
+            min-height: 100vh;
+        }
+        .sidebar-link {
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-link i {
+            margin-right: 0.75rem;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-banner {
+            background-color: #f0f4f8;
+            border-left: 4px solid var(--menezes-blue);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 p-4 fixed h-full">
+            <div class="flex items-center justify-center mb-8 pt-4">
+                <img src="/assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog" class="h-10">
+            </div>
+            
+            <nav>
+                <a href="#" class="sidebar-link active">
+                    <i class="fas fa-tachometer-alt"></i> Meu Dashboard
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-truck"></i> Minhas Entregas
+                </a>
+                <a href="nota_fiscal.html" class="sidebar-link">
+                    <i class="fas fa-file-invoice"></i> Notas Fiscais
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-history"></i> Histórico
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-user-circle"></i> Meu Perfil
+                </a>
+            </nav>
+            
+            <div class="absolute bottom-0 left-0 w-full p-4">
+                <a href="index.html" class="sidebar-link">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="ml-64 w-full">
+            <!-- Top Navigation -->
+            <div class="bg-white p-4 shadow-sm flex justify-between items-center">
+                <h1 class="text-xl font-bold text-menezes-blue">Meu Dashboard</h1>
+                <div class="flex items-center">
+                    <span class="mr-4 text-gray-700 font-medium">João da Silva</span>
+                    <div class="w-10 h-10 rounded-full bg-menezes-blue text-white flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Welcome Banner -->
+                <div class="welcome-banner rounded-lg p-6 mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2 text-menezes-blue">Olá, João da Silva!</h2>
+                        <p class="text-menezes-blue font-medium">ID do Motorista: 123456</p>
+                        <p class="text-menezes-blue font-medium">Período atual: 01/06/2025 - 15/06/2025</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-menezes-blue font-medium">Seu pagamento estimado</p>
+                        <p class="text-3xl font-bold text-menezes-blue">R$ 1.245,50</p>
+                        <span class="inline-block px-2 py-1 bg-green-500 text-white text-xs font-bold rounded mt-1">+5% em relação ao último período</span>
+                    </div>
+                </div>
+                
+                <!-- Status Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="card bg-white p-4">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-blue-100 p-3 mr-4">
+                                <i class="fas fa-box text-menezes-blue text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-700 text-sm font-medium">Total de Entregas</h3>
+                                <p class="text-2xl font-bold text-menezes-blue">342</p>
+                                <p class="text-xs text-gray-600 font-medium">Período atual</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-4">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-yellow-100 p-3 mr-4">
+                                <i class="fas fa-percentage text-yellow-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-700 text-sm font-medium">Bonificações</h3>
+                                <p class="text-2xl font-bold text-menezes-blue">R$ 125,00</p>
+                                <p class="text-xs text-gray-600 font-medium">Período atual</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white p-4">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-red-100 p-3 mr-4">
+                                <i class="fas fa-file-invoice text-red-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-700 text-sm font-medium">Nota Fiscal</h3>
+                                <p class="text-lg font-bold text-red-600">Pendente</p>
+                                <p class="text-xs text-gray-600 font-medium">Período anterior</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="card bg-white p-6 mb-6">
+                    <h2 class="text-lg font-bold text-menezes-blue mb-4">Ações Rápidas</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button class="btn-menezes-blue py-3 px-4 rounded flex items-center justify-center">
+                            <i class="fas fa-download mr-2"></i> Baixar Relatório
+                        </button>
+                        <button class="btn-menezes-yellow py-3 px-4 rounded flex items-center justify-center">
+                            <i class="fas fa-upload mr-2"></i> Enviar Nota Fiscal
+                        </button>
+                        <button class="bg-gray-200 text-gray-700 py-3 px-4 rounded flex items-center justify-center hover:bg-gray-300">
+                            <i class="fas fa-question-circle mr-2"></i> Suporte
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Entregas por Tipo de Serviço -->
+                <div class="card bg-white p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-menezes-blue">Entregas por Tipo de Serviço</h2>
+                        <a href="#" class="text-sm text-menezes-blue hover:underline font-medium">Ver detalhes</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tipo</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Descrição</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Quantidade</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Valor Base</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Bonificação</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="bg-blue-100 text-menezes-blue rounded-full w-8 h-8 flex items-center justify-center">
+                                            <span class="font-bold">0</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">Entrega Padrão</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">250</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 3,50</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 0,50</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900">R$ 1.000,00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="bg-blue-100 text-menezes-blue rounded-full w-8 h-8 flex items-center justify-center">
+                                            <span class="font-bold">9</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">Entrega Expressa</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">50</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 2,00</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">10%</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900">R$ 110,00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="bg-blue-100 text-menezes-blue rounded-full w-8 h-8 flex items-center justify-center">
+                                            <span class="font-bold">6</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">Entrega Especial</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">42</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 0,50</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 0,25</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900">R$ 31,50</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td colspan="5" class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">Total:</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900">R$ 1.141,50</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td colspan="5" class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">Bônus por Volume (5%):</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900">R$ 104,00</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td colspan="5" class="py-3 px-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">Total Geral:</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm font-bold text-menezes-blue">R$ 1.245,50</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Últimas Entregas -->
+                <div class="card bg-white p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-menezes-blue">Últimas Entregas</h2>
+                        <a href="#" class="text-sm text-menezes-blue hover:underline font-medium">Ver todas</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Data</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">AWB</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Remetente</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tipo</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">04/06/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">TXAS531420040tx</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">SHOPEE XD SANTANA DE PARNAÍBA</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">0</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">ENTREGA REALIZADA</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 4,00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">04/06/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">TXAS531419166tx</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">SHOPEE XD CRAVINHOS</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">0</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">ENTREGA REALIZADA</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 4,00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">03/06/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">TXAS531420917tx</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">SHOPEE XD LOUVEIRA</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">0</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">ENTREGA REALIZADA</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 4,00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">03/06/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">AMZB656527728tx</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">AMAZON DBA - PUDO - PPX</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">9</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">ENTREGA REALIZADA</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 2,20</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">02/06/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">AMZB656513822tx</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">AMAZON DBA - PUDO - PPX</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-700 font-medium">9</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">ENTREGA REALIZADA</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 font-medium">R$ 2,20</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

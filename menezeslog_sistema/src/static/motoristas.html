@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Motoristas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0047AB; /* Azul MenezesLog */
+            --secondary-color: #FFD700; /* Amarelo MenezesLog */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 250px;
+        }
+        
+        .sidebar .logo-container {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .logo-container img {
+            max-width: 90%;
+            height: auto;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px); /* Garante que o conteúdo ocupe toda a largura disponível */
+        }
+        
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #003a8c;
+            border-color: #003a8c;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="assets/MENEZESLOG-MarcaBrancaH.png" alt="MenezesLog Logo">
+            </div>
+            <div class="mt-4">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="admin_dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a class="nav-link" href="upload.html"><i class="bi bi-upload"></i> Upload de Arquivos</a>
+                    <a class="nav-link" href="bonificacoes.html"><i class="bi bi-trophy"></i> Bonificações</a>
+                    <a class="nav-link" href="descontos.html"><i class="bi bi-dash-circle"></i> Descontos</a>
+                    <a class="nav-link active" href="motoristas.html"><i class="bi bi-people"></i> Motoristas</a>
+                    <a class="nav-link" href="relatorios.html"><i class="bi bi-file-earmark-text"></i> Relatórios</a>
+                    <a class="nav-link" href="configuracoes.html"><i class="bi bi-gear"></i> Configurações</a>
+                    <a class="nav-link" href="#" id="logout-link"><i class="bi bi-box-arrow-right"></i> Sair</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header mb-4">
+                <h4>Motoristas</h4>
+                <div class="user-info">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div class="fw-bold">Admin</div>
+                        <div class="small text-muted">Administrador</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Lista de Motoristas</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-upload"></i> Importar
+                                </button>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDriverModal">
+                                    <i class="bi bi-plus"></i> Novo Motorista
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Buscar motorista...">
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-primary active">Todos</button>
+                                        <button type="button" class="btn btn-outline-primary">Ativos</button>
+                                        <button type="button" class="btn btn-outline-primary">Inativos</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Telefone</th>
+                                            <th>Entregas (Mês)</th>
+                                            <th>Valor (Mês)</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>100957</td>
+                                            <td>Ailton Oliveira de Freitas</td>
+                                            <td>ailton.freitas@email.com</td>
+                                            <td>(11) 98765-4321</td>
+                                            <td>78</td>
+                                            <td>R$ 312,00</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>100278</td>
+                                            <td>Maria Santos Silva</td>
+                                            <td>maria.santos@email.com</td>
+                                            <td>(11) 97654-3210</td>
+                                            <td>120</td>
+                                            <td>R$ 432,00</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>100345</td>
+                                            <td>Carlos Oliveira Pereira</td>
+                                            <td>carlos.oliveira@email.com</td>
+                                            <td>(11) 96543-2109</td>
+                                            <td>45</td>
+                                            <td>R$ 82,50</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>100489</td>
+                                            <td>Ana Pereira Costa</td>
+                                            <td>ana.pereira@email.com</td>
+                                            <td>(11) 95432-1098</td>
+                                            <td>92</td>
+                                            <td>R$ 118,00</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>100512</td>
+                                            <td>Roberto Almeida Santos</td>
+                                            <td>roberto.almeida@email.com</td>
+                                            <td>(11) 94321-0987</td>
+                                            <td>105</td>
+                                            <td>R$ 224,25</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>100623</td>
+                                            <td>Juliana Ferreira Lima</td>
+                                            <td>juliana.ferreira@email.com</td>
+                                            <td>(11) 93210-9876</td>
+                                            <td>0</td>
+                                            <td>R$ 0,00</td>
+                                            <td><span class="badge bg-secondary">Inativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">Próximo</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Estatísticas de Motoristas</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-0">42</h3>
+                                            <p class="text-muted mb-0">Total de Motoristas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-0">38</h3>
+                                            <p class="text-muted mb-0">Motoristas Ativos</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-0">1.248</h3>
+                                            <p class="text-muted mb-0">Entregas no Mês</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-0">R$ 4.320</h3>
+                                            <p class="text-muted mb-0">Valor Total no Mês</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar motorista -->
+    <div class="modal fade" id="addDriverModal" tabindex="-1" aria-labelledby="addDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDriverModalLabel">Novo Motorista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="driverId" class="form-label">ID do Motorista</label>
+                            <input type="text" class="form-control" id="driverId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="driverName" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="driverName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="driverEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="driverEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="driverPhone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" id="driverPhone" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="driverActive" checked>
+                            <label class="form-check-label" for="driverActive">Ativo</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="driverPassword" class="form-label">Senha Inicial</label>
+                            <input type="password" class="form-control" id="driverPassword" required>
+                            <div class="form-text">O motorista será solicitado a alterar a senha no primeiro acesso.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const checkAuth = () => {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'index.html';
+                }
+            };
+            
+            // Logout
+            document.getElementById('logout-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+            
+            // Inicializar
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

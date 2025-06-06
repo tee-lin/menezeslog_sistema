@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Bonificações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0047AB; /* Azul MenezesLog */
+            --secondary-color: #FFD700; /* Amarelo MenezesLog */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 250px;
+        }
+        
+        .sidebar .logo-container {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .logo-container img {
+            max-width: 90%;
+            height: auto;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px); /* Garante que o conteúdo ocupe toda a largura disponível */
+        }
+        
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #003a8c;
+            border-color: #003a8c;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="assets/MENEZESLOG-MarcaBrancaH.png" alt="MenezesLog Logo">
+            </div>
+            <div class="mt-4">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="admin_dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a class="nav-link" href="upload.html"><i class="bi bi-upload"></i> Upload de Arquivos</a>
+                    <a class="nav-link active" href="bonificacoes.html"><i class="bi bi-trophy"></i> Bonificações</a>
+                    <a class="nav-link" href="descontos.html"><i class="bi bi-dash-circle"></i> Descontos</a>
+                    <a class="nav-link" href="motoristas.html"><i class="bi bi-people"></i> Motoristas</a>
+                    <a class="nav-link" href="relatorios.html"><i class="bi bi-file-earmark-text"></i> Relatórios</a>
+                    <a class="nav-link" href="configuracoes.html"><i class="bi bi-gear"></i> Configurações</a>
+                    <a class="nav-link" href="#" id="logout-link"><i class="bi bi-box-arrow-right"></i> Sair</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header mb-4">
+                <h4>Bonificações</h4>
+                <div class="user-info">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div class="fw-bold">Admin</div>
+                        <div class="small text-muted">Administrador</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Bonificações por Tipo de Serviço</span>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addBonusModal">
+                                <i class="bi bi-plus"></i> Nova Bonificação
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de Serviço</th>
+                                            <th>Valor Base</th>
+                                            <th>Valor Bonificado</th>
+                                            <th>Aumento</th>
+                                            <th>Data de Início</th>
+                                            <th>Data de Término</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>0</td>
+                                            <td>R$ 3,50</td>
+                                            <td>R$ 4,00</td>
+                                            <td>+14,3%</td>
+                                            <td>01/06/2025</td>
+                                            <td>30/06/2025</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>9</td>
+                                            <td>R$ 2,00</td>
+                                            <td>R$ 2,50</td>
+                                            <td>+25%</td>
+                                            <td>01/06/2025</td>
+                                            <td>30/06/2025</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>R$ 0,50</td>
+                                            <td>R$ 0,75</td>
+                                            <td>+50%</td>
+                                            <td>01/05/2025</td>
+                                            <td>31/05/2025</td>
+                                            <td><span class="badge bg-secondary">Encerrado</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Bonificações por Volume</span>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addVolumeModal">
+                                <i class="bi bi-plus"></i> Nova Bonificação
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Quantidade Mínima</th>
+                                            <th>Quantidade Máxima</th>
+                                            <th>Percentual de Bonificação</th>
+                                            <th>Data de Início</th>
+                                            <th>Data de Término</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>50</td>
+                                            <td>100</td>
+                                            <td>5%</td>
+                                            <td>01/06/2025</td>
+                                            <td>30/06/2025</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>101</td>
+                                            <td>200</td>
+                                            <td>10%</td>
+                                            <td>01/06/2025</td>
+                                            <td>30/06/2025</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>201</td>
+                                            <td>-</td>
+                                            <td>15%</td>
+                                            <td>01/06/2025</td>
+                                            <td>30/06/2025</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Histórico de Bonificações</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                            <th>Valor/Percentual</th>
+                                            <th>Período</th>
+                                            <th>Total Pago</th>
+                                            <th>Motoristas Beneficiados</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Tipo de Serviço</td>
+                                            <td>Bonificação Tipo 0</td>
+                                            <td>+R$ 0,50</td>
+                                            <td>01/05/2025 - 31/05/2025</td>
+                                            <td>R$ 1.250,00</td>
+                                            <td>32</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Volume</td>
+                                            <td>Bonificação por Volume</td>
+                                            <td>+10%</td>
+                                            <td>01/05/2025 - 31/05/2025</td>
+                                            <td>R$ 875,50</td>
+                                            <td>12</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tipo de Serviço</td>
+                                            <td>Bonificação Tipo 9</td>
+                                            <td>+R$ 0,25</td>
+                                            <td>01/04/2025 - 30/04/2025</td>
+                                            <td>R$ 625,00</td>
+                                            <td>28</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar bonificação por tipo de serviço -->
+    <div class="modal fade" id="addBonusModal" tabindex="-1" aria-labelledby="addBonusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBonusModalLabel">Nova Bonificação por Tipo de Serviço</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="serviceType" class="form-label">Tipo de Serviço</label>
+                            <select class="form-select" id="serviceType" required>
+                                <option value="" selected disabled>Selecione o tipo de serviço</option>
+                                <option value="0">0 - Entrega Padrão (R$ 3,50)</option>
+                                <option value="9">9 - Entrega Expressa (R$ 2,00)</option>
+                                <option value="6">6 - Entrega Especial (R$ 0,50)</option>
+                                <option value="8">8 - Entrega Econômica (R$ 0,50)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bonusType" class="form-label">Tipo de Bonificação</label>
+                            <select class="form-select" id="bonusType" required>
+                                <option value="fixed" selected>Valor Fixo</option>
+                                <option value="percentage">Percentual</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bonusValue" class="form-label">Valor da Bonificação</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="valuePrefix">R$</span>
+                                <input type="number" class="form-control" id="bonusValue" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="startDate" class="form-label">Data de Início</label>
+                                <input type="date" class="form-control" id="startDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endDate" class="form-label">Data de Término</label>
+                                <input type="date" class="form-control" id="endDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar bonificação por volume -->
+    <div class="modal fade" id="addVolumeModal" tabindex="-1" aria-labelledby="addVolumeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVolumeModalLabel">Nova Bonificação por Volume</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="minQuantity" class="form-label">Quantidade Mínima</label>
+                                <input type="number" class="form-control" id="minQuantity" min="1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="maxQuantity" class="form-label">Quantidade Máxima</label>
+                                <input type="number" class="form-control" id="maxQuantity" min="1">
+                                <div class="form-text">Deixe em branco para "sem limite"</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="percentageBonus" class="form-label">Percentual de Bonificação</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="percentageBonus" step="0.1" min="0" required>
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="volumeStartDate" class="form-label">Data de Início</label>
+                                <input type="date" class="form-control" id="volumeStartDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="volumeEndDate" class="form-label">Data de Término</label>
+                                <input type="date" class="form-control" id="volumeEndDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="volumeDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="volumeDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const checkAuth = () => {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'index.html';
+                }
+            };
+            
+            // Logout
+            document.getElementById('logout-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+            
+            // Alternar tipo de bonificação
+            const bonusType = document.getElementById('bonusType');
+            const valuePrefix = document.getElementById('valuePrefix');
+            
+            if (bonusType) {
+                bonusType.addEventListener('change', function() {
+                    if (this.value === 'percentage') {
+                        valuePrefix.textContent = '%';
+                    } else {
+                        valuePrefix.textContent = 'R$';
+                    }
+                });
+            }
+            
+            // Inicializar
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Arquivos - MenezesLog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #ffc107;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .sidebar {
+            background-color: var(--dark-color);
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 100;
+        }
+        
+        .sidebar .logo {
+            text-align: center;
+            padding: 10px 0 20px;
+        }
+        
+        .sidebar .logo img {
+            max-width: 180px;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 4px 16px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .top-bar {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        
+        .upload-area.highlight {
+            border-color: var(--primary-color);
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area h4 {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .upload-area p {
+            color: #777;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .selected-files {
+            text-align: left;
+            margin-top: 20px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .file-item .file-icon {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .file-item .file-name {
+            font-weight: 500;
+        }
+        
+        .file-item .file-size {
+            color: #777;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .file-item .remove-file {
+            color: #dc3545;
+            cursor: pointer;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .status-message {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+        }
+        
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #6c757d;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .result-card {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(13, 110, 253, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .result-icon i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+        
+        .result-text h5 {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .result-text p {
+            margin-bottom: 0;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="admin_dashboard.html" class="nav-link">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="upload.html" class="nav-link active">
+                    <i class="bi bi-cloud-upload"></i> Upload de Arquivos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="bonificacoes.html" class="nav-link">
+                    <i class="bi bi-trophy"></i> Bonificações
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="descontos.html" class="nav-link">
+                    <i class="bi bi-dash-circle"></i> Descontos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="motoristas.html" class="nav-link">
+                    <i class="bi bi-person"></i> Motoristas
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="relatorios.html" class="nav-link">
+                    <i class="bi bi-file-earmark-text"></i> Relatórios
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="configuracoes.html" class="nav-link">
+                    <i class="bi bi-gear"></i> Configurações
+                </a>
+            </li>
+            <li class="nav-item mt-5">
+                <a href="#" class="nav-link" id="logout-btn">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h4 class="mb-0">Upload de Arquivos</h4>
+            <div class="user-info">
+                <img src="https://via.placeholder.com/40" alt="User Avatar">
+                <div>
+                    <h6 class="mb-0">Admin</h6>
+                    <small class="text-muted">Administrador</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-cloud-upload me-2"></i> Upload de Arquivos para Processamento
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-4">Faça o upload dos arquivos necessários para processar os pagamentos dos motoristas. É necessário enviar um arquivo CSV com os dados das entregas e um arquivo Excel com os dados dos motoristas.</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="upload-area" id="csv-upload-area">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    <h4>Arquivo CSV de Entregas</h4>
+                                    <p>Arraste e solte o arquivo CSV ou clique para selecionar</p>
+                                    <input type="file" class="file-input" id="csv-file" accept=".csv">
+                                    <button class="btn btn-outline-secondary">Escolher Arquivo</button>
+                                    <div class="selected-files" id="csv-selected-file"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="upload-area" id="excel-upload-area">
+                                    <i class="bi bi-file-earmark-excel"></i>
+                                    <h4>Arquivo Excel de Motoristas</h4>
+                                    <p>Arraste e solte o arquivo Excel ou clique para selecionar</p>
+                                    <input type="file" class="file-input" id="excel-file" accept=".xlsx,.xls">
+                                    <button class="btn btn-outline-secondary">Escolher Arquivo</button>
+                                    <div class="selected-files" id="excel-selected-file"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary" id="process-btn" disabled>
+                                <i class="bi bi-gear me-2"></i> Processar Arquivos
+                            </button>
+                        </div>
+                        
+                        <div class="progress-container" id="progress-container">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <p class="status-message" id="status-message">Preparando arquivos...</p>
+                        </div>
+                        
+                        <div class="result-card card mt-4" id="result-card">
+                            <div class="card-header">
+                                <i class="bi bi-check-circle me-2"></i> Processamento Concluído
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="result-item">
+                                            <div class="result-icon">
+                                                <i class="bi bi-box-seam"></i>
+                                            </div>
+                                            <div class="result-text">
+                                                <h5>Total de Entregas</h5>
+                                                <p id="total-deliveries">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="result-item">
+                                            <div class="result-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                            <div class="result-text">
+                                                <h5>Total de Motoristas</h5>
+                                                <p id="total-drivers">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="result-item">
+                                            <div class="result-icon">
+                                                <i class="bi bi-cash"></i>
+                                            </div>
+                                            <div class="result-text">
+                                                <h5>Valor Total</h5>
+                                                <p id="total-amount">R$ 0,00</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <a href="relatorios.html" class="btn btn-primary">
+                                        <i class="bi bi-file-earmark-text me-2"></i> Ver Relatórios
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Processamento Concluído</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">Arquivos Processados com Sucesso!</h4>
+                    <p class="mb-0">Os pagamentos foram calculados e os relatórios estão disponíveis.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <a href="relatorios.html" class="btn btn-primary">Ver Relatórios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Elementos do DOM
+            const csvFileInput = document.getElementById('csv-file');
+            const excelFileInput = document.getElementById('excel-file');
+            const csvUploadArea = document.getElementById('csv-upload-area');
+            const excelUploadArea = document.getElementById('excel-upload-area');
+            const csvSelectedFile = document.getElementById('csv-selected-file');
+            const excelSelectedFile = document.getElementById('excel-selected-file');
+            const processBtn = document.getElementById('process-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.querySelector('.progress-bar');
+            const statusMessage = document.getElementById('status-message');
+            const resultCard = document.getElementById('result-card');
+            const totalDeliveries = document.getElementById('total-deliveries');
+            const totalDrivers = document.getElementById('total-drivers');
+            const totalAmount = document.getElementById('total-amount');
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            
+            // Variáveis para armazenar os arquivos
+            let csvFile = null;
+            let excelFile = null;
+            
+            // Função para formatar o tamanho do arquivo
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Função para atualizar o botão de processamento
+            function updateProcessButton() {
+                processBtn.disabled = !(csvFile && excelFile);
+            }
+            
+            // Função para exibir o arquivo CSV selecionado
+            function displayCSVFile(file) {
+                csvFile = file;
+                csvSelectedFile.innerHTML = `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <i class="bi bi-file-earmark-text file-icon"></i>
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">(${formatFileSize(file.size)})</span>
+                        </div>
+                        <i class="bi bi-x-circle remove-file" id="remove-csv"></i>
+                    </div>
+                `;
+                
+                document.getElementById('remove-csv').addEventListener('click', function() {
+                    csvFile = null;
+                    csvSelectedFile.innerHTML = '';
+                    csvFileInput.value = '';
+                    updateProcessButton();
+                });
+                
+                updateProcessButton();
+            }
+            
+            // Função para exibir o arquivo Excel selecionado
+            function displayExcelFile(file) {
+                excelFile = file;
+                excelSelectedFile.innerHTML = `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <i class="bi bi-file-earmark-excel file-icon"></i>
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">(${formatFileSize(file.size)})</span>
+                        </div>
+                        <i class="bi bi-x-circle remove-file" id="remove-excel"></i>
+                    </div>
+                `;
+                
+                document.getElementById('remove-excel').addEventListener('click', function() {
+                    excelFile = null;
+                    excelSelectedFile.innerHTML = '';
+                    excelFileInput.value = '';
+                    updateProcessButton();
+                });
+                
+                updateProcessButton();
+            }
+            
+            // Event listeners para o upload de arquivos CSV
+            csvFileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    displayCSVFile(this.files[0]);
+                }
+            });
+            
+            csvUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            });
+            
+            csvUploadArea.addEventListener('dragleave', function() {
+                this.classList.remove('highlight');
+            });
+            
+            csvUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.name.toLowerCase().endsWith('.csv')) {
+                        displayCSVFile(file);
+                    } else {
+                        alert('Por favor, selecione um arquivo CSV válido.');
+                    }
+                }
+            });
+            
+            // Event listeners para o upload de arquivos Excel
+            excelFileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    displayExcelFile(this.files[0]);
+                }
+            });
+            
+            excelUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            });
+            
+            excelUploadArea.addEventListener('dragleave', function() {
+                this.classList.remove('highlight');
+            });
+            
+            excelUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')) {
+                        displayExcelFile(file);
+                    } else {
+                        alert('Por favor, selecione um arquivo Excel válido (.xlsx ou .xls).');
+                    }
+                }
+            });
+            
+            // Event listener para o botão de processamento
+            processBtn.addEventListener('click', function() {
+                if (!csvFile || !excelFile) {
+                    alert('Por favor, selecione os arquivos CSV e Excel antes de processar.');
+                    return;
+                }
+                
+                // Mostrar barra de progresso
+                progressContainer.style.display = 'block';
+                processBtn.disabled = true;
+                
+                // Criar FormData para envio dos arquivos
+                const formData = new FormData();
+                formData.append('csv_file', csvFile);
+                formData.append('excel_file', excelFile);
+                
+                // Simular progresso (em produção, isso seria substituído pelo progresso real do upload)
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 5;
+                    if (progress > 100) {
+                        clearInterval(progressInterval);
+                        return;
+                    }
+                    
+                    progressBar.style.width = `${progress}%`;
+                    
+                    if (progress < 30) {
+                        statusMessage.textContent = 'Enviando arquivos...';
+                    } else if (progress < 60) {
+                        statusMessage.textContent = 'Processando dados...';
+                    } else if (progress < 90) {
+                        statusMessage.textContent = 'Calculando pagamentos...';
+                    } else {
+                        statusMessage.textContent = 'Finalizando...';
+                    }
+                }, 200);
+                
+                // Enviar arquivos para o backend
+                fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    statusMessage.textContent = 'Processamento concluído!';
+                    
+                    if (!response.ok) {
+                        throw new Error('Erro ao processar os arquivos');
+                    }
+                    
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Resposta do servidor:', data);
+                    
+                    // Exibir resultados
+                    if (data.success) {
+                        setTimeout(() => {
+                            resultCard.style.display = 'block';
+                            totalDeliveries.textContent = data.stats.total_deliveries.toLocaleString();
+                            totalDrivers.textContent = data.stats.total_drivers.toLocaleString();
+                            totalAmount.textContent = `R$ ${data.stats.total_payments.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            
+                            // Mostrar modal de sucesso
+                            successModal.show();
+                        }, 1000);
+                    } else {
+                        alert(`Erro ao processar os arquivos: ${data.error}`);
+                        processBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    clearInterval(progressInterval);
+                    statusMessage.textContent = `Erro: ${error.message}`;
+                    alert(`Ocorreu um erro ao processar os arquivos: ${error.message}`);
+                    processBtn.disabled = false;
+                });
+            });
+            
+            // Event listener para o botão de logout
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            });
+            
+            // Navegação do menu lateral
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') !== '#') {
+                        const href = this.getAttribute('href');
+                        if (href && href !== '#') {
+                            e.preventDefault();
+                            window.location.href = href;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

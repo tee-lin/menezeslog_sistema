@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Protótipo</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --menezes-blue: #0046AD;
+            --menezes-yellow: #FFD100;
+        }
+        .bg-menezes-blue {
+            background-color: var(--menezes-blue);
+        }
+        .bg-menezes-yellow {
+            background-color: var(--menezes-yellow);
+        }
+        .text-menezes-blue {
+            color: var(--menezes-blue);
+        }
+        .text-menezes-yellow {
+            color: var(--menezes-yellow);
+        }
+        .btn-menezes-blue {
+            background-color: var(--menezes-blue);
+            color: white;
+        }
+        .btn-menezes-blue:hover {
+            background-color: #003a8e;
+        }
+        .btn-menezes-yellow {
+            background-color: var(--menezes-yellow);
+            color: var(--menezes-blue);
+        }
+        .btn-menezes-yellow:hover {
+            background-color: #e6bc00;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog" class="h-16 mx-auto mb-4">
+            <h1 class="text-3xl font-bold text-menezes-blue">Protótipo do Sistema de Pagamento</h1>
+            <p class="text-gray-600 mt-2">Navegue entre as telas do protótipo usando os links abaixo</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div class="card bg-white p-6">
+                <h2 class="text-xl font-bold text-menezes-blue mb-4">Área do Administrador</h2>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="index.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Tela de Login
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin_dashboard.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard Administrativo
+                        </a>
+                    </li>
+                    <li>
+                        <a href="upload.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-upload mr-2"></i> Upload de Arquivos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="bonificacoes.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-percentage mr-2"></i> Configuração de Bonificações
+                        </a>
+                    </li>
+                    <li>
+                        <a href="descontos.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-minus-circle mr-2"></i> Configuração de Descontos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card bg-white p-6">
+                <h2 class="text-xl font-bold text-menezes-blue mb-4">Área do Motorista</h2>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="index.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Tela de Login
+                        </a>
+                    </li>
+                    <li>
+                        <a href="motorista_dashboard_ajustado.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard do Motorista (Ajustado)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="motorista_dashboard.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard do Motorista (Original)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="nota_fiscal.html" class="flex items-center text-menezes-blue hover:underline">
+                            <i class="fas fa-file-invoice mr-2"></i> Envio de Nota Fiscal
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center text-gray-600">
+            <p>Este é um protótipo visual para avaliação do design e estrutura das telas.</p>
+            <p>Na versão final, a navegação entre as telas funcionará normalmente com os botões e links.</p>
+            <p class="mt-4 text-menezes-blue font-medium">Atualizações recentes:</p>
+            <p class="text-gray-700">- Nova tela de Descontos para extravios e adiantamentos</p>
+            <p class="text-gray-700">- Melhorias de contraste no Dashboard do Motorista</p>
+        </div>
+    </div>
+</body>
+</html>

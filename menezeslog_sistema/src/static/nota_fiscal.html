@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Envio de Nota Fiscal</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --menezes-blue: #0046AD;
+            --menezes-yellow: #FFD100;
+        }
+        .bg-menezes-blue {
+            background-color: var(--menezes-blue);
+        }
+        .bg-menezes-yellow {
+            background-color: var(--menezes-yellow);
+        }
+        .text-menezes-blue {
+            color: var(--menezes-blue);
+        }
+        .text-menezes-yellow {
+            color: var(--menezes-yellow);
+        }
+        .border-menezes-blue {
+            border-color: var(--menezes-blue);
+        }
+        .border-menezes-yellow {
+            border-color: var(--menezes-yellow);
+        }
+        .btn-menezes-blue {
+            background-color: var(--menezes-blue);
+            color: white;
+        }
+        .btn-menezes-blue:hover {
+            background-color: #003a8e;
+        }
+        .btn-menezes-yellow {
+            background-color: var(--menezes-yellow);
+            color: var(--menezes-blue);
+        }
+        .btn-menezes-yellow:hover {
+            background-color: #e6bc00;
+        }
+        .sidebar {
+            background-color: var(--menezes-blue);
+            min-height: 100vh;
+        }
+        .sidebar-link {
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-link i {
+            margin-right: 0.75rem;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: var(--menezes-blue);
+        }
+        .upload-area.active {
+            border-color: var(--menezes-blue);
+            background-color: rgba(0, 70, 173, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 p-4 fixed h-full">
+            <div class="flex items-center justify-center mb-8 pt-4">
+                <img src="/assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog" class="h-10">
+            </div>
+            
+            <nav>
+                <a href="motorista_dashboard.html" class="sidebar-link">
+                    <i class="fas fa-tachometer-alt"></i> Meu Dashboard
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-truck"></i> Minhas Entregas
+                </a>
+                <a href="#" class="sidebar-link active">
+                    <i class="fas fa-file-invoice"></i> Notas Fiscais
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-history"></i> Histórico
+                </a>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-user-circle"></i> Meu Perfil
+                </a>
+            </nav>
+            
+            <div class="absolute bottom-0 left-0 w-full p-4">
+                <a href="index.html" class="sidebar-link">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="ml-64 w-full">
+            <!-- Top Navigation -->
+            <div class="bg-white p-4 shadow-sm flex justify-between items-center">
+                <h1 class="text-xl font-bold text-menezes-blue">Envio de Nota Fiscal</h1>
+                <div class="flex items-center">
+                    <span class="mr-4 text-gray-600">João da Silva</span>
+                    <div class="w-10 h-10 rounded-full bg-menezes-blue text-white flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Resumo do Pagamento -->
+                <div class="card bg-white p-6 mb-6">
+                    <h2 class="text-lg font-bold text-menezes-blue mb-4">Resumo do Pagamento</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Período</p>
+                                <p class="font-medium">01/06/2025 - 15/06/2025</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Total de Entregas</p>
+                                <p class="font-medium">342</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded">Aguardando Nota Fiscal</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Valor Base</p>
+                                <p class="font-medium">R$ 1.120,50</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Bonificações</p>
+                                <p class="font-medium">R$ 125,00</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Valor Total</p>
+                                <p class="text-xl font-bold text-menezes-blue">R$ 1.245,50</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upload da Nota Fiscal -->
+                <div class="card bg-white p-6 mb-6">
+                    <h2 class="text-lg font-bold text-menezes-blue mb-4">Upload da Nota Fiscal</h2>
+                    <div class="text-gray-700 mb-6">
+                        <p class="mb-2">Para receber seu pagamento, envie a nota fiscal referente ao período atual.</p>
+                        <ul class="list-disc pl-5 mb-4 text-sm">
+                            <li class="mb-1">A nota fiscal deve ser emitida com o valor total de R$ 1.245,50</li>
+                            <li class="mb-1">Formatos aceitos: PDF, JPG ou PNG</li>
+                            <li class="mb-1">Tamanho máximo: 5MB</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="upload-area mb-4" id="invoice-upload">
+                        <i class="fas fa-file-invoice text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-600 mb-2">Arraste e solte sua nota fiscal aqui</p>
+                        <p class="text-gray-400 text-sm">ou</p>
+                        <button class="mt-3 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Selecionar Arquivo</button>
+                        <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
+                    </div>
+                    
+                    <div class="hidden" id="invoice-file-info">
+                        <div class="flex items-center p-3 bg-blue-50 rounded">
+                            <i class="fas fa-file-pdf text-menezes-blue mr-3"></i>
+                            <div class="flex-grow">
+                                <p class="text-sm font-medium text-menezes-blue">NotaFiscal_123456_Junho2025.pdf</p>
+                                <p class="text-xs text-gray-500">1.2 MB</p>
+                            </div>
+                            <button class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Informações Adicionais -->
+                <div class="card bg-white p-6 mb-6">
+                    <h2 class="text-lg font-bold text-menezes-blue mb-4">Informações Adicionais</h2>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="invoice-number">
+                            Número da Nota Fiscal
+                        </label>
+                        <input id="invoice-number" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-menezes-blue" placeholder="Ex: NF-e 12345">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="invoice-date">
+                            Data de Emissão
+                        </label>
+                        <input id="invoice-date" type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-menezes-blue">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="comments">
+                            Observações (opcional)
+                        </label>
+                        <textarea id="comments" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-menezes-blue" rows="3" placeholder="Informações adicionais sobre a nota fiscal..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-4">
+                    <button class="px-6 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">Cancelar</button>
+                    <button class="btn-menezes-blue px-6 py-2 rounded">Enviar Nota Fiscal</button>
+                </div>
+                
+                <!-- Histórico de Notas Fiscais -->
+                <div class="mt-8">
+                    <h2 class="text-lg font-bold text-menezes-blue mb-4">Histórico de Notas Fiscais</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Período</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número NF</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Envio</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">16/05 - 31/05/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500">NF-e 12344</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500">01/06/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">R$ 1.120,00</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aprovada</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm">
+                                        <a href="#" class="text-menezes-blue hover:underline">Visualizar</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">01/05 - 15/05/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500">NF-e 12343</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500">16/05/2025</td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900">R$ 980,50</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aprovada</span>
+                                    </td>
+                                    <td class="py-3 px-4 whitespace-nowrap text-sm">
+                                        <a href="#" class="text-menezes-blue hover:underline">Visualizar</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple script to show file selection UI
+        document.addEventListener('DOMContentLoaded', function() {
+            const invoiceUpload = document.getElementById('invoice-upload');
+            const invoiceFileInfo = document.getElementById('invoice-file-info');
+            
+            invoiceUpload.addEventListener('click', function() {
+                invoiceUpload.classList.add('hidden');
+                invoiceFileInfo.classList.remove('hidden');
+            });
+            
+            // Reset button
+            const resetButton = document.querySelector('#invoice-file-info button');
+            resetButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                invoiceFileInfo.classList.add('hidden');
+                invoiceUpload.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

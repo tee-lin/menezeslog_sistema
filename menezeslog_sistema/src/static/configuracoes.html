@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Configurações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0047AB; /* Azul MenezesLog */
+            --secondary-color: #FFD700; /* Amarelo MenezesLog */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 250px;
+        }
+        
+        .sidebar .logo-container {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .logo-container img {
+            max-width: 90%;
+            height: auto;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px); /* Garante que o conteúdo ocupe toda a largura disponível */
+        }
+        
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #003a8c;
+            border-color: #003a8c;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="assets/MENEZESLOG-MarcaBrancaH.png" alt="MenezesLog Logo">
+            </div>
+            <div class="mt-4">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="admin_dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a class="nav-link" href="upload.html"><i class="bi bi-upload"></i> Upload de Arquivos</a>
+                    <a class="nav-link" href="bonificacoes.html"><i class="bi bi-trophy"></i> Bonificações</a>
+                    <a class="nav-link" href="descontos.html"><i class="bi bi-dash-circle"></i> Descontos</a>
+                    <a class="nav-link" href="motoristas.html"><i class="bi bi-people"></i> Motoristas</a>
+                    <a class="nav-link" href="relatorios.html"><i class="bi bi-file-earmark-text"></i> Relatórios</a>
+                    <a class="nav-link active" href="configuracoes.html"><i class="bi bi-gear"></i> Configurações</a>
+                    <a class="nav-link" href="#" id="logout-link"><i class="bi bi-box-arrow-right"></i> Sair</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header mb-4">
+                <h4>Configurações</h4>
+                <div class="user-info">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div class="fw-bold">Admin</div>
+                        <div class="small text-muted">Administrador</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Configurações do Sistema</span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs mb-4" id="configTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">Geral</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button" role="tab" aria-controls="payment" aria-selected="false">Pagamentos</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="notification-tab" data-bs-toggle="tab" data-bs-target="#notification" type="button" role="tab" aria-controls="notification" aria-selected="false">Notificações</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="backup-tab" data-bs-toggle="tab" data-bs-target="#backup" type="button" role="tab" aria-controls="backup" aria-selected="false">Backup</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="configTabsContent">
+                                <!-- Configurações Gerais -->
+                                <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                                    <form>
+                                        <div class="mb-4">
+                                            <h5>Informações da Empresa</h5>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="companyName" class="form-label">Nome da Empresa</label>
+                                                    <input type="text" class="form-control" id="companyName" value="MenezesLog Transportes">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="companyCNPJ" class="form-label">CNPJ</label>
+                                                    <input type="text" class="form-control" id="companyCNPJ" value="12.345.678/0001-90">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="companyEmail" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" id="companyEmail" value="contato@menezeslog.com.br">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="companyPhone" class="form-label">Telefone</label>
+                                                    <input type="tel" class="form-control" id="companyPhone" value="(11) 3456-7890">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="companyAddress" class="form-label">Endereço</label>
+                                                <input type="text" class="form-control" id="companyAddress" value="Av. Paulista, 1000 - São Paulo, SP">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <h5>Configurações de Interface</h5>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="itemsPerPage" class="form-label">Itens por página</label>
+                                                    <select class="form-select" id="itemsPerPage">
+                                                        <option value="10">10</option>
+                                                        <option value="25" selected>25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="dateFormat" class="form-label">Formato de data</label>
+                                                    <select class="form-select" id="dateFormat">
+                                                        <option value="dd/mm/yyyy" selected>DD/MM/AAAA</option>
+                                                        <option value="mm/dd/yyyy">MM/DD/AAAA</option>
+                                                        <option value="yyyy-mm-dd">AAAA-MM-DD</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="darkMode">
+                                                <label class="form-check-label" for="darkMode">Ativar modo escuro</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- Configurações de Pagamento -->
+                                <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+                                    <form>
+                                        <div class="mb-4">
+                                            <h5>Configurações de Pagamento</h5>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="paymentCycle" class="form-label">Ciclo de Pagamento</label>
+                                                    <select class="form-select" id="paymentCycle">
+                                                        <option value="weekly">Semanal</option>
+                                                        <option value="biweekly" selected>Quinzenal</option>
+                                                        <option value="monthly">Mensal</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="paymentDay" class="form-label">Dia de Pagamento</label>
+                                                    <input type="number" class="form-control" id="paymentDay" min="1" max="31" value="15">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="paymentMethod" class="form-label">Método de Pagamento Padrão</label>
+                                                <select class="form-select" id="paymentMethod">
+                                                    <option value="bank_transfer" selected>Transferência Bancária</option>
+                                                    <option value="pix">PIX</option>
+                                                    <option value="check">Cheque</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <h5>Valores por Tipo de Serviço</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tipo de Serviço</th>
+                                                            <th>Descrição</th>
+                                                            <th>Valor (R$)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>0</td>
+                                                            <td>Entrega Padrão</td>
+                                                            <td>
+                                                                <input type="number" class="form-control" value="3.50" step="0.01" min="0">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>9</td>
+                                                            <td>Entrega Expressa</td>
+                                                            <td>
+                                                                <input type="number" class="form-control" value="2.00" step="0.01" min="0">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>6</td>
+                                                            <td>Entrega Especial</td>
+                                                            <td>
+                                                                <input type="number" class="form-control" value="0.50" step="0.01" min="0">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>8</td>
+                                                            <td>Entrega Econômica</td>
+                                                            <td>
+                                                                <input type="number" class="form-control" value="0.50" step="0.01" min="0">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- Configurações de Notificação -->
+                                <div class="tab-pane fade" id="notification" role="tabpanel" aria-labelledby="notification-tab">
+                                    <form>
+                                        <div class="mb-4">
+                                            <h5>Notificações por Email</h5>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="emailPayment" checked>
+                                                <label class="form-check-label" for="emailPayment">Notificar motoristas sobre pagamentos</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="emailInvoice" checked>
+                                                <label class="form-check-label" for="emailInvoice">Notificar sobre notas fiscais pendentes</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="emailReport" checked>
+                                                <label class="form-check-label" for="emailReport">Enviar relatórios quinzenais por email</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <h5>Notificações do Sistema</h5>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="notifyLogin" checked>
+                                                <label class="form-check-label" for="notifyLogin">Notificar sobre novos logins</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="notifyUpload" checked>
+                                                <label class="form-check-label" for="notifyUpload">Notificar sobre uploads de arquivos</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="notifyBonus">
+                                                <label class="form-check-label" for="notifyBonus">Notificar sobre novas bonificações</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- Configurações de Backup -->
+                                <div class="tab-pane fade" id="backup" role="tabpanel" aria-labelledby="backup-tab">
+                                    <div class="mb-4">
+                                        <h5>Backup Automático</h5>
+                                        <div class="mb-3">
+                                            <label for="backupFrequency" class="form-label">Frequência de Backup</label>
+                                            <select class="form-select" id="backupFrequency">
+                                                <option value="daily">Diário</option>
+                                                <option value="weekly" selected>Semanal</option>
+                                                <option value="monthly">Mensal</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="backupTime" class="form-label">Horário do Backup</label>
+                                            <input type="time" class="form-control" id="backupTime" value="03:00">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="backupRetention" class="form-label">Retenção de Backups (dias)</label>
+                                            <input type="number" class="form-control" id="backupRetention" min="1" value="30">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h5>Backup Manual</h5>
+                                        <p>Crie um backup completo do sistema agora.</p>
+                                        <button type="button" class="btn btn-primary">Criar Backup</button>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h5>Backups Disponíveis</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Data</th>
+                                                        <th>Tamanho</th>
+                                                        <th>Tipo</th>
+                                                        <th>Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>04/06/2025 03:00</td>
+                                                        <td>24.5 MB</td>
+                                                        <td>Automático</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-download"></i></button>
+                                                            <button class="btn btn-sm btn-outline-success me-1"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>28/05/2025 03:00</td>
+                                                        <td>23.8 MB</td>
+                                                        <td>Automático</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-download"></i></button>
+                                                            <button class="btn btn-sm btn-outline-success me-1"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>21/05/2025 03:00</td>
+                                                        <td>22.9 MB</td>
+                                                        <td>Automático</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-download"></i></button>
+                                                            <button class="btn btn-sm btn-outline-success me-1"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Gerenciamento de Usuários</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5>Usuários Administradores</h5>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                    <i class="bi bi-plus"></i> Novo Usuário
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Usuário</th>
+                                            <th>Email</th>
+                                            <th>Função</th>
+                                            <th>Status</th>
+                                            <th>Último Acesso</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Administrador</td>
+                                            <td>admin</td>
+                                            <td>admin@menezeslog.com</td>
+                                            <td>Administrador</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>05/06/2025 10:30</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>João Silva</td>
+                                            <td>joao.silva</td>
+                                            <td>joao.silva@menezeslog.com</td>
+                                            <td>Gerente</td>
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>04/06/2025 16:45</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Maria Oliveira</td>
+                                            <td>maria.oliveira</td>
+                                            <td>maria.oliveira@menezeslog.com</td>
+                                            <td>Financeiro</td>
+                                            <td><span class="badge bg-secondary">Inativo</span></td>
+                                            <td>01/06/2025 09:15</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar usuário -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Novo Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userLogin" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="userLogin" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userRole" class="form-label">Função</label>
+                            <select class="form-select" id="userRole" required>
+                                <option value="admin">Administrador</option>
+                                <option value="manager">Gerente</option>
+                                <option value="finance">Financeiro</option>
+                                <option value="support">Suporte</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userPassword" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="userPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userPasswordConfirm" class="form-label">Confirmar Senha</label>
+                            <input type="password" class="form-control" id="userPasswordConfirm" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="userActive" checked>
+                            <label class="form-check-label" for="userActive">Ativo</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const checkAuth = () => {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'index.html';
+                }
+            };
+            
+            // Logout
+            document.getElementById('logout-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+            
+            // Inicializar
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

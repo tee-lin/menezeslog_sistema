@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Descontos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0047AB; /* Azul MenezesLog */
+            --secondary-color: #FFD700; /* Amarelo MenezesLog */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 250px;
+        }
+        
+        .sidebar .logo-container {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .logo-container img {
+            max-width: 90%;
+            height: auto;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px); /* Garante que o conteúdo ocupe toda a largura disponível */
+        }
+        
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #003a8c;
+            border-color: #003a8c;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="assets/MENEZESLOG-MarcaBrancaH.png" alt="MenezesLog Logo">
+            </div>
+            <div class="mt-4">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="admin_dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a class="nav-link" href="upload.html"><i class="bi bi-upload"></i> Upload de Arquivos</a>
+                    <a class="nav-link" href="bonificacoes.html"><i class="bi bi-trophy"></i> Bonificações</a>
+                    <a class="nav-link active" href="descontos.html"><i class="bi bi-dash-circle"></i> Descontos</a>
+                    <a class="nav-link" href="motoristas.html"><i class="bi bi-people"></i> Motoristas</a>
+                    <a class="nav-link" href="relatorios.html"><i class="bi bi-file-earmark-text"></i> Relatórios</a>
+                    <a class="nav-link" href="configuracoes.html"><i class="bi bi-gear"></i> Configurações</a>
+                    <a class="nav-link" href="#" id="logout-link"><i class="bi bi-box-arrow-right"></i> Sair</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header mb-4">
+                <h4>Descontos</h4>
+                <div class="user-info">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div class="fw-bold">Admin</div>
+                        <div class="small text-muted">Administrador</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Descontos por Extravios</span>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addExtravioModal">
+                                <i class="bi bi-plus"></i> Novo Desconto
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Motorista</th>
+                                            <th>ID</th>
+                                            <th>Descrição</th>
+                                            <th>Valor</th>
+                                            <th>Data</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Carlos Oliveira</td>
+                                            <td>100345</td>
+                                            <td>Extravio de encomenda #E-12567</td>
+                                            <td>R$ 150,00</td>
+                                            <td>04/06/2025</td>
+                                            <td><span class="badge bg-warning">Pendente</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Maria Santos</td>
+                                            <td>100278</td>
+                                            <td>Extravio de encomenda #E-11982</td>
+                                            <td>R$ 75,00</td>
+                                            <td>01/06/2025</td>
+                                            <td><span class="badge bg-success">Aplicado</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Roberto Almeida</td>
+                                            <td>100512</td>
+                                            <td>Extravio de encomenda #E-12003</td>
+                                            <td>R$ 120,00</td>
+                                            <td>28/05/2025</td>
+                                            <td><span class="badge bg-success">Aplicado</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Adiantamentos e Empréstimos</span>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAdiantamentoModal">
+                                <i class="bi bi-plus"></i> Novo Adiantamento
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Motorista</th>
+                                            <th>ID</th>
+                                            <th>Tipo</th>
+                                            <th>Valor Total</th>
+                                            <th>Parcelas</th>
+                                            <th>Valor Parcela</th>
+                                            <th>Parcela Atual</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Ailton Oliveira</td>
+                                            <td>100957</td>
+                                            <td>Adiantamento</td>
+                                            <td>R$ 500,00</td>
+                                            <td>2</td>
+                                            <td>R$ 250,00</td>
+                                            <td>1/2</td>
+                                            <td><span class="badge bg-primary">Em Andamento</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ana Pereira</td>
+                                            <td>100489</td>
+                                            <td>Empréstimo</td>
+                                            <td>R$ 1.000,00</td>
+                                            <td>4</td>
+                                            <td>R$ 250,00</td>
+                                            <td>2/4</td>
+                                            <td><span class="badge bg-primary">Em Andamento</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Carlos Oliveira</td>
+                                            <td>100345</td>
+                                            <td>Adiantamento</td>
+                                            <td>R$ 300,00</td>
+                                            <td>1</td>
+                                            <td>R$ 300,00</td>
+                                            <td>1/1</td>
+                                            <td><span class="badge bg-success">Concluído</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Configurações de Descontos</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Regras para Extravios</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Valor padrão para extravios</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" class="form-control" value="100.00" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Máximo de parcelas para extravios</label>
+                                        <input type="number" class="form-control" value="3" min="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Regras para Adiantamentos</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Limite máximo para adiantamentos</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" class="form-control" value="1000.00" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Máximo de parcelas para adiantamentos</label>
+                                        <input type="number" class="form-control" value="4" min="1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button class="btn btn-primary">Salvar Configurações</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar desconto por extravio -->
+    <div class="modal fade" id="addExtravioModal" tabindex="-1" aria-labelledby="addExtravioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addExtravioModalLabel">Novo Desconto por Extravio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="driverSelect" class="form-label">Motorista</label>
+                            <select class="form-select" id="driverSelect" required>
+                                <option value="" selected disabled>Selecione o motorista</option>
+                                <option value="100957">100957 - Ailton Oliveira</option>
+                                <option value="100278">100278 - Maria Santos</option>
+                                <option value="100345">100345 - Carlos Oliveira</option>
+                                <option value="100489">100489 - Ana Pereira</option>
+                                <option value="100512">100512 - Roberto Almeida</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="extravioDesc" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" id="extravioDesc" placeholder="Ex: Extravio de encomenda #E-12345" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="extravioValue" class="form-label">Valor</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" class="form-control" id="extravioValue" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="extravioDate" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="extravioDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="extravioInstallments" class="form-label">Parcelas</label>
+                                <input type="number" class="form-control" id="extravioInstallments" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar adiantamento -->
+    <div class="modal fade" id="addAdiantamentoModal" tabindex="-1" aria-labelledby="addAdiantamentoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAdiantamentoModalLabel">Novo Adiantamento/Empréstimo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="adiantamentoDriver" class="form-label">Motorista</label>
+                            <select class="form-select" id="adiantamentoDriver" required>
+                                <option value="" selected disabled>Selecione o motorista</option>
+                                <option value="100957">100957 - Ailton Oliveira</option>
+                                <option value="100278">100278 - Maria Santos</option>
+                                <option value="100345">100345 - Carlos Oliveira</option>
+                                <option value="100489">100489 - Ana Pereira</option>
+                                <option value="100512">100512 - Roberto Almeida</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adiantamentoType" class="form-label">Tipo</label>
+                            <select class="form-select" id="adiantamentoType" required>
+                                <option value="adiantamento" selected>Adiantamento</option>
+                                <option value="emprestimo">Empréstimo</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adiantamentoDesc" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" id="adiantamentoDesc" placeholder="Ex: Adiantamento quinzena 1 de junho" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adiantamentoValue" class="form-label">Valor Total</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" class="form-control" id="adiantamentoValue" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="adiantamentoDate" class="form-label">Data</label>
+                                <input type="date" class="form-control" id="adiantamentoDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="adiantamentoInstallments" class="form-label">Parcelas</label>
+                                <input type="number" class="form-control" id="adiantamentoInstallments" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const checkAuth = () => {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'index.html';
+                }
+            };
+            
+            // Logout
+            document.getElementById('logout-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+            
+            // Inicializar
+            checkAuth();
+        });
+    </script>
+</body>
+</html>
