@@ -15,8 +15,22 @@ logger = logging.getLogger(__name__)
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 try:
-    # Inicializar aplicação Flask
-    app = Flask(__name__, static_folder='src/static')
+    # Verificar a estrutura de diretórios
+    logger.info(f"Diretório atual: {os.getcwd()}")
+    logger.info(f"Conteúdo do diretório: {os.listdir('.')}")
+    
+    if os.path.exists('src'):
+        logger.info(f"Conteúdo do diretório src: {os.listdir('src')}")
+        if os.path.exists('src/static'):
+            logger.info(f"Conteúdo do diretório src/static: {os.listdir('src/static')}")
+    
+    # Inicializar aplicação Flask com caminho correto para static_folder
+    static_folder = 'src/static'
+    if not os.path.exists(static_folder):
+        logger.warning(f"Diretório static_folder '{static_folder}' não encontrado. Tentando criar...")
+        os.makedirs(static_folder, exist_ok=True)
+        
+    app = Flask(__name__, static_folder=static_folder, static_url_path='')
     CORS(app)  # Habilitar CORS para todas as rotas
     
     # Configuração do banco de dados
@@ -149,56 +163,38 @@ try:
         logger.error(f"Erro ao importar invoice_bp: {str(e)}")
         logger.error(traceback.format_exc())
     
-    # Rotas para servir o frontend
-    @app.route('/')
-    def index():
-        """Rota raiz que serve a página de login"""
+    # Rotas para servir o frontend - MODIFICADO PARA PRIORIDADE MÁXIMA
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_frontend(path):
+        """Serve o frontend com prioridade máxima"""
         try:
-            logger.info("Acessando rota raiz '/'")
+            logger.info(f"Acessando rota: /{path}")
+            
+            # Verificar se é uma rota de API
+            if path.startswith('api/'):
+                return jsonify({"error": "Endpoint not found"}), 404
+                
+            # Verificar se é uma página HTML específica
+            if path in ['admin_dashboard', 'motorista_dashboard', 'motoristas', 
+                       'bonificacoes', 'descontos', 'upload', 'relatorios', 
+                       'nota_fiscal', 'configuracoes']:
+                html_file = f"{path}.html"
+                if os.path.exists(os.path.join(app.static_folder, html_file)):
+                    logger.info(f"Servindo página específica: {html_file}")
+                    return send_from_directory(app.static_folder, html_file)
+            
+            # Verificar se é um arquivo estático
+            if path and os.path.exists(os.path.join(app.static_folder, path)):
+                logger.info(f"Servindo arquivo estático: {path}")
+                return send_from_directory(app.static_folder, path)
+            
+            # Se não for nada específico, servir o index.html
+            logger.info("Servindo index.html")
             return send_from_directory(app.static_folder, 'index.html')
+            
         except Exception as e:
-            logger.error(f"Erro ao servir index.html: {str(e)}")
-            logger.error(traceback.format_exc())
-            return jsonify({"error": "Erro ao carregar página inicial", "details": str(e)}), 500
-    
-    @app.route('/<path:filename>')
-    def serve_static(filename):
-        """Serve arquivos estáticos do frontend"""
-        try:
-            logger.info(f"Acessando arquivo estático: {filename}")
-            if os.path.exists(os.path.join(app.static_folder, filename)):
-                return send_from_directory(app.static_folder, filename)
-            else:
-                # Para rotas não encontradas, retornar a página principal (SPA)
-                logger.warning(f"Arquivo não encontrado: {filename}, redirecionando para index.html")
-                return send_from_directory(app.static_folder, 'index.html')
-        except Exception as e:
-            logger.error(f"Erro ao servir arquivo estático {filename}: {str(e)}")
-            logger.error(traceback.format_exc())
-            return jsonify({"error": "Erro ao carregar arquivo", "details": str(e)}), 500
-    
-    # Rotas para páginas específicas do frontend
-    @app.route('/admin_dashboard')
-    @app.route('/motorista_dashboard')
-    @app.route('/motoristas')
-    @app.route('/bonificacoes')
-    @app.route('/descontos')
-    @app.route('/upload')
-    @app.route('/relatorios')
-    @app.route('/nota_fiscal')
-    @app.route('/configuracoes')
-    def serve_spa_routes():
-        """Serve as páginas específicas do frontend"""
-        try:
-            path = request.path.lstrip('/')
-            logger.info(f"Acessando rota SPA: {path}")
-            if os.path.exists(os.path.join(app.static_folder, f"{path}.html")):
-                return send_from_directory(app.static_folder, f"{path}.html")
-            else:
-                logger.warning(f"Página não encontrada: {path}, redirecionando para index.html")
-                return send_from_directory(app.static_folder, 'index.html')
-        except Exception as e:
-            logger.error(f"Erro ao servir rota SPA {request.path}: {str(e)}")
+            logger.error(f"Erro ao servir frontend: {str(e)}")
             logger.error(traceback.format_exc())
             return jsonify({"error": "Erro ao carregar página", "details": str(e)}), 500
     
@@ -208,6 +204,7 @@ try:
         """Retorna o status da API"""
         try:
             logger.info("Verificando status da API")
+            static_files = os.listdir(app.static_folder) if os.path.exists(app.static_folder) else []
             return jsonify({
                 'status': 'online',
                 'timestamp': datetime.datetime.utcnow().isoformat(),
@@ -215,7 +212,8 @@ try:
                 'environment': os.environ.get('FLASK_ENV', 'production'),
                 'database_connected': db.engine.connect() is not None,
                 'static_folder': app.static_folder,
-                'static_folder_exists': os.path.exists(app.static_folder)
+                'static_folder_exists': os.path.exists(app.static_folder),
+                'static_files': static_files[:10]  # Listar até 10 arquivos para diagnóstico
             })
         except Exception as e:
             logger.error(f"Erro ao verificar status da API: {str(e)}")
