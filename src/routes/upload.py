@@ -1,389 +1,265 @@
-from flask import Blueprint, request, jsonify, current_app, send_from_directory
-from werkzeug.utils import secure_filename
+from flask import Blueprint, request, jsonify, current_app
 import os
 import pandas as pd
-import datetime
-from src.models.models import db, Driver, Delivery, Payment, ServiceType, FileUpload
-from src.routes.auth import token_required
+from werkzeug.utils import secure_filename
+from src.models.models import db, FileUpload, Driver, Payment, ServiceType
+from datetime import datetime
 import uuid
 
 upload_bp = Blueprint('upload', __name__)
 
-# Configurações para upload de arquivos
-ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
-UPLOAD_FOLDER = os.path.join(current_app.root_path, 'uploads')
+# Configurações de upload
+ALLOWED_EXTENSIONS_CSV = {'csv'}
+ALLOWED_EXTENSIONS_EXCEL = {'xlsx', 'xls'}
 
-# Verificar se o diretório de uploads existe, senão criar
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+def allowed_file_csv(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_CSV
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file_excel(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_EXCEL
 
-# Rota para upload de arquivo CSV de entregas
-@upload_bp.route('/deliveries', methods=['POST'])
-@token_required
-def upload_deliveries(current_user):
-    # Verificar se o usuário é admin
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Acesso não autorizado!'}), 403
+@upload_bp.route('/api/upload', methods=['POST'])
+def upload_files():
+    # Verificar se os diretórios de upload existem, se não, criá-los
+    UPLOAD_FOLDER = current_app.config['UPLOAD_FOLDER']
+    csv_dir = os.path.join(UPLOAD_FOLDER, 'csv')
+    excel_dir = os.path.join(UPLOAD_FOLDER, 'excel')
     
-    # Verificar se o arquivo foi enviado
-    if 'file' not in request.files:
-        return jsonify({'message': 'Nenhum arquivo enviado!'}), 400
+    os.makedirs(csv_dir, exist_ok=True)
+    os.makedirs(excel_dir, exist_ok=True)
     
-    file = request.files['file']
+    # Verificar se os arquivos foram enviados
+    if 'csv_file' not in request.files or 'excel_file' not in request.files:
+        return jsonify({'success': False, 'error': 'Arquivos CSV e Excel são obrigatórios'}), 400
     
-    # Verificar se o arquivo tem nome
-    if file.filename == '':
-        return jsonify({'message': 'Nenhum arquivo selecionado!'}), 400
+    csv_file = request.files['csv_file']
+    excel_file = request.files['excel_file']
     
-    # Verificar se o arquivo é permitido
-    if not allowed_file(file.filename):
-        return jsonify({'message': f'Formato de arquivo não permitido! Formatos aceitos: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
+    # Verificar se os arquivos têm nomes
+    if csv_file.filename == '' or excel_file.filename == '':
+        return jsonify({'success': False, 'error': 'Nomes de arquivos inválidos'}), 400
     
-    # Gerar nome único para o arquivo
-    filename = secure_filename(file.filename)
-    unique_filename = f"{uuid.uuid4()}_{filename}"
-    file_path = os.path.join(UPLOAD_FOLDER, unique_filename)
+    # Verificar se os arquivos são do tipo permitido
+    if not allowed_file_csv(csv_file.filename):
+        return jsonify({'success': False, 'error': 'Arquivo CSV inválido. Use apenas arquivos .csv'}), 400
     
-    # Salvar o arquivo
-    file.save(file_path)
+    if not allowed_file_excel(excel_file.filename):
+        return jsonify({'success': False, 'error': 'Arquivo Excel inválido. Use apenas arquivos .xlsx ou .xls'}), 400
     
-    # Registrar o upload no banco de dados
-    file_upload = FileUpload(
-        filename=filename,
-        file_path=file_path,
-        file_type='csv' if filename.endswith('.csv') else 'excel',
-        uploaded_by=current_user.id
-    )
+    # Salvar os arquivos com nomes seguros
+    csv_filename = secure_filename(csv_file.filename)
+    excel_filename = secure_filename(excel_file.filename)
     
-    db.session.add(file_upload)
-    db.session.commit()
+    # Adicionar timestamp para evitar sobrescrever arquivos
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    csv_filename = f"{timestamp}_{csv_filename}"
+    excel_filename = f"{timestamp}_{excel_filename}"
     
-    # Iniciar processamento do arquivo em background
-    # Em uma implementação real, isso seria feito com uma tarefa assíncrona (Celery, etc.)
-    # Para simplificar, vamos processar diretamente
+    csv_path = os.path.join(csv_dir, csv_filename)
+    excel_path = os.path.join(excel_dir, excel_filename)
+    
+    csv_file.save(csv_path)
+    excel_file.save(excel_path)
+    
+    # Registrar os uploads no banco de dados
     try:
-        result = process_delivery_file(file_path, file_upload.id)
-        return jsonify({
-            'message': 'Arquivo enviado e processado com sucesso!',
-            'file_id': file_upload.id,
-            'result': result
-        }), 200
-    except Exception as e:
-        return jsonify({
-            'message': f'Erro ao processar arquivo: {str(e)}',
-            'file_id': file_upload.id
-        }), 500
-
-# Rota para upload de arquivo Excel com nomes de motoristas
-@upload_bp.route('/drivers', methods=['POST'])
-@token_required
-def upload_drivers(current_user):
-    # Verificar se o usuário é admin
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Acesso não autorizado!'}), 403
-    
-    # Verificar se o arquivo foi enviado
-    if 'file' not in request.files:
-        return jsonify({'message': 'Nenhum arquivo enviado!'}), 400
-    
-    file = request.files['file']
-    
-    # Verificar se o arquivo tem nome
-    if file.filename == '':
-        return jsonify({'message': 'Nenhum arquivo selecionado!'}), 400
-    
-    # Verificar se o arquivo é permitido
-    if not allowed_file(file.filename):
-        return jsonify({'message': f'Formato de arquivo não permitido! Formatos aceitos: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
-    
-    # Gerar nome único para o arquivo
-    filename = secure_filename(file.filename)
-    unique_filename = f"{uuid.uuid4()}_{filename}"
-    file_path = os.path.join(UPLOAD_FOLDER, unique_filename)
-    
-    # Salvar o arquivo
-    file.save(file_path)
-    
-    # Registrar o upload no banco de dados
-    file_upload = FileUpload(
-        filename=filename,
-        file_path=file_path,
-        file_type='excel',
-        uploaded_by=current_user.id
-    )
-    
-    db.session.add(file_upload)
-    db.session.commit()
-    
-    # Processar o arquivo de motoristas
-    try:
-        result = process_drivers_file(file_path, file_upload.id)
-        return jsonify({
-            'message': 'Arquivo enviado e processado com sucesso!',
-            'file_id': file_upload.id,
-            'result': result
-        }), 200
-    except Exception as e:
-        return jsonify({
-            'message': f'Erro ao processar arquivo: {str(e)}',
-            'file_id': file_upload.id
-        }), 500
-
-# Função para processar arquivo de entregas
-def process_delivery_file(file_path, file_upload_id):
-    # Determinar o tipo de arquivo
-    if file_path.endswith('.csv'):
-        try:
-            # Tentar com encoding latin1 (comum para arquivos brasileiros)
-            df = pd.read_csv(file_path, encoding='latin1', sep=';')
-        except:
-            # Se falhar, tentar com UTF-8
-            df = pd.read_csv(file_path, encoding='utf-8', sep=';')
-    else:
-        # Excel
-        df = pd.read_excel(file_path)
-    
-    # Verificar colunas necessárias
-    required_columns = ['ID do motorista', 'Peso Capturado', 'Status da encomenda', 'Desc. do status da encomenda', 'Tipo de serviço']
-    missing_columns = [col for col in required_columns if col not in df.columns]
-    
-    if missing_columns:
-        raise ValueError(f"Colunas obrigatórias ausentes: {', '.join(missing_columns)}")
-    
-    # Obter período de pagamento (quinzena atual)
-    today = datetime.date.today()
-    if today.day <= 15:
-        start_date = datetime.date(today.year, today.month, 1)
-        end_date = datetime.date(today.year, today.month, 15)
-    else:
-        start_date = datetime.date(today.year, today.month, 16)
-        end_date = (datetime.date(today.year, today.month + 1, 1) if today.month < 12 else datetime.date(today.year + 1, 1, 1)) - datetime.timedelta(days=1)
-    
-    period = f"{start_date.isoformat()}_{end_date.isoformat()}"
-    
-    # Obter valores base por tipo de serviço
-    service_types = {
-        0: 3.50,  # Tipo 0 = R$ 3,50
-        9: 2.00,  # Tipo 9 = R$ 2,00
-        6: 0.50,  # Tipo 6 = R$ 0,50
-        8: 0.50   # Tipo 8 = R$ 0,50
-    }
-    
-    # Inicializar contadores
-    processed_count = 0
-    error_count = 0
-    driver_deliveries = {}
-    
-    # Processar cada linha do arquivo
-    for _, row in df.iterrows():
-        try:
-            driver_id = str(row['ID do motorista'])
-            service_type = int(row['Tipo de serviço'])
-            status = str(row['Status da encomenda'])
-            
-            # Verificar se o motorista existe
-            driver = Driver.query.filter_by(driver_id=driver_id).first()
-            if not driver:
-                # Criar motorista com nome temporário
-                driver = Driver(
-                    driver_id=driver_id,
-                    name=f"Motorista {driver_id}"
-                )
-                db.session.add(driver)
-                db.session.commit()
-            
-            # Verificar se o tipo de serviço é válido
-            if service_type not in service_types:
-                error_count += 1
-                continue
-            
-            # Calcular valor base
-            base_value = service_types[service_type]
-            
-            # Criar entrega
-            delivery = Delivery(
-                driver_id=driver_id,
-                awb=str(row.get('AWB', '')),
-                sender=str(row.get('Remetente', '')),
-                service_type=service_type,
-                weight=float(row.get('Peso Capturado', 0)),
-                status=status,
-                status_description=str(row.get('Desc. do status da encomenda', '')),
-                delivery_date=datetime.date.today(),
-                payment_period=period,
-                base_value=base_value,
-                bonus_value=0.0,  # Será calculado posteriormente
-                total_value=base_value  # Inicialmente igual ao valor base
-            )
-            
-            db.session.add(delivery)
-            processed_count += 1
-            
-            # Atualizar contagem por motorista
-            if driver_id not in driver_deliveries:
-                driver_deliveries[driver_id] = {
-                    'count': 0,
-                    'total': 0.0,
-                    'by_type': {0: 0, 9: 0, 6: 0, 8: 0}
-                }
-            
-            driver_deliveries[driver_id]['count'] += 1
-            driver_deliveries[driver_id]['total'] += base_value
-            driver_deliveries[driver_id]['by_type'][service_type] += 1
-            
-        except Exception as e:
-            error_count += 1
-            continue
-    
-    # Commit das entregas
-    db.session.commit()
-    
-    # Atualizar ou criar pagamentos para cada motorista
-    for driver_id, data in driver_deliveries.items():
-        # Verificar se já existe pagamento para este período
-        payment = Payment.query.filter_by(driver_id=driver_id, period=period).first()
+        # Criar registros de upload
+        csv_upload = FileUpload(
+            filename=csv_filename,
+            filepath=csv_path,
+            filetype='csv',
+            upload_date=datetime.now(),
+            user_id=1  # Assumindo ID 1 para o admin por enquanto
+        )
         
-        if payment:
-            # Atualizar pagamento existente
-            payment.deliveries_count += data['count']
-            payment.base_value += data['total']
-            payment.total_value = payment.base_value + payment.bonus_value - payment.discount_value
+        excel_upload = FileUpload(
+            filename=excel_filename,
+            filepath=excel_path,
+            filetype='excel',
+            upload_date=datetime.now(),
+            user_id=1  # Assumindo ID 1 para o admin por enquanto
+        )
+        
+        db.session.add(csv_upload)
+        db.session.add(excel_upload)
+        db.session.commit()
+        
+        # Processar os arquivos
+        process_result = process_files(csv_path, excel_path)
+        
+        if process_result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'Arquivos enviados e processados com sucesso',
+                'csv_id': csv_upload.id,
+                'excel_id': excel_upload.id,
+                'stats': process_result['stats']
+            }), 200
         else:
-            # Criar novo pagamento
-            payment = Payment(
-                driver_id=driver_id,
-                period=period,
-                start_date=start_date,
-                end_date=end_date,
-                deliveries_count=data['count'],
-                base_value=data['total'],
-                bonus_value=0.0,  # Será calculado posteriormente
-                discount_value=0.0,  # Será calculado posteriormente
-                total_value=data['total']  # Inicialmente igual ao valor base
-            )
-            db.session.add(payment)
-        
-    # Commit dos pagamentos
-    db.session.commit()
-    
-    # Atualizar status do upload
-    file_upload = FileUpload.query.get(file_upload_id)
-    file_upload.processed = True
-    file_upload.process_date = datetime.datetime.utcnow()
-    file_upload.process_result = f"Processadas {processed_count} entregas com {error_count} erros."
-    db.session.commit()
-    
-    return {
-        'processed': processed_count,
-        'errors': error_count,
-        'drivers': len(driver_deliveries),
-        'period': period
-    }
-
-# Função para processar arquivo de motoristas
-def process_drivers_file(file_path, file_upload_id):
-    # Determinar o tipo de arquivo
-    if file_path.endswith('.csv'):
-        try:
-            # Tentar com encoding latin1 (comum para arquivos brasileiros)
-            df = pd.read_csv(file_path, encoding='latin1')
-        except:
-            # Se falhar, tentar com UTF-8
-            df = pd.read_csv(file_path, encoding='utf-8')
-    else:
-        # Excel
-        df = pd.read_excel(file_path)
-    
-    # Verificar colunas necessárias
-    if len(df.columns) < 2:
-        raise ValueError("O arquivo deve ter pelo menos duas colunas: ID do motorista e Nome")
-    
-    # Renomear colunas para padronizar
-    df.columns = ['driver_id', 'name'] + list(df.columns[2:])
-    
-    # Inicializar contadores
-    processed_count = 0
-    updated_count = 0
-    error_count = 0
-    
-    # Processar cada linha do arquivo
-    for _, row in df.iterrows():
-        try:
-            driver_id = str(row['driver_id'])
-            name = str(row['name'])
+            return jsonify({
+                'success': False,
+                'error': process_result['error'],
+                'csv_id': csv_upload.id,
+                'excel_id': excel_upload.id
+            }), 500
             
-            # Verificar se o motorista já existe
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+def process_files(csv_path, excel_path):
+    try:
+        # Carregar arquivo CSV com dados de entregas
+        deliveries_df = pd.read_csv(csv_path, encoding='latin1', sep=';')
+        
+        # Carregar arquivo Excel com dados dos motoristas
+        drivers_df = pd.read_excel(excel_path)
+        
+        # Verificar se as colunas necessárias existem
+        required_csv_columns = ['ID do motorista', 'Tipo de serviço']
+        required_excel_columns = ['ID do motorista', 'Nome do motorista']
+        
+        for col in required_csv_columns:
+            if col not in deliveries_df.columns:
+                return {'success': False, 'error': f'Coluna obrigatória não encontrada no CSV: {col}'}
+        
+        for col in required_excel_columns:
+            if col not in drivers_df.columns:
+                return {'success': False, 'error': f'Coluna obrigatória não encontrada no Excel: {col}'}
+        
+        # Processar dados dos motoristas
+        for _, row in drivers_df.iterrows():
+            driver_id = str(row['ID do motorista'])
+            driver_name = row['Nome do motorista']
+            
+            # Verificar se o motorista já existe no banco de dados
             driver = Driver.query.filter_by(driver_id=driver_id).first()
             
-            if driver:
-                # Atualizar nome
-                driver.name = name
-                updated_count += 1
-            else:
+            if not driver:
                 # Criar novo motorista
                 driver = Driver(
                     driver_id=driver_id,
-                    name=name
+                    name=driver_name,
+                    active=True
                 )
                 db.session.add(driver)
-                processed_count += 1
-                
-        except Exception as e:
-            error_count += 1
-            continue
-    
-    # Commit das alterações
-    db.session.commit()
-    
-    # Atualizar status do upload
-    file_upload = FileUpload.query.get(file_upload_id)
-    file_upload.processed = True
-    file_upload.process_date = datetime.datetime.utcnow()
-    file_upload.process_result = f"Processados {processed_count} novos motoristas, atualizados {updated_count} existentes, com {error_count} erros."
-    db.session.commit()
-    
-    return {
-        'new_drivers': processed_count,
-        'updated_drivers': updated_count,
-        'errors': error_count
-    }
+        
+        # Commit para salvar os motoristas
+        db.session.commit()
+        
+        # Obter valores de pagamento por tipo de serviço
+        service_types = ServiceType.query.all()
+        service_type_values = {}
+        
+        # Se não existirem tipos de serviço, criar os padrões
+        if not service_types:
+            default_types = [
+                {'type_id': 0, 'value': 3.50, 'description': 'Tipo 0'},
+                {'type_id': 6, 'value': 0.50, 'description': 'Tipo 6'},
+                {'type_id': 8, 'value': 0.50, 'description': 'Tipo 8'},
+                {'type_id': 9, 'value': 2.00, 'description': 'Tipo 9'}
+            ]
+            
+            for type_data in default_types:
+                service_type = ServiceType(
+                    type_id=type_data['type_id'],
+                    value=type_data['value'],
+                    description=type_data['description']
+                )
+                db.session.add(service_type)
+                service_type_values[type_data['type_id']] = type_data['value']
+            
+            db.session.commit()
+        else:
+            for st in service_types:
+                service_type_values[st.type_id] = st.value
+        
+        # Processar pagamentos
+        payment_data = {}
+        
+        # Agrupar entregas por motorista e tipo de serviço
+        for _, row in deliveries_df.iterrows():
+            driver_id = str(row['ID do motorista'])
+            service_type = int(row['Tipo de serviço'])
+            
+            if driver_id not in payment_data:
+                payment_data[driver_id] = {}
+            
+            if service_type not in payment_data[driver_id]:
+                payment_data[driver_id][service_type] = 0
+            
+            payment_data[driver_id][service_type] += 1
+        
+        # Calcular pagamentos e salvar no banco de dados
+        total_payments = 0
+        payment_date = datetime.now()
+        payment_reference = f"PAG-{payment_date.strftime('%Y%m%d')}"
+        
+        for driver_id, service_counts in payment_data.items():
+            driver = Driver.query.filter_by(driver_id=driver_id).first()
+            
+            if not driver:
+                continue
+            
+            total_driver_payment = 0
+            payment_details = {}
+            
+            for service_type, count in service_counts.items():
+                if service_type in service_type_values:
+                    value_per_item = service_type_values[service_type]
+                    payment_amount = count * value_per_item
+                    total_driver_payment += payment_amount
+                    payment_details[service_type] = {
+                        'count': count,
+                        'value_per_item': value_per_item,
+                        'total': payment_amount
+                    }
+            
+            # Criar registro de pagamento
+            payment = Payment(
+                driver_id=driver.id,
+                amount=total_driver_payment,
+                payment_date=payment_date,
+                reference=payment_reference,
+                status='pending',
+                details=str(payment_details)
+            )
+            
+            db.session.add(payment)
+            total_payments += total_driver_payment
+        
+        # Commit para salvar os pagamentos
+        db.session.commit()
+        
+        # Gerar estatísticas
+        stats = {
+            'total_deliveries': deliveries_df.shape[0],
+            'total_drivers': len(payment_data),
+            'total_payments': round(total_payments, 2)
+        }
+        
+        return {'success': True, 'stats': stats}
+        
+    except Exception as e:
+        db.session.rollback()
+        return {'success': False, 'error': str(e)}
 
-# Rota para listar uploads
-@upload_bp.route('/list', methods=['GET'])
-@token_required
-def list_uploads(current_user):
-    # Verificar se o usuário é admin
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Acesso não autorizado!'}), 403
-    
-    # Obter todos os uploads ordenados por data
-    uploads = FileUpload.query.order_by(FileUpload.upload_date.desc()).all()
-    
-    return jsonify({
-        'uploads': [upload.to_dict() for upload in uploads]
-    }), 200
-
-# Rota para baixar arquivo
-@upload_bp.route('/download/<int:file_id>', methods=['GET'])
-@token_required
-def download_file(current_user, file_id):
-    # Verificar se o usuário é admin
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Acesso não autorizado!'}), 403
-    
-    # Obter o upload
-    file_upload = FileUpload.query.get_or_404(file_id)
-    
-    # Verificar se o arquivo existe
-    if not os.path.exists(file_upload.file_path):
-        return jsonify({'message': 'Arquivo não encontrado!'}), 404
-    
-    # Retornar o arquivo
-    return send_from_directory(
-        os.path.dirname(file_upload.file_path),
-        os.path.basename(file_upload.file_path),
-        as_attachment=True,
-        download_name=file_upload.filename
-    )
+@upload_bp.route('/api/uploads', methods=['GET'])
+def get_uploads():
+    try:
+        uploads = FileUpload.query.order_by(FileUpload.upload_date.desc()).all()
+        
+        result = []
+        for upload in uploads:
+            result.append({
+                'id': upload.id,
+                'filename': upload.filename,
+                'filetype': upload.filetype,
+                'upload_date': upload.upload_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'user_id': upload.user_id
+            })
+        
+        return jsonify({'success': True, 'uploads': result}), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
