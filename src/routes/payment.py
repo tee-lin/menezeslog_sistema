@@ -3,14 +3,6 @@ import os
 import pandas as pd
 from src.models.models import db, Driver, Payment, ServiceType
 from datetime import datetime
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-import matplotlib.pyplot as plt
-import numpy as np
-import io
 import json
 
 payment_bp = Blueprint('payment', __name__)
@@ -179,7 +171,3 @@ def generate_payment_pdf(payment_id):
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-def generate_pdf_report(payment, driver, output_path):
-    # Função temporariamente desativada
-    return None
