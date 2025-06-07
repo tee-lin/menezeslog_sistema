@@ -10,10 +10,6 @@ invoice_bp = Blueprint('invoice', __name__)
 
 # Configurações para upload de arquivos
 ALLOWED_EXTENSIONS = {'pdf', 'jpg', 'jpeg', 'png'}
-UPLOAD_FOLDER = os.path.join(current_app.root_path, 'invoices')
-
-# Verificar se o diretório de uploads existe, senão criar
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -59,6 +55,10 @@ def upload_invoice(current_user):
         issue_date = datetime.datetime.strptime(issue_date_str, '%Y-%m-%d').date()
     except:
         return jsonify({'message': 'Formato de data inválido! Use YYYY-MM-DD'}), 400
+    
+    # Criar diretório de invoices se não existir
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'invoices')
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     
     # Gerar nome único para o arquivo
     filename = secure_filename(file.filename)
