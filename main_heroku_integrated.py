@@ -98,6 +98,17 @@ class ServiceType(db.Model):
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
 
+# Desabilitar verificação de autenticação para navegação entre páginas
+@app.before_request
+def disable_auth_for_navigation():
+    """Permite navegação entre páginas sem verificação de token"""
+    # Permitir todas as requisições GET para arquivos HTML
+    if request.method == 'GET' and request.path.endswith('.html'):
+        return None
+    
+    # Continuar com o fluxo normal para outras requisições
+    return None
+
 # Implementação direta da rota de login para evitar problemas de importação
 @app.route('/api/auth/login', methods=['POST'])
 def login():
