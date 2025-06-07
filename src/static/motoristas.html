@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Gerenciamento de Motoristas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">Admin</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link active">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="bonificacoes.html" class="nav-link">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="descontos.html" class="nav-link">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="nota_fiscal.html" class="nav-link">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Gerenciamento de Motoristas</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDriverModal">
+                    <i class="fas fa-plus me-2"></i>Novo Motorista
+                </button>
+            </div>
+            
+            <!-- Filtros e Busca -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-input" placeholder="Buscar por nome, ID ou CPF...">
+                                <button class="btn btn-primary" id="search-button">Buscar</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <select class="form-select" id="status-filter">
+                                <option value="all">Todos os Status</option>
+                                <option value="active">Ativos</option>
+                                <option value="inactive">Inativos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <select class="form-select" id="sort-by">
+                                <option value="name">Ordenar por Nome</option>
+                                <option value="id">Ordenar por ID</option>
+                                <option value="date">Ordenar por Data de Cadastro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabela de Motoristas -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th>E-mail</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drivers-table">
+                                <tr>
+                                    <td colspan="7" class="text-center">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginação -->
+                    <div id="pagination-container" class="mt-4">
+                        <!-- Paginação será inserida via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Adicionar Motorista -->
+    <div class="modal fade" id="addDriverModal" tabindex="-1" aria-labelledby="addDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDriverModalLabel">Adicionar Novo Motorista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-driver-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-id" class="form-label">ID do Motorista</label>
+                                <input type="text" class="form-control" id="driver-id" required>
+                                <div class="form-text">Código único de identificação do motorista</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-name" class="form-label">Nome Completo</label>
+                                <input type="text" class="form-control" id="driver-name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-cpf" class="form-label">CPF</label>
+                                <input type="text" class="form-control" id="driver-cpf" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-rg" class="form-label">RG</label>
+                                <input type="text" class="form-control" id="driver-rg">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-phone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="driver-phone" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-email" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="driver-email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-birth-date" class="form-label">Data de Nascimento</label>
+                                <input type="date" class="form-control" id="driver-birth-date">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-license" class="form-label">CNH</label>
+                                <input type="text" class="form-control" id="driver-license">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-bank" class="form-label">Banco</label>
+                                <input type="text" class="form-control" id="driver-bank">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-bank-account" class="form-label">Conta Bancária</label>
+                                <input type="text" class="form-control" id="driver-bank-account">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-pix" class="form-label">Chave PIX</label>
+                                <input type="text" class="form-control" id="driver-pix">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-status" class="form-label">Status</label>
+                                <select class="form-select" id="driver-status" required>
+                                    <option value="active">Ativo</option>
+                                    <option value="inactive">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="driver-notes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="driver-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-driver-button">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Editar Motorista -->
+    <div class="modal fade" id="editDriverModal" tabindex="-1" aria-labelledby="editDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDriverModalLabel">Editar Motorista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-driver-form">
+                        <input type="hidden" id="edit-driver-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-code" class="form-label">ID do Motorista</label>
+                                <input type="text" class="form-control" id="edit-driver-code" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-name" class="form-label">Nome Completo</label>
+                                <input type="text" class="form-control" id="edit-driver-name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-cpf" class="form-label">CPF</label>
+                                <input type="text" class="form-control" id="edit-driver-cpf" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-rg" class="form-label">RG</label>
+                                <input type="text" class="form-control" id="edit-driver-rg">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-phone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="edit-driver-phone" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-email" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="edit-driver-email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-birth-date" class="form-label">Data de Nascimento</label>
+                                <input type="date" class="form-control" id="edit-driver-birth-date">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-license" class="form-label">CNH</label>
+                                <input type="text" class="form-control" id="edit-driver-license">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-bank" class="form-label">Banco</label>
+                                <input type="text" class="form-control" id="edit-driver-bank">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-bank-account" class="form-label">Conta Bancária</label>
+                                <input type="text" class="form-control" id="edit-driver-bank-account">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-pix" class="form-label">Chave PIX</label>
+                                <input type="text" class="form-control" id="edit-driver-pix">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="edit-driver-status" class="form-label">Status</label>
+                                <select class="form-select" id="edit-driver-status" required>
+                                    <option value="active">Ativo</option>
+                                    <option value="inactive">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="edit-driver-notes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="edit-driver-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="update-driver-button">Atualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualizar Motorista -->
+    <div class="modal fade" id="viewDriverModal" tabindex="-1" aria-labelledby="viewDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewDriverModalLabel">Detalhes do Motorista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Informações Pessoais</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>ID:</th>
+                                    <td id="view-driver-id"></td>
+                                </tr>
+                                <tr>
+                                    <th>Nome:</th>
+                                    <td id="view-driver-name"></td>
+                                </tr>
+                                <tr>
+                                    <th>CPF:</th>
+                                    <td id="view-driver-cpf"></td>
+                                </tr>
+                                <tr>
+                                    <th>RG:</th>
+                                    <td id="view-driver-rg"></td>
+                                </tr>
+                                <tr>
+                                    <th>Data de Nascimento:</th>
+                                    <td id="view-driver-birth-date"></td>
+                                </tr>
+                                <tr>
+                                    <th>CNH:</th>
+                                    <td id="view-driver-license"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Informações de Contato</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Telefone:</th>
+                                    <td id="view-driver-phone"></td>
+                                </tr>
+                                <tr>
+                                    <th>E-mail:</th>
+                                    <td id="view-driver-email"></td>
+                                </tr>
+                                <tr>
+                                    <th>Banco:</th>
+                                    <td id="view-driver-bank"></td>
+                                </tr>
+                                <tr>
+                                    <th>Conta Bancária:</th>
+                                    <td id="view-driver-bank-account"></td>
+                                </tr>
+                                <tr>
+                                    <th>Chave PIX:</th>
+                                    <td id="view-driver-pix"></td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td id="view-driver-status"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>Observações</h6>
+                            <p id="view-driver-notes" class="border p-2 rounded"></p>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>Histórico de Pagamentos</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="view-driver-payments">
+                                        <tr>
+                                            <td colspan="3" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="edit-driver-button">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteDriverModal" tabindex="-1" aria-labelledby="deleteDriverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteDriverModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir o motorista <strong id="delete-driver-name"></strong>?</p>
+                    <p class="text-danger">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-button">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Variáveis globais
+        let currentPage = 1;
+        let totalPages = 1;
+        let driversPerPage = 10;
+        let currentDrivers = [];
+        let selectedDriverId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar lista de motoristas
+            loadDrivers();
+            
+            // Configurar eventos de filtro e busca
+            document.getElementById('search-button').addEventListener('click', function() {
+                currentPage = 1;
+                loadDrivers();
+            });
+            
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    currentPage = 1;
+                    loadDrivers();
+                }
+            });
+            
+            document.getElementById('status-filter').addEventListener('change', function() {
+                currentPage = 1;
+                loadDrivers();
+            });
+            
+            document.getElementById('sort-by').addEventListener('change', function() {
+                currentPage = 1;
+                loadDrivers();
+            });
+            
+            // Configurar eventos de modal
+            document.getElementById('save-driver-button').addEventListener('click', saveDriver);
+            document.getElementById('update-driver-button').addEventListener('click', updateDriver);
+            document.getElementById('confirm-delete-button').addEventListener('click', deleteDriver);
+            
+            // Verificar se deve abrir modal de novo motorista
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('new') === 'true') {
+                const addDriverModal = new bootstrap.Modal(document.getElementById('addDriverModal'));
+                addDriverModal.show();
+            }
+            
+            // Verificar se deve abrir modal de edição
+            const driverId = urlParams.get('id');
+            if (driverId) {
+                loadDriverDetails(driverId, 'edit');
+            }
+        });
+        
+        // Função para carregar lista de motoristas
+        function loadDrivers() {
+            const tableBody = document.getElementById('drivers-table');
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center"><div class="loader"></div></td></tr>';
+            
+            // Obter parâmetros de filtro
+            const searchTerm = document.getElementById('search-input').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const sortBy = document.getElementById('sort-by').value;
+            
+            // Construir query string
+            let queryParams = `?page=${currentPage}&limit=${driversPerPage}`;
+            if (searchTerm) queryParams += `&search=${encodeURIComponent(searchTerm)}`;
+            if (statusFilter !== 'all') queryParams += `&status=${statusFilter}`;
+            if (sortBy) queryParams += `&sort=${sortBy}`;
+            
+            fetchAPI(`/api/drivers${queryParams}`)
+                .then(data => {
+                    currentDrivers = data.drivers;
+                    totalPages = Math.ceil(data.total / driversPerPage);
+                    
+                    if (currentDrivers.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum motorista encontrado</td></tr>';
+                        document.getElementById('pagination-container').innerHTML = '';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    currentDrivers.forEach(driver => {
+                        const statusClass = driver.active ? 'success' : 'danger';
+                        const statusText = driver.active ? 'Ativo' : 'Inativo';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${driver.driver_id}</td>
+                                <td>${driver.name}</td>
+                                <td>${driver.cpf || '-'}</td>
+                                <td>${driver.phone || '-'}</td>
+                                <td>${driver.email || '-'}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white me-1" onclick="viewDriver('${driver.driver_id}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editDriver('${driver.driver_id}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteDriver('${driver.driver_id}', '${driver.name}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    // Atualizar paginação
+                    updatePagination();
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                    console.error('Erro ao carregar motoristas:', error);
+                });
+        }
+        
+        // Função para atualizar paginação
+        function updatePagination() {
+            const paginationContainer = document.getElementById('pagination-container');
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const pagination = createPagination(currentPage, totalPages, function(page) {
+                currentPage = page;
+                loadDrivers();
+            });
+            
+            paginationContainer.innerHTML = '';
+            paginationContainer.appendChild(pagination);
+        }
+        
+        // Função para visualizar detalhes do motorista
+        function viewDriver(driverId) {
+            loadDriverDetails(driverId, 'view');
+        }
+        
+        // Função para editar motorista
+        function editDriver(driverId) {
+            loadDriverDetails(driverId, 'edit');
+        }
+        
+        // Função para confirmar exclusão de motorista
+        function confirmDeleteDriver(driverId, driverName) {
+            selectedDriverId = driverId;
+            document.getElementById('delete-driver-name').textContent = driverName;
+            
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteDriverModal'));
+            deleteModal.show();
+        }
+        
+        // Função para carregar detalhes do motorista
+        function loadDriverDetails(driverId, mode) {
+            fetchAPI(`/api/drivers/${driverId}`)
+                .then(driver => {
+                    selectedDriverId = driverId;
+                    
+                    if (mode === 'view') {
+                        // Preencher modal de visualização
+                        document.getElementById('view-driver-id').textContent = driver.driver_id;
+                        document.getElementById('view-driver-name').textContent = driver.name;
+                        document.getElementById('view-driver-cpf').textContent = driver.cpf || '-';
+                        document.getElementById('view-driver-rg').textContent = driver.rg || '-';
+                        document.getElementById('view-driver-birth-date').textContent = driver.birth_date ? formatDate(driver.birth_date) : '-';
+                        document.getElementById('view-driver-license').textContent = driver.license || '-';
+                        document.getElementById('view-driver-phone').textContent = driver.phone || '-';
+                        document.getElementById('view-driver-email').textContent = driver.email || '-';
+                        document.getElementById('view-driver-bank').textContent = driver.bank || '-';
+                        document.getElementById('view-driver-bank-account').textContent = driver.bank_account || '-';
+                        document.getElementById('view-driver-pix').textContent = driver.pix_key || '-';
+                        
+                        const statusClass = driver.active ? 'success' : 'danger';
+                        const statusText = driver.active ? 'Ativo' : 'Inativo';
+                        document.getElementById('view-driver-status').innerHTML = `<span class="badge bg-${statusClass}">${statusText}</span>`;
+                        
+                        document.getElementById('view-driver-notes').textContent = driver.notes || 'Nenhuma observação';
+                        
+                        // Carregar histórico de pagamentos
+                        loadDriverPayments(driverId);
+                        
+                        // Configurar botão de edição
+                        document.getElementById('edit-driver-button').onclick = function() {
+                            const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewDriverModal'));
+                            viewModal.hide();
+                            editDriver(driverId);
+                        };
+                        
+                        // Mostrar modal
+                        const viewModal = new bootstrap.Modal(document.getElementById('viewDriverModal'));
+                        viewModal.show();
+                    } else if (mode === 'edit') {
+                        // Preencher formulário de edição
+                        document.getElementById('edit-driver-id').value = driver.id;
+                        document.getElementById('edit-driver-code').value = driver.driver_id;
+                        document.getElementById('edit-driver-name').value = driver.name;
+                        document.getElementById('edit-driver-cpf').value = driver.cpf || '';
+                        document.getElementById('edit-driver-rg').value = driver.rg || '';
+                        document.getElementById('edit-driver-phone').value = driver.phone || '';
+                        document.getElementById('edit-driver-email').value = driver.email || '';
+                        document.getElementById('edit-driver-birth-date').value = driver.birth_date || '';
+                        document.getElementById('edit-driver-license').value = driver.license || '';
+                        document.getElementById('edit-driver-bank').value = driver.bank || '';
+                        document.getElementById('edit-driver-bank-account').value = driver.bank_account || '';
+                        document.getElementById('edit-driver-pix').value = driver.pix_key || '';
+                        document.getElementById('edit-driver-status').value = driver.active ? 'active' : 'inactive';
+                        document.getElementById('edit-driver-notes').value = driver.notes || '';
+                        
+                        // Mostrar modal
+                        const editModal = new bootstrap.Modal(document.getElementById('editDriverModal'));
+                        editModal.show();
+                    }
+                })
+                .catch(error => {
+                    showNotification('Erro ao carregar detalhes do motorista', 'error');
+                    console.error('Erro ao carregar detalhes do motorista:', error);
+                });
+        }
+        
+        // Função para carregar histórico de pagamentos do motorista
+        function loadDriverPayments(driverId) {
+            const tableBody = document.getElementById('view-driver-payments');
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI(`/api/payment/driver/${driverId}?limit=5`)
+                .then(payments => {
+                    if (payments.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Nenhum pagamento encontrado</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    payments.forEach(payment => {
+                        const statusClass = payment.status === 'paid' ? 'success' : 
+                                          payment.status === 'pending' ? 'warning' : 
+                                          payment.status === 'cancelled' ? 'danger' : 'secondary';
+                        
+                        const statusText = payment.status === 'paid' ? 'Pago' : 
+                                         payment.status === 'pending' ? 'Pendente' : 
+                                         payment.status === 'cancelled' ? 'Cancelado' : 'Processando';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${formatDate(payment.payment_date)}</td>
+                                <td>${formatCurrency(payment.total_value)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erro ao carregar pagamentos</td></tr>';
+                    console.error('Erro ao carregar pagamentos do motorista:', error);
+                });
+        }
+        
+        // Função para salvar novo motorista
+        function saveDriver() {
+            // Validar formulário
+            const form = document.getElementById('add-driver-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Obter dados do formulário
+            const driverId = document.getElementById('driver-id').value;
+            const name = document.getElementById('driver-name').value;
+            const cpf = document.getElementById('driver-cpf').value;
+            const rg = document.getElementById('driver-rg').value;
+            const phone = document.getElementById('driver-phone').value;
+            const email = document.getElementById('driver-email').value;
+            const birthDate = document.getElementById('driver-birth-date').value;
+            const license = document.getElementById('driver-license').value;
+            const bank = document.getElementById('driver-bank').value;
+            const bankAccount = document.getElementById('driver-bank-account').value;
+            const pix = document.getElementById('driver-pix').value;
+            const status = document.getElementById('driver-status').value;
+            const notes = document.getElementById('driver-notes').value;
+            
+            // Preparar dados para envio
+            const driverData = {
+                driver_id: driverId,
+                name: name,
+                cpf: cpf,
+                rg: rg,
+                phone: phone,
+                email: email,
+                birth_date: birthDate,
+                license: license,
+                bank: bank,
+                bank_account: bankAccount,
+                pix_key: pix,
+                active: status === 'active',
+                notes: notes
+            };
+            
+            // Desabilitar botão durante o envio
+            const saveButton = document.getElementById('save-driver-button');
+            saveButton.disabled = true;
+            saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Salvando...';
+            
+            // Enviar dados para API
+            fetchAPI('/api/drivers', {
+                method: 'POST',
+                body: JSON.stringify(driverData)
+            })
+                .then(response => {
+                    showNotification('Motorista cadastrado com sucesso', 'success');
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addDriverModal'));
+                    modal.hide();
+                    
+                    // Limpar formulário
+                    document.getElementById('add-driver-form').reset();
+                    
+                    // Recarregar lista de motoristas
+                    loadDrivers();
+                })
+                .catch(error => {
+                    showNotification('Erro ao cadastrar motorista', 'error');
+                    console.error('Erro ao cadastrar motorista:', error);
+                })
+                .finally(() => {
+                    // Reabilitar botão
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = 'Salvar';
+                });
+        }
+        
+        // Função para atualizar motorista
+        function updateDriver() {
+            // Validar formulário
+            const form = document.getElementById('edit-driver-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Obter dados do formulário
+            const id = document.getElementById('edit-driver-id').value;
+            const driverId = document.getElementById('edit-driver-code').value;
+            const name = document.getElementById('edit-driver-name').value;
+            const cpf = document.getElementById('edit-driver-cpf').value;
+            const rg = document.getElementById('edit-driver-rg').value;
+            const phone = document.getElementById('edit-driver-phone').value;
+            const email = document.getElementById('edit-driver-email').value;
+            const birthDate = document.getElementById('edit-driver-birth-date').value;
+            const license = document.getElementById('edit-driver-license').value;
+            const bank = document.getElementById('edit-driver-bank').value;
+            const bankAccount = document.getElementById('edit-driver-bank-account').value;
+            const pix = document.getElementById('edit-driver-pix').value;
+            const status = document.getElementById('edit-driver-status').value;
+            const notes = document.getElementById('edit-driver-notes').value;
+            
+            // Preparar dados para envio
+            const driverData = {
+                id: id,
+                driver_id: driverId,
+                name: name,
+                cpf: cpf,
+                rg: rg,
+                phone: phone,
+                email: email,
+                birth_date: birthDate,
+                license: license,
+                bank: bank,
+                bank_account: bankAccount,
+                pix_key: pix,
+                active: status === 'active',
+                notes: notes
+            };
+            
+            // Desabilitar botão durante o envio
+            const updateButton = document.getElementById('update-driver-button');
+            updateButton.disabled = true;
+            updateButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Atualizando...';
+            
+            // Enviar dados para API
+            fetchAPI(`/api/drivers/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(driverData)
+            })
+                .then(response => {
+                    showNotification('Motorista atualizado com sucesso', 'success');
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editDriverModal'));
+                    modal.hide();
+                    
+                    // Recarregar lista de motoristas
+                    loadDrivers();
+                })
+                .catch(error => {
+                    showNotification('Erro ao atualizar motorista', 'error');
+                    console.error('Erro ao atualizar motorista:', error);
+                })
+                .finally(() => {
+                    // Reabilitar botão
+                    updateButton.disabled = false;
+                    updateButton.innerHTML = 'Atualizar';
+                });
+        }
+        
+        // Função para excluir motorista
+        function deleteDriver() {
+            if (!selectedDriverId) return;
+            
+            // Desabilitar botão durante o envio
+            const deleteButton = document.getElementById('confirm-delete-button');
+            deleteButton.disabled = true;
+            deleteButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Excluindo...';
+            
+            // Enviar solicitação para API
+            fetchAPI(`/api/drivers/${selectedDriverId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    showNotification('Motorista excluído com sucesso', 'success');
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteDriverModal'));
+                    modal.hide();
+                    
+                    // Recarregar lista de motoristas
+                    loadDrivers();
+                })
+                .catch(error => {
+                    showNotification('Erro ao excluir motorista', 'error');
+                    console.error('Erro ao excluir motorista:', error);
+                })
+                .finally(() => {
+                    // Reabilitar botão
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = 'Excluir';
+                    
+                    // Limpar ID selecionado
+                    selectedDriverId = null;
+                });
+        }
+    </script>
+</body>
+</html>

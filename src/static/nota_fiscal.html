@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Notas Fiscais</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">Admin</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="bonificacoes.html" class="nav-link">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="descontos.html" class="nav-link">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="nota_fiscal.html" class="nav-link active">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Notas Fiscais</h1>
+                <div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateInvoiceModal">
+                        <i class="fas fa-plus me-2"></i>Gerar Nova Nota
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros e Busca -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-input" placeholder="Buscar por motorista, número ou status...">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <select class="form-select" id="status-filter">
+                                <option value="all">Todos os Status</option>
+                                <option value="pending">Pendentes</option>
+                                <option value="paid">Pagas</option>
+                                <option value="cancelled">Canceladas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text">De</span>
+                                <input type="date" class="form-control" id="date-from">
+                                <span class="input-group-text">Até</span>
+                                <input type="date" class="form-control" id="date-to">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-flex">
+                                <button class="btn btn-primary flex-grow-1 me-2" id="search-button">Buscar</button>
+                                <button class="btn btn-outline-secondary" id="clear-filters-button">Limpar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Notas Fiscais -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Motorista</th>
+                                    <th>Data de Emissão</th>
+                                    <th>Valor Total</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoices-table">
+                                <tr>
+                                    <td colspan="6" class="text-center">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="pagination-container" class="mt-4">
+                        <!-- Paginação será inserida via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Geração de Nota Fiscal -->
+    <div class="modal fade" id="generateInvoiceModal" tabindex="-1" aria-labelledby="generateInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="generateInvoiceModalLabel">Gerar Nova Nota Fiscal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="invoice-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="driver-id" class="form-label">Motorista</label>
+                                <select class="form-select" id="driver-id" required>
+                                    <option value="">Selecione um motorista...</option>
+                                    <!-- Motoristas serão carregados via JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="invoice-period" class="form-label">Período de Referência</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="period-start" required>
+                                    <span class="input-group-text">até</span>
+                                    <input type="date" class="form-control" id="period-end" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Itens a Incluir</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include-payments" checked>
+                                <label class="form-check-label" for="include-payments">
+                                    Pagamentos
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include-bonuses" checked>
+                                <label class="form-check-label" for="include-bonuses">
+                                    Bonificações
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include-discounts" checked>
+                                <label class="form-check-label" for="include-discounts">
+                                    Descontos
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="invoice-notes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="invoice-notes" rows="3"></textarea>
+                        </div>
+
+                        <div class="alert alert-info" id="invoice-preview-alert" style="display: none;">
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-border spinner-border-sm me-2" role="status" id="preview-spinner">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                                <div>
+                                    <strong>Calculando valores...</strong>
+                                    <div id="invoice-preview-text"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info" id="preview-invoice-button">
+                        <i class="fas fa-eye me-2"></i>Visualizar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="generate-invoice-button">
+                        <i class="fas fa-file-invoice me-2"></i>Gerar Nota
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização de Nota Fiscal -->
+    <div class="modal fade" id="viewInvoiceModal" tabindex="-1" aria-labelledby="viewInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewInvoiceModalLabel">Detalhes da Nota Fiscal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="invoice-details-container">
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="mt-2">Carregando detalhes da nota fiscal...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" id="download-invoice-button">
+                        <i class="fas fa-download me-2"></i>Download PDF
+                    </button>
+                    <button type="button" class="btn btn-primary" id="send-invoice-button">
+                        <i class="fas fa-envelope me-2"></i>Enviar por Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Cancelamento -->
+    <div class="modal fade" id="cancelInvoiceModal" tabindex="-1" aria-labelledby="cancelInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelInvoiceModalLabel">Confirmar Cancelamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja cancelar a nota fiscal <strong id="cancel-invoice-number"></strong>?</p>
+                    <p class="text-danger">Esta ação não pode ser desfeita.</p>
+                    <div class="mb-3">
+                        <label for="cancel-reason" class="form-label">Motivo do Cancelamento</label>
+                        <textarea class="form-control" id="cancel-reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-cancel-button">Confirmar Cancelamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Envio de Email -->
+    <div class="modal fade" id="sendEmailModal" tabindex="-1" aria-labelledby="sendEmailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendEmailModalLabel">Enviar Nota Fiscal por Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="email-form">
+                        <div class="mb-3">
+                            <label for="email-to" class="form-label">Destinatário</label>
+                            <input type="email" class="form-control" id="email-to" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email-cc" class="form-label">Cópia (CC)</label>
+                            <input type="email" class="form-control" id="email-cc">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email-subject" class="form-label">Assunto</label>
+                            <input type="text" class="form-control" id="email-subject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email-message" class="form-label">Mensagem</label>
+                            <textarea class="form-control" id="email-message" rows="5" required></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="attach-pdf" checked>
+                            <label class="form-check-label" for="attach-pdf">
+                                Anexar PDF da Nota Fiscal
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirm-send-email-button">Enviar Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Variáveis globais
+        let currentPage = 1;
+        let totalPages = 1;
+        let itemsPerPage = 10;
+        let selectedInvoiceId = null;
+        let selectedInvoiceNumber = null;
+        let drivers = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dados iniciais
+            loadInvoices();
+            loadDriversForSelect();
+            
+            // Configurar eventos
+            document.getElementById('search-button').addEventListener('click', function() {
+                currentPage = 1;
+                loadInvoices();
+            });
+            
+            document.getElementById('clear-filters-button').addEventListener('click', function() {
+                document.getElementById('search-input').value = '';
+                document.getElementById('status-filter').value = 'all';
+                document.getElementById('date-from').value = '';
+                document.getElementById('date-to').value = '';
+                currentPage = 1;
+                loadInvoices();
+            });
+            
+            document.getElementById('preview-invoice-button').addEventListener('click', previewInvoice);
+            document.getElementById('generate-invoice-button').addEventListener('click', generateInvoice);
+            document.getElementById('download-invoice-button').addEventListener('click', downloadInvoice);
+            document.getElementById('send-invoice-button').addEventListener('click', openSendEmailModal);
+            document.getElementById('confirm-cancel-button').addEventListener('click', confirmCancelInvoice);
+            document.getElementById('confirm-send-email-button').addEventListener('click', sendInvoiceByEmail);
+            
+            // Configurar eventos para cálculo automático ao selecionar motorista ou período
+            document.getElementById('driver-id').addEventListener('change', function() {
+                if (this.value && document.getElementById('period-start').value && document.getElementById('period-end').value) {
+                    previewInvoice();
+                }
+            });
+            
+            document.getElementById('period-start').addEventListener('change', function() {
+                if (document.getElementById('driver-id').value && this.value && document.getElementById('period-end').value) {
+                    previewInvoice();
+                }
+            });
+            
+            document.getElementById('period-end').addEventListener('change', function() {
+                if (document.getElementById('driver-id').value && document.getElementById('period-start').value && this.value) {
+                    previewInvoice();
+                }
+            });
+            
+            // Configurar checkboxes para recalcular ao mudar
+            document.getElementById('include-payments').addEventListener('change', function() {
+                if (document.getElementById('driver-id').value && document.getElementById('period-start').value && document.getElementById('period-end').value) {
+                    previewInvoice();
+                }
+            });
+            
+            document.getElementById('include-bonuses').addEventListener('change', function() {
+                if (document.getElementById('driver-id').value && document.getElementById('period-start').value && document.getElementById('period-end').value) {
+                    previewInvoice();
+                }
+            });
+            
+            document.getElementById('include-discounts').addEventListener('change', function() {
+                if (document.getElementById('driver-id').value && document.getElementById('period-start').value && document.getElementById('period-end').value) {
+                    previewInvoice();
+                }
+            });
+        });
+        
+        // Função para carregar notas fiscais
+        function loadInvoices() {
+            const tableBody = document.getElementById('invoices-table');
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center"><div class="loader"></div></td></tr>';
+            
+            // Obter parâmetros de filtro
+            const searchTerm = document.getElementById('search-input').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            
+            // Construir query string
+            let queryParams = `?page=${currentPage}&limit=${itemsPerPage}`;
+            if (searchTerm) queryParams += `&search=${encodeURIComponent(searchTerm)}`;
+            if (statusFilter !== 'all') queryParams += `&status=${statusFilter}`;
+            if (dateFrom) queryParams += `&date_from=${dateFrom}`;
+            if (dateTo) queryParams += `&date_to=${dateTo}`;
+            
+            fetchAPI(`/api/invoices${queryParams}`)
+                .then(data => {
+                    const invoices = data.invoices;
+                    totalPages = Math.ceil(data.total / itemsPerPage);
+                    
+                    if (invoices.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma nota fiscal encontrada</td></tr>';
+                        document.getElementById('pagination-container').innerHTML = '';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    invoices.forEach(invoice => {
+                        const statusClass = invoice.status === 'paid' ? 'success' : 
+                                          invoice.status === 'pending' ? 'warning' : 'danger';
+                        
+                        const statusText = invoice.status === 'paid' ? 'Paga' : 
+                                         invoice.status === 'pending' ? 'Pendente' : 'Cancelada';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${invoice.invoice_number}</td>
+                                <td>${invoice.driver_name}</td>
+                                <td>${formatDate(invoice.issue_date)}</td>
+                                <td>${formatCurrency(invoice.total_amount)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white me-1" onclick="viewInvoice(${invoice.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success me-1" onclick="downloadInvoiceById(${invoice.id})">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    ${invoice.status !== 'cancelled' ? `
+                                    <button class="btn btn-sm btn-danger" onclick="cancelInvoice(${invoice.id}, '${invoice.invoice_number}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    ` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    // Atualizar paginação
+                    updatePagination();
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erro ao carregar notas fiscais</td></tr>';
+                    console.error('Erro ao carregar notas fiscais:', error);
+                });
+        }
+        
+        // Função para atualizar paginação
+        function updatePagination() {
+            const paginationContainer = document.getElementById('pagination-container');
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const pagination = createPagination(currentPage, totalPages, function(page) {
+                currentPage = page;
+                loadInvoices();
+            });
+            
+            paginationContainer.innerHTML = '';
+            paginationContainer.appendChild(pagination);
+        }
+        
+        // Função para carregar motoristas para o select
+        function loadDriversForSelect() {
+            const driverSelect = document.getElementById('driver-id');
+            
+            fetchAPI('/api/drivers?limit=1000&status=active')
+                .then(data => {
+                    drivers = data.drivers;
+                    driverSelect.innerHTML = '<option value="">Selecione um motorista...</option>';
+                    
+                    drivers.forEach(driver => {
+                        driverSelect.innerHTML += `<option value="${driver.driver_id}">${driver.name} (ID: ${driver.driver_id})</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar motoristas:', error);
+                });
+        }
+        
+        // Função para visualizar prévia da nota fiscal
+        function previewInvoice() {
+            const driverId = document.getElementById('driver-id').value;
+            const periodStart = document.getElementById('period-start').value;
+            const periodEnd = document.getElementById('period-end').value;
+            const includePayments = document.getElementById('include-payments').checked;
+            const includeBonuses = document.getElementById('include-bonuses').checked;
+            const includeDiscounts = document.getElementById('include-discounts').checked;
+            
+            if (!driverId || !periodStart || !periodEnd) {
+                showNotification('Selecione o motorista e o período para visualizar a prévia', 'warning');
+                return;
+            }
+            
+            // Mostrar alerta de prévia com spinner
+            document.getElementById('invoice-preview-alert').style.display = 'block';
+            document.getElementById('preview-spinner').style.display = 'inline-block';
+            document.getElementById('invoice-preview-text').textContent = 'Calculando valores...';
+            
+            const requestBody = {
+                driver_id: driverId,
+                period_start: periodStart,
+                period_end: periodEnd,
+                include_payments: includePayments,
+                include_bonuses: includeBonuses,
+                include_discounts: includeDiscounts
+            };
+            
+            fetchAPI('/api/invoices/preview', { method: 'POST', body: JSON.stringify(requestBody) })
+                .then(data => {
+                    document.getElementById('preview-spinner').style.display = 'none';
+                    
+                    if (data.error) {
+                        document.getElementById('invoice-preview-text').innerHTML = `<div class="text-danger">${data.error}</div>`;
+                        return;
+                    }
+                    
+                    // Formatar valores para exibição
+                    const paymentsTotal = formatCurrency(data.payments_total || 0);
+                    const bonusesTotal = formatCurrency(data.bonuses_total || 0);
+                    const discountsTotal = formatCurrency(data.discounts_total || 0);
+                    const totalAmount = formatCurrency(data.total_amount || 0);
+                    
+                    document.getElementById('invoice-preview-text').innerHTML = `
+                        <div class="mt-2">
+                            <p><strong>Pagamentos:</strong> ${paymentsTotal}</p>
+                            <p><strong>Bonificações:</strong> ${bonusesTotal}</p>
+                            <p><strong>Descontos:</strong> ${discountsTotal}</p>
+                            <p class="fw-bold">Total a Pagar: ${totalAmount}</p>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('preview-spinner').style.display = 'none';
+                    document.getElementById('invoice-preview-text').innerHTML = `<div class="text-danger">Erro ao calcular prévia: ${error.message}</div>`;
+                    console.error('Erro ao calcular prévia da nota fiscal:', error);
+                });
+        }
+        
+        // Função para gerar nota fiscal
+        function generateInvoice() {
+            const driverId = document.getElementById('driver-id').value;
+            const periodStart = document.getElementById('period-start').value;
+            const periodEnd = document.getElementById('period-end').value;
+            const includePayments = document.getElementById('include-payments').checked;
+            const includeBonuses = document.getElementById('include-bonuses').checked;
+            const includeDiscounts = document.getElementById('include-discounts').checked;
+            const notes = document.getElementById('invoice-notes').value;
+            
+            if (!driverId || !periodStart || !periodEnd) {
+                showNotification('Selecione o motorista e o período para gerar a nota fiscal', 'warning');
+                return;
+            }
+            
+            const generateButton = document.getElementById('generate-invoice-button');
+            const originalButtonText = generateButton.innerHTML;
+            generateButton.disabled = true;
+            generateButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Gerando...';
+            
+            const requestBody = {
+                driver_id: driverId,
+                period_start: periodStart,
+                period_end: periodEnd,
+                include_payments: includePayments,
+                include_bonuses: includeBonuses,
+                include_discounts: includeDiscounts,
+                notes: notes
+            };
+            
+            fetchAPI('/api/invoices', { method: 'POST', body: JSON.stringify(requestBody) })
+                .then(data => {
+                    if (data.error) {
+                        showNotification(`Erro ao gerar nota fiscal: ${data.error}`, 'error');
+                        return;
+                    }
+                    
+                    showNotification('Nota fiscal gerada com sucesso', 'success');
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
+                    
+                    // Limpar formulário
+                    document.getElementById('invoice-form').reset();
+                    document.getElementById('invoice-preview-alert').style.display = 'none';
+                    
+                    // Recarregar lista de notas fiscais
+                    loadInvoices();
+                    
+                    // Opcionalmente, abrir a nota fiscal gerada para visualização
+                    if (data.id) {
+                        viewInvoice(data.id);
+                    }
+                })
+                .catch(error => {
+                    showNotification('Erro ao gerar nota fiscal', 'error');
+                    console.error('Erro ao gerar nota fiscal:', error);
+                })
+                .finally(() => {
+                    generateButton.disabled = false;
+                    generateButton.innerHTML = originalButtonText;
+                });
+        }
+        
+        // Função para visualizar nota fiscal
+        function viewInvoice(id) {
+            selectedInvoiceId = id;
+            
+            const detailsContainer = document.getElementById('invoice-details-container');
+            detailsContainer.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2">Carregando detalhes da nota fiscal...</p>
+                </div>
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('viewInvoiceModal'));
+            modal.show();
+            
+            fetchAPI(`/api/invoices/${id}`)
+                .then(invoice => {
+                    selectedInvoiceNumber = invoice.invoice_number;
+                    
+                    const statusClass = invoice.status === 'paid' ? 'success' : 
+                                      invoice.status === 'pending' ? 'warning' : 'danger';
+                    
+                    const statusText = invoice.status === 'paid' ? 'Paga' : 
+                                     invoice.status === 'pending' ? 'Pendente' : 'Cancelada';
+                    
+                    let html = `
+                        <div class="invoice-header d-flex justify-content-between align-items-start mb-4">
+                            <div>
+                                <h4>Nota Fiscal #${invoice.invoice_number}</h4>
+                                <p class="text-muted">Emitida em ${formatDate(invoice.issue_date)}</p>
+                            </div>
+                            <div>
+                                <span class="badge bg-${statusClass} fs-6">${statusText}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Dados do Motorista</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>Nome:</th>
+                                        <td>${invoice.driver_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ID:</th>
+                                        <td>${invoice.driver_id}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>CPF/CNPJ:</th>
+                                        <td>${invoice.driver_document || '-'}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Dados da Nota</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>Período:</th>
+                                        <td>${formatDate(invoice.period_start)} a ${formatDate(invoice.period_end)}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Valor Total:</th>
+                                        <td>${formatCurrency(invoice.total_amount)}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Adicionar detalhes dos itens
+                    if (invoice.items && invoice.items.length > 0) {
+                        html += `
+                            <h5>Itens da Nota</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Descrição</th>
+                                            <th>Tipo</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        
+                        invoice.items.forEach(item => {
+                            const itemType = item.type === 'payment' ? 'Pagamento' : 
+                                           item.type === 'bonus' ? 'Bonificação' : 'Desconto';
+                            
+                            html += `
+                                <tr>
+                                    <td>${item.description}</td>
+                                    <td>${itemType}</td>
+                                    <td>${formatDate(item.date)}</td>
+                                    <td>${formatCurrency(item.amount)}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+                    
+                    // Adicionar resumo
+                    html += `
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>Observações</h5>
+                                <p>${invoice.notes || 'Nenhuma observação'}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Resumo</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>Total de Pagamentos:</th>
+                                        <td>${formatCurrency(invoice.payments_total || 0)}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total de Bonificações:</th>
+                                        <td>${formatCurrency(invoice.bonuses_total || 0)}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total de Descontos:</th>
+                                        <td>${formatCurrency(invoice.discounts_total || 0)}</td>
+                                    </tr>
+                                    <tr class="table-active fw-bold">
+                                        <th>Valor Total:</th>
+                                        <td>${formatCurrency(invoice.total_amount)}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Adicionar histórico de alterações se houver
+                    if (invoice.history && invoice.history.length > 0) {
+                        html += `
+                            <div class="mt-4">
+                                <h5>Histórico</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Ação</th>
+                                                <th>Usuário</th>
+                                                <th>Observação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        `;
+                        
+                        invoice.history.forEach(entry => {
+                            html += `
+                                <tr>
+                                    <td>${formatDateTime(entry.date)}</td>
+                                    <td>${entry.action}</td>
+                                    <td>${entry.user}</td>
+                                    <td>${entry.notes || '-'}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    detailsContainer.innerHTML = html;
+                    
+                    // Configurar botões conforme o status
+                    const sendButton = document.getElementById('send-invoice-button');
+                    if (invoice.status === 'cancelled') {
+                        sendButton.style.display = 'none';
+                    } else {
+                        sendButton.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    detailsContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Erro ao carregar detalhes da nota fiscal: ${error.message}
+                        </div>
+                    `;
+                    console.error('Erro ao carregar detalhes da nota fiscal:', error);
+                });
+        }
+        
+        // Função para baixar nota fiscal
+        function downloadInvoice() {
+            if (!selectedInvoiceId) return;
+            downloadInvoiceById(selectedInvoiceId);
+        }
+        
+        // Função para baixar nota fiscal por ID
+        function downloadInvoiceById(id) {
+            window.location.href = `/api/invoices/${id}/pdf`;
+        }
+        
+        // Função para cancelar nota fiscal
+        function cancelInvoice(id, invoiceNumber) {
+            selectedInvoiceId = id;
+            selectedInvoiceNumber = invoiceNumber;
+            document.getElementById('cancel-invoice-number').textContent = invoiceNumber;
+            
+            const modal = new bootstrap.Modal(document.getElementById('cancelInvoiceModal'));
+            modal.show();
+        }
+        
+        // Função para confirmar cancelamento de nota fiscal
+        function confirmCancelInvoice() {
+            if (!selectedInvoiceId) return;
+            
+            const reason = document.getElementById('cancel-reason').value;
+            if (!reason) {
+                showNotification('Informe o motivo do cancelamento', 'warning');
+                return;
+            }
+            
+            const cancelButton = document.getElementById('confirm-cancel-button');
+            const originalButtonText = cancelButton.innerHTML;
+            cancelButton.disabled = true;
+            cancelButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Cancelando...';
+            
+            fetchAPI(`/api/invoices/${selectedInvoiceId}/cancel`, { 
+                method: 'POST', 
+                body: JSON.stringify({ reason: reason }) 
+            })
+                .then(() => {
+                    showNotification('Nota fiscal cancelada com sucesso', 'success');
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('cancelInvoiceModal')).hide();
+                    
+                    // Limpar campo de motivo
+                    document.getElementById('cancel-reason').value = '';
+                    
+                    // Recarregar lista de notas fiscais
+                    loadInvoices();
+                    
+                    // Se o modal de visualização estiver aberto, fechar e reabrir para atualizar
+                    const viewModal = document.getElementById('viewInvoiceModal');
+                    if (viewModal.classList.contains('show')) {
+                        bootstrap.Modal.getInstance(viewModal).hide();
+                        setTimeout(() => viewInvoice(selectedInvoiceId), 500);
+                    }
+                })
+                .catch(error => {
+                    showNotification('Erro ao cancelar nota fiscal', 'error');
+                    console.error('Erro ao cancelar nota fiscal:', error);
+                })
+                .finally(() => {
+                    cancelButton.disabled = false;
+                    cancelButton.innerHTML = originalButtonText;
+                });
+        }
+        
+        // Função para abrir modal de envio de email
+        function openSendEmailModal() {
+            if (!selectedInvoiceId || !selectedInvoiceNumber) return;
+            
+            // Buscar email do motorista
+            fetchAPI(`/api/invoices/${selectedInvoiceId}`)
+                .then(invoice => {
+                    // Preencher campos do formulário de email
+                    document.getElementById('email-to').value = invoice.driver_email || '';
+                    document.getElementById('email-subject').value = `Nota Fiscal #${selectedInvoiceNumber} - MenezesLog`;
+                    document.getElementById('email-message').value = `Prezado(a) ${invoice.driver_name},\n\nSegue em anexo a Nota Fiscal #${selectedInvoiceNumber} referente ao período de ${formatDate(invoice.period_start)} a ${formatDate(invoice.period_end)}.\n\nValor total: ${formatCurrency(invoice.total_amount)}\n\nQualquer dúvida, estamos à disposição.\n\nAtenciosamente,\nEquipe MenezesLog`;
+                    
+                    // Mostrar modal
+                    const modal = new bootstrap.Modal(document.getElementById('sendEmailModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    showNotification('Erro ao carregar dados para envio de email', 'error');
+                    console.error('Erro ao carregar dados para envio de email:', error);
+                });
+        }
+        
+        // Função para enviar nota fiscal por email
+        function sendInvoiceByEmail() {
+            if (!selectedInvoiceId) return;
+            
+            const emailTo = document.getElementById('email-to').value;
+            const emailCc = document.getElementById('email-cc').value;
+            const emailSubject = document.getElementById('email-subject').value;
+            const emailMessage = document.getElementById('email-message').value;
+            const attachPdf = document.getElementById('attach-pdf').checked;
+            
+            if (!emailTo || !emailSubject || !emailMessage) {
+                showNotification('Preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+            
+            const sendButton = document.getElementById('confirm-send-email-button');
+            const originalButtonText = sendButton.innerHTML;
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
+            
+            const requestBody = {
+                to: emailTo,
+                cc: emailCc,
+                subject: emailSubject,
+                message: emailMessage,
+                attach_pdf: attachPdf
+            };
+            
+            fetchAPI(`/api/invoices/${selectedInvoiceId}/send-email`, { 
+                method: 'POST', 
+                body: JSON.stringify(requestBody) 
+            })
+                .then(() => {
+                    showNotification('Email enviado com sucesso', 'success');
+                    
+                    // Fechar modal
+                    bootstrap.Modal.getInstance(document.getElementById('sendEmailModal')).hide();
+                })
+                .catch(error => {
+                    showNotification('Erro ao enviar email', 'error');
+                    console.error('Erro ao enviar email:', error);
+                })
+                .finally(() => {
+                    sendButton.disabled = false;
+                    sendButton.innerHTML = originalButtonText;
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,206 +1,221 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>menezeslog_sistema</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
-        h2 { margin-top: 0; }
-        label { display: inline-block; width: 80px; margin-bottom: 5px; }
-        input[type="text"], input[type="email"], input[type="number"] { margin-bottom: 10px; padding: 5px; width: 200px; }
-        button { padding: 8px 15px; margin-right: 10px; cursor: pointer; }
-        pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
-    </style>
+    <title>MenezesLog - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <h1>User API Test</h1>
-
-    <!-- Get All Users -->
-    <div class="section">
-        <h2>Get All Users (GET /users)</h2>
-        <button onclick="getUsers()">Get Users</button>
-        <pre id="get-users-result"></pre>
+    <div class="container">
+        <div class="login-container">
+            <div class="logo-container">
+                <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+            </div>
+            
+            <h4 class="text-center mb-4">Sistema de Pagamento de Motoristas</h4>
+            
+            <div class="alert alert-danger" id="error-message" role="alert" style="display: none;">
+                Usuário ou senha incorretos. Por favor, tente novamente.
+            </div>
+            
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuário</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                    </button>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" class="text-decoration-none" id="forgot-password">
+                        <i class="fas fa-key me-1"></i>Esqueci minha senha
+                    </a>
+                </div>
+            </form>
+            
+            <div class="login-footer">
+                <p>© 2025 MenezesLog - Todos os direitos reservados</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Create User -->
-    <div class="section">
-        <h2>Create User (POST /users)</h2>
-        <label for="create-username">Username:</label>
-        <input type="text" id="create-username" name="username"><br>
-        <label for="create-email">Email:</label>
-        <input type="email" id="create-email" name="email"><br>
-        <button onclick="createUser()">Create User</button>
-        <pre id="create-user-result"></pre>
+    <!-- Modal de Recuperação de Senha -->
+    <div class="modal fade" id="passwordRecoveryModal" tabindex="-1" aria-labelledby="passwordRecoveryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordRecoveryModalLabel">Recuperação de Senha</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Informe seu e-mail cadastrado para receber instruções de recuperação de senha:</p>
+                    <form id="recovery-form">
+                        <div class="mb-3">
+                            <label for="recovery-email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="recovery-email" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="send-recovery">Enviar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Get Single User -->
-    <div class="section">
-        <h2>Get Single User (GET /users/&lt;id&gt;)</h2>
-        <label for="get-user-id">User ID:</label>
-        <input type="number" id="get-user-id" name="user_id"><br>
-        <button onclick="getUser()">Get User</button>
-        <pre id="get-user-result"></pre>
-    </div>
-
-    <!-- Update User -->
-    <div class="section">
-        <h2>Update User (PUT /users/&lt;id&gt;)</h2>
-        <label for="update-user-id">User ID:</label>
-        <input type="number" id="update-user-id" name="user_id"><br>
-        <label for="update-username">New Username:</label>
-        <input type="text" id="update-username" name="username"><br>
-        <label for="update-email">New Email:</label>
-        <input type="email" id="update-email" name="email"><br>
-        <button onclick="updateUser()">Update User</button>
-        <pre id="update-user-result"></pre>
-    </div>
-
-    <!-- Delete User -->
-    <div class="section">
-        <h2>Delete User (DELETE /users/&lt;id&gt;)</h2>
-        <label for="delete-user-id">User ID:</label>
-        <input type="number" id="delete-user-id" name="user_id"><br>
-        <button onclick="deleteUser()">Delete User</button>
-        <pre id="delete-user-result"></pre>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
     <script>
-        const API_BASE_URL = '/api/users';
-
-        // Helper function to display results
-        function displayResult(elementId, data) {
-            document.getElementById(elementId).textContent = JSON.stringify(data, null, 2);
-        }
-
-        // Helper function to display errors
-        function displayError(elementId, error) {
-            document.getElementById(elementId).textContent = `Error: ${error.message || error}`;
-        }
-
-        // GET /users
-        async function getUsers() {
-            const resultElementId = 'get-users-result';
-            try {
-                const response = await fetch(API_BASE_URL);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                displayResult(resultElementId, data);
-            } catch (error) {
-                displayError(resultElementId, error);
-            }
-        }
-
-        // POST /users
-        async function createUser() {
-            const resultElementId = 'create-user-result';
-            const username = document.getElementById('create-username').value;
-            const email = document.getElementById('create-email').value;
-            if (!username || !email) {
-                displayError(resultElementId, 'Username and email cannot be empty');
-                return;
-            }
-            try {
-                const response = await fetch(API_BASE_URL, {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+            
+            // Login form submission
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('error-message');
+                
+                // Disable form elements during submission
+                const submitButton = this.querySelector('button[type="submit"]');
+                const formElements = this.querySelectorAll('input, button');
+                formElements.forEach(el => el.disabled = true);
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Entrando...';
+                
+                // Hide previous error messages
+                errorMessage.style.display = 'none';
+                
+                // Send login request to API
+                fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Falha na autenticação');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Store token and user data
+                    setAuthData(data.token, {
+                        id: data.user_id,
+                        username: data.username,
+                        role: data.role,
+                        first_access: data.first_access
+                    });
+                    
+                    // Redirect based on user role
+                    if (data.role === 'admin') {
+                        window.location.href = 'admin_dashboard.html';
+                    } else {
+                        window.location.href = 'motorista_dashboard.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    errorMessage.style.display = 'block';
+                    
+                    // Re-enable form elements
+                    formElements.forEach(el => el.disabled = false);
+                    submitButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Entrar';
                 });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
-                displayResult(resultElementId, data);
-                // 清空输入框
-                document.getElementById('create-username').value = '';
-                document.getElementById('create-email').value = '';
-            } catch (error) {
-                displayError(resultElementId, error);
-            }
-        }
-
-        // GET /users/<id>
-        async function getUser() {
-            const resultElementId = 'get-user-result';
-            const userId = document.getElementById('get-user-id').value;
-            if (!userId) {
-                displayError(resultElementId, 'User ID cannot be empty');
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE_URL}/${userId}`);
-                 if (response.status === 404) throw new Error('User not found');
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                displayResult(resultElementId, data);
-            } catch (error) {
-                displayError(resultElementId, error);
-            }
-        }
-
-        // PUT /users/<id>
-        async function updateUser() {
-            const resultElementId = 'update-user-result';
-            const userId = document.getElementById('update-user-id').value;
-            const username = document.getElementById('update-username').value;
-            const email = document.getElementById('update-email').value;
-            if (!userId) {
-                displayError(resultElementId, 'User ID cannot be empty');
-                return;
-            }
-            const updateData = {};
-            if (username) updateData.username = username;
-            if (email) updateData.email = email;
-            if (Object.keys(updateData).length === 0) {
-                 displayError(resultElementId, 'Please enter a username or email to update');
-                 return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updateData)
-                });
-                if (response.status === 404) throw new Error('User not found');
-                const data = await response.json();
-                 if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
-                displayResult(resultElementId, data);
-                 // Clear input fields
-                document.getElementById('update-username').value = '';
-                document.getElementById('update-email').value = '';
-            } catch (error) {
-                displayError(resultElementId, error);
-            }
-        }
-
-        // DELETE /users/<id>
-        async function deleteUser() {
-            const resultElementId = 'delete-user-result';
-            const userId = document.getElementById('delete-user-id').value;
-            if (!userId) {
-                displayError(resultElementId, 'User ID cannot be empty');
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE_URL}/${userId}`, {
-                    method: 'DELETE'
-                });
-                if (response.status === 404) throw new Error('User not found');
-                if (!response.ok && response.status !== 204) throw new Error(`HTTP error! status: ${response.status}`); // Allow 204
-                // 204 No Content indicates success
-                if (response.status === 204) {
-                     displayResult(resultElementId, { message: `User ID ${userId} has been successfully deleted` });
-                } else {
-                     // Try to read potential error message even on success-like status if not 204
-                     const data = await response.text();
-                     displayResult(resultElementId, data || { message: `Deletion successful, status code: ${response.status}` });
+            });
+            
+            // Password recovery modal
+            const passwordRecoveryModal = new bootstrap.Modal(document.getElementById('passwordRecoveryModal'));
+            
+            document.getElementById('forgot-password').addEventListener('click', function(e) {
+                e.preventDefault();
+                passwordRecoveryModal.show();
+            });
+            
+            document.getElementById('send-recovery').addEventListener('click', function() {
+                const email = document.getElementById('recovery-email').value;
+                
+                if (!email || !validateEmail(email)) {
+                    showNotification('Por favor, informe um e-mail válido', 'warning');
+                    return;
                 }
-                 // Clear input field
-                document.getElementById('delete-user-id').value = '';
-            } catch (error) {
-                displayError(resultElementId, error);
+                
+                // Disable button and show loading
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Enviando...';
+                
+                // Send recovery request to API
+                fetch('/api/auth/recover-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showNotification('Instruções de recuperação enviadas para seu e-mail', 'success');
+                    passwordRecoveryModal.hide();
+                })
+                .catch(error => {
+                    showNotification('Erro ao processar solicitação. Tente novamente.', 'error');
+                })
+                .finally(() => {
+                    // Re-enable button
+                    this.disabled = false;
+                    this.innerHTML = 'Enviar';
+                });
+            });
+            
+            // Check for URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.get('logout') === 'true') {
+                showNotification('Você foi desconectado com sucesso', 'info');
             }
-        }
+            
+            if (urlParams.get('expired') === 'true') {
+                showNotification('Sua sessão expirou. Por favor, faça login novamente.', 'warning');
+            }
+            
+            if (urlParams.get('password_changed') === 'true') {
+                showNotification('Senha alterada com sucesso. Por favor, faça login com sua nova senha.', 'success');
+            }
+        });
     </script>
 </body>
 </html>
