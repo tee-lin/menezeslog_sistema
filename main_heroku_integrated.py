@@ -83,6 +83,7 @@ try:
         __tablename__ = 'service_types'
         id = db.Column(db.Integer, primary_key=True)
         type_code = db.Column(db.Integer, unique=True, nullable=False)
+        name = db.Column(db.String(100), nullable=False)  # Adicionado campo name
         description = db.Column(db.String(100), nullable=False)
         base_value = db.Column(db.Float, nullable=False)
         created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -92,6 +93,7 @@ try:
             return {
                 'id': self.id,
                 'type_code': self.type_code,
+                'name': self.name,
                 'description': self.description,
                 'base_value': self.base_value,
                 'created_at': self.created_at.isoformat() if self.created_at else None,
@@ -322,27 +324,32 @@ try:
             
             # Criar tipos de serviço padrão
             service_types = {
-                0: ('Entrega Padrão', 3.50),
-                9: ('Entrega Expressa', 2.00),
-                6: ('Entrega Especial', 0.50),
-                8: ('Entrega Econômica', 0.50)
+                0: ('Entrega Padrão', 'Serviço de entrega padrão', 3.50),
+                9: ('Entrega Expressa', 'Serviço de entrega expressa', 2.00),
+                6: ('Entrega Especial', 'Serviço de entrega especial', 0.50),
+                8: ('Entrega Econômica', 'Serviço de entrega econômica', 0.50)
             }
             
-            for type_code, (description, base_value) in service_types.items():
-                service_type = ServiceType.query.filter_by(type_code=type_code).first()
-                if not service_type:
-                    service_type = ServiceType(
-                        type_code=type_code,
-                        description=description,
-                        base_value=base_value
-                    )
-                    db.session.add(service_type)
+            # Usar session.no_autoflush para evitar problemas de autoflush
+            with db.session.no_autoflush:
+                for type_code, (name, description, base_value) in service_types.items():
+                    service_type = ServiceType.query.filter_by(type_code=type_code).first()
+                    if not service_type:
+                        service_type = ServiceType(
+                            type_code=type_code,
+                            name=name,  # Adicionado campo name
+                            description=description,
+                            base_value=base_value
+                        )
+                        db.session.add(service_type)
             
             db.session.commit()
             logger.info("Tipos de serviço criados com sucesso!")
         except Exception as e:
             logger.error(f"Erro ao inicializar banco de dados: {str(e)}")
             logger.error(traceback.format_exc())
+            # Não propagar a exceção para permitir que a aplicação continue funcionando
+            # mesmo se a inicialização do banco falhar
     
     # Tratamento de erros
     @app.errorhandler(404)
