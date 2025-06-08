@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Configurações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">Admin</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="bonificacoes.html" class="nav-link">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="descontos.html" class="nav-link">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="nota_fiscal.html" class="nav-link">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link active">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <h1 class="mb-4">Configurações do Sistema</h1>
+
+            <div class="row">
+                <!-- Configurações Gerais -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Configurações Gerais</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="general-settings-form">
+                                <div class="mb-3">
+                                    <label for="company-name" class="form-label">Nome da Empresa</label>
+                                    <input type="text" class="form-control" id="company-name" placeholder="Nome da sua empresa">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="company-logo" class="form-label">Logo da Empresa</label>
+                                    <input class="form-control" type="file" id="company-logo" accept="image/png, image/jpeg">
+                                    <div class="form-text">Recomendado: PNG transparente, máx. 2MB.</div>
+                                    <div id="logo-preview" class="mt-2">
+                                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="Logo Preview" class="img-thumbnail" style="max-height: 80px;">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="default-currency" class="form-label">Moeda Padrão</label>
+                                    <select class="form-select" id="default-currency">
+                                        <option value="BRL">Real Brasileiro (BRL)</option>
+                                        <option value="USD">Dólar Americano (USD)</option>
+                                        <option value="EUR">Euro (EUR)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="timezone" class="form-label">Fuso Horário</label>
+                                    <select class="form-select" id="timezone">
+                                        <option value="America/Sao_Paulo">America/Sao_Paulo</option>
+                                        <option value="America/New_York">America/New_York</option>
+                                        <option value="Europe/London">Europe/London</option>
+                                        <!-- Adicionar mais fusos horários conforme necessário -->
+                                    </select>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Salvar Configurações Gerais</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações de Pagamento -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="fas fa-credit-card me-2"></i>Configurações de Pagamento</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="payment-settings-form">
+                                <div class="mb-3">
+                                    <label for="payment-cycle" class="form-label">Ciclo de Pagamento Padrão</label>
+                                    <select class="form-select" id="payment-cycle">
+                                        <option value="weekly">Semanal</option>
+                                        <option value="biweekly">Quinzenal</option>
+                                        <option value="monthly">Mensal</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="payment-day" class="form-label">Dia do Pagamento (para ciclo mensal)</label>
+                                    <input type="number" class="form-control" id="payment-day" min="1" max="31" placeholder="Ex: 5">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="invoice-due-days" class="form-label">Prazo de Vencimento da Nota Fiscal (dias)</label>
+                                    <input type="number" class="form-control" id="invoice-due-days" min="0" placeholder="Ex: 7">
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="auto-generate-invoices">
+                                    <label class="form-check-label" for="auto-generate-invoices">
+                                        Gerar notas fiscais automaticamente
+                                    </label>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Salvar Configurações de Pagamento</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Configurações de Notificação -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="fas fa-bell me-2"></i>Configurações de Notificação</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="notification-settings-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Notificações por Email</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="notify-payment-processed">
+                                        <label class="form-check-label" for="notify-payment-processed">
+                                            Pagamento processado
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="notify-invoice-generated">
+                                        <label class="form-check-label" for="notify-invoice-generated">
+                                            Nota fiscal gerada
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="notify-driver-registered">
+                                        <label class="form-check-label" for="notify-driver-registered">
+                                            Novo motorista cadastrado
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="admin-email" class="form-label">Email do Administrador para Notificações</label>
+                                    <input type="email" class="form-control" id="admin-email" placeholder="admin@suaempresa.com">
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Salvar Configurações de Notificação</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações de Integração (Exemplo) -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="fas fa-plug me-2"></i>Integrações</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="integration-settings-form">
+                                <div class="mb-3">
+                                    <label for="accounting-software" class="form-label">Software de Contabilidade</label>
+                                    <select class="form-select" id="accounting-software">
+                                        <option value="none">Nenhum</option>
+                                        <option value="quickbooks">QuickBooks</option>
+                                        <option value="xero">Xero</option>
+                                        <option value="contabilizei">Contabilizei</option>
+                                    </select>
+                                </div>
+                                <div id="api-key-section" style="display: none;">
+                                    <div class="mb-3">
+                                        <label for="api-key" class="form-label">Chave da API</label>
+                                        <input type="text" class="form-control" id="api-key" placeholder="Sua chave de API">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Salvar Configurações de Integração</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Gerenciamento de Usuários -->
+                <div class="col-lg-12 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0"><i class="fas fa-users-cog me-2"></i>Gerenciamento de Usuários</h5>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="fas fa-user-plus me-2"></i>Novo Usuário
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Função</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table">
+                                        <!-- Usuários carregados via JS -->
+                                        <tr><td colspan="5" class="text-center">Carregando usuários...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal de Adicionar/Editar Usuário -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Novo Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="user-form">
+                        <input type="hidden" id="user-id">
+                        <div class="mb-3">
+                            <label for="user-name" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="user-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="user-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-role" class="form-label">Função</label>
+                            <select class="form-select" id="user-role" required>
+                                <option value="admin">Administrador</option>
+                                <option value="manager">Gerente</option>
+                                <option value="operator">Operador</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-password" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="user-password">
+                            <div class="form-text">Deixe em branco para não alterar a senha (ao editar). Mínimo 8 caracteres.</div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="user-active" checked>
+                            <label class="form-check-label" for="user-active">
+                                Usuário Ativo
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-user-button">Salvar Usuário</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Carregar configurações existentes
+            loadGeneralSettings();
+            loadPaymentSettings();
+            loadNotificationSettings();
+            loadIntegrationSettings();
+            loadUsers();
+
+            // Configurar eventos dos formulários
+            document.getElementById("general-settings-form").addEventListener("submit", saveGeneralSettings);
+            document.getElementById("payment-settings-form").addEventListener("submit", savePaymentSettings);
+            document.getElementById("notification-settings-form").addEventListener("submit", saveNotificationSettings);
+            document.getElementById("integration-settings-form").addEventListener("submit", saveIntegrationSettings);
+            document.getElementById("save-user-button").addEventListener("click", saveUser);
+            
+            // Evento para preview do logo
+            document.getElementById("company-logo").addEventListener("change", function(event) {
+                const preview = document.getElementById("logo-preview").querySelector("img");
+                if (event.target.files && event.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(event.target.files[0]);
+                } else {
+                    preview.src = "assets/MENEZESLOG-MarcaAzulH.png"; // Logo padrão
+                }
+            });
+            
+            // Evento para mostrar/ocultar campo de API Key
+            document.getElementById("accounting-software").addEventListener("change", function() {
+                const apiKeySection = document.getElementById("api-key-section");
+                if (this.value !== "none") {
+                    apiKeySection.style.display = "block";
+                } else {
+                    apiKeySection.style.display = "none";
+                }
+            });
+            
+            // Limpar formulário de usuário ao fechar modal
+            document.getElementById("addUserModal").addEventListener("hidden.bs.modal", function() {
+                document.getElementById("user-form").reset();
+                document.getElementById("user-id").value = "";
+                document.getElementById("addUserModalLabel").textContent = "Novo Usuário";
+                document.getElementById("user-password").placeholder = "";
+            });
+        });
+
+        // Funções para carregar configurações (simuladas)
+        function loadGeneralSettings() {
+            fetchAPI("/api/settings/general")
+                .then(settings => {
+                    document.getElementById("company-name").value = settings.company_name || "MenezesLog";
+                    document.getElementById("default-currency").value = settings.default_currency || "BRL";
+                    document.getElementById("timezone").value = settings.timezone || "America/Sao_Paulo";
+                    if (settings.company_logo_url) {
+                        document.getElementById("logo-preview").querySelector("img").src = settings.company_logo_url;
+                    }
+                })
+                .catch(error => console.error("Erro ao carregar configurações gerais:", error));
+        }
+
+        function loadPaymentSettings() {
+            fetchAPI("/api/settings/payment")
+                .then(settings => {
+                    document.getElementById("payment-cycle").value = settings.payment_cycle || "monthly";
+                    document.getElementById("payment-day").value = settings.payment_day || 5;
+                    document.getElementById("invoice-due-days").value = settings.invoice_due_days || 7;
+                    document.getElementById("auto-generate-invoices").checked = settings.auto_generate_invoices || false;
+                })
+                .catch(error => console.error("Erro ao carregar configurações de pagamento:", error));
+        }
+
+        function loadNotificationSettings() {
+            fetchAPI("/api/settings/notification")
+                .then(settings => {
+                    document.getElementById("notify-payment-processed").checked = settings.notify_payment_processed || true;
+                    document.getElementById("notify-invoice-generated").checked = settings.notify_invoice_generated || true;
+                    document.getElementById("notify-driver-registered").checked = settings.notify_driver_registered || false;
+                    document.getElementById("admin-email").value = settings.admin_email || "";
+                })
+                .catch(error => console.error("Erro ao carregar configurações de notificação:", error));
+        }
+
+        function loadIntegrationSettings() {
+            fetchAPI("/api/settings/integration")
+                .then(settings => {
+                    document.getElementById("accounting-software").value = settings.accounting_software || "none";
+                    document.getElementById("api-key").value = settings.api_key || "";
+                    if (settings.accounting_software && settings.accounting_software !== "none") {
+                        document.getElementById("api-key-section").style.display = "block";
+                    }
+                })
+                .catch(error => console.error("Erro ao carregar configurações de integração:", error));
+        }
+
+        // Funções para salvar configurações (simuladas)
+        function saveGeneralSettings(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append("company_name", document.getElementById("company-name").value);
+            formData.append("default_currency", document.getElementById("default-currency").value);
+            formData.append("timezone", document.getElementById("timezone").value);
+            const logoFile = document.getElementById("company-logo").files[0];
+            if (logoFile) {
+                formData.append("company_logo", logoFile);
+            }
+
+            fetchAPI("/api/settings/general", { method: "POST", body: formData, // FormData é enviado como multipart/form-data
+                headers: {} // Remover Content-Type para FormData
+             })
+                .then(() => showNotification("Configurações gerais salvas com sucesso!", "success"))
+                .catch(error => {
+                    showNotification("Erro ao salvar configurações gerais.", "error");
+                    console.error("Erro ao salvar configurações gerais:", error);
+                });
+        }
+
+        function savePaymentSettings(event) {
+            event.preventDefault();
+            const settings = {
+                payment_cycle: document.getElementById("payment-cycle").value,
+                payment_day: parseInt(document.getElementById("payment-day").value),
+                invoice_due_days: parseInt(document.getElementById("invoice-due-days").value),
+                auto_generate_invoices: document.getElementById("auto-generate-invoices").checked
+            };
+            fetchAPI("/api/settings/payment", { method: "POST", body: JSON.stringify(settings) })
+                .then(() => showNotification("Configurações de pagamento salvas com sucesso!", "success"))
+                .catch(error => {
+                    showNotification("Erro ao salvar configurações de pagamento.", "error");
+                    console.error("Erro ao salvar configurações de pagamento:", error);
+                });
+        }
+
+        function saveNotificationSettings(event) {
+            event.preventDefault();
+            const settings = {
+                notify_payment_processed: document.getElementById("notify-payment-processed").checked,
+                notify_invoice_generated: document.getElementById("notify-invoice-generated").checked,
+                notify_driver_registered: document.getElementById("notify-driver-registered").checked,
+                admin_email: document.getElementById("admin-email").value
+            };
+            fetchAPI("/api/settings/notification", { method: "POST", body: JSON.stringify(settings) })
+                .then(() => showNotification("Configurações de notificação salvas com sucesso!", "success"))
+                .catch(error => {
+                    showNotification("Erro ao salvar configurações de notificação.", "error");
+                    console.error("Erro ao salvar configurações de notificação:", error);
+                });
+        }
+
+        function saveIntegrationSettings(event) {
+            event.preventDefault();
+            const settings = {
+                accounting_software: document.getElementById("accounting-software").value,
+                api_key: document.getElementById("api-key").value
+            };
+            fetchAPI("/api/settings/integration", { method: "POST", body: JSON.stringify(settings) })
+                .then(() => showNotification("Configurações de integração salvas com sucesso!", "success"))
+                .catch(error => {
+                    showNotification("Erro ao salvar configurações de integração.", "error");
+                    console.error("Erro ao salvar configurações de integração:", error);
+                });
+        }
+        
+        // Funções para gerenciamento de usuários
+        function loadUsers() {
+            const tableBody = document.getElementById("users-table");
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center"><div class="loader"></div></td></tr>`;
+
+            fetchAPI("/api/users")
+                .then(data => {
+                    tableBody.innerHTML = "";
+                    if (data.users.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum usuário cadastrado.</td></tr>`;
+                        return;
+                    }
+                    data.users.forEach(user => {
+                        const statusClass = user.active ? "success" : "danger";
+                        const statusText = user.active ? "Ativo" : "Inativo";
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.role}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editUser(${user.id})"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Erro ao carregar usuários.</td></tr>`;
+                    console.error("Erro ao carregar usuários:", error);
+                });
+        }
+
+        function editUser(userId) {
+            fetchAPI(`/api/users/${userId}`)
+                .then(user => {
+                    document.getElementById("user-id").value = user.id;
+                    document.getElementById("user-name").value = user.name;
+                    document.getElementById("user-email").value = user.email;
+                    document.getElementById("user-role").value = user.role;
+                    document.getElementById("user-active").checked = user.active;
+                    document.getElementById("user-password").value = ""; // Limpar senha
+                    document.getElementById("user-password").placeholder = "Deixe em branco para não alterar";
+                    document.getElementById("addUserModalLabel").textContent = "Editar Usuário";
+                    
+                    const modal = new bootstrap.Modal(document.getElementById("addUserModal"));
+                    modal.show();
+                })
+                .catch(error => {
+                    showNotification("Erro ao carregar dados do usuário.", "error");
+                    console.error("Erro ao carregar usuário:", error);
+                });
+        }
+
+        function saveUser() {
+            const userId = document.getElementById("user-id").value;
+            const userName = document.getElementById("user-name").value;
+            const userEmail = document.getElementById("user-email").value;
+            const userRole = document.getElementById("user-role").value;
+            const userPassword = document.getElementById("user-password").value;
+            const userActive = document.getElementById("user-active").checked;
+
+            if (!userName || !userEmail || !userRole) {
+                showNotification("Preencha nome, email e função do usuário.", "warning");
+                return;
+            }
+            
+            if (!userId && !userPassword) { // Novo usuário sem senha
+                showNotification("A senha é obrigatória para novos usuários.", "warning");
+                return;
+            }
+            if (userPassword && userPassword.length < 8) {
+                 showNotification("A senha deve ter no mínimo 8 caracteres.", "warning");
+                return;
+            }
+
+            const userData = {
+                name: userName,
+                email: userEmail,
+                role: userRole,
+                active: userActive
+            };
+            if (userPassword) {
+                userData.password = userPassword;
+            }
+
+            const method = userId ? "PUT" : "POST";
+            const endpoint = userId ? `/api/users/${userId}` : "/api/users";
+            
+            const saveButton = document.getElementById("save-user-button");
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.disabled = true;
+            saveButton.innerHTML = 
+                `<span class="spinner-border spinner-border-sm me-2"></span>Salvando...`;
+
+            fetchAPI(endpoint, { method: method, body: JSON.stringify(userData) })
+                .then(() => {
+                    showNotification(`Usuário ${userId ? "atualizado" : "criado"} com sucesso!`, "success");
+                    bootstrap.Modal.getInstance(document.getElementById("addUserModal")).hide();
+                    loadUsers();
+                })
+                .catch(error => {
+                    showNotification(`Erro ao ${userId ? "atualizar" : "criar"} usuário.`, "error");
+                    console.error("Erro ao salvar usuário:", error);
+                })
+                .finally(() => {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                });
+        }
+
+        function deleteUser(userId) {
+            if (confirm("Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.")) {
+                fetchAPI(`/api/users/${userId}`, { method: "DELETE" })
+                    .then(() => {
+                        showNotification("Usuário excluído com sucesso!", "success");
+                        loadUsers();
+                    })
+                    .catch(error => {
+                        showNotification("Erro ao excluir usuário.", "error");
+                        console.error("Erro ao excluir usuário:", error);
+                    });
+            }
+        }
+
+    </script>
+</body>
+</html>

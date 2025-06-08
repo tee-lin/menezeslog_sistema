@@ -1,165 +1,115 @@
 # Sistema de Pagamento para Motoristas - MenezesLog
 
-## Visão Geral
-
-O Sistema de Pagamento para Motoristas da MenezesLog é uma plataforma web completa para gerenciamento de pagamentos de motoristas, processamento de entregas, cálculo de bonificações e descontos, e geração de relatórios detalhados.
+Este sistema foi desenvolvido para automatizar o processo de cálculo de pagamentos para motoristas da MenezesLog, com base nos tipos de serviço realizados, incluindo funcionalidades de bonificações e descontos.
 
 ## Funcionalidades Principais
 
-- **Upload e Processamento de Arquivos CSV**: Importação automática de dados de entregas
-- **Cálculo de Pagamentos**: Baseado em tipos de serviço com valores configuráveis
-- **Bonificações**: Sistema flexível para configuração de bonificações por tipo de serviço e volume
-- **Descontos**: Gerenciamento de extravios e adiantamentos/empréstimos
-- **Relatórios em PDF**: Geração de demonstrativos detalhados por motorista
-- **Área do Motorista**: Interface para motoristas visualizarem pagamentos e enviarem notas fiscais
-- **Gestão de Usuários**: Controle de acesso com diferentes níveis de permissão
+- **Autenticação de Usuários**: Sistema de login para administradores e motoristas
+- **Upload de Arquivos**: Processamento de arquivos CSV de entregas e Excel com dados dos motoristas
+- **Cálculo de Pagamentos**: Processamento automático baseado nos tipos de serviço
+- **Bonificações**: Configuração flexível de bonificações por tipo de serviço e volume
+- **Descontos**: Sistema para gerenciar extravios e adiantamentos/empréstimos
+- **Relatórios em PDF**: Geração de demonstrativos detalhados para cada motorista
+- **Upload de Notas Fiscais**: Interface para motoristas enviarem suas notas fiscais
 
-## Requisitos Técnicos
+## Regras de Pagamento
 
-- Python 3.11 ou superior
-- Flask (framework web)
-- SQLAlchemy (ORM para banco de dados)
-- MySQL (banco de dados)
-- Bibliotecas Python: pandas, reportlab, matplotlib, pyjwt, flask-cors
+O sistema calcula os pagamentos com base nos seguintes valores por tipo de serviço:
 
-## Instalação
-
-1. Clone o repositório:
-```bash
-git clone [URL_DO_REPOSITORIO]
-```
-
-2. Crie e ative um ambiente virtual:
-```bash
-python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-```
-
-3. Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
-
-4. Configure o banco de dados:
-```bash
-# Edite as configurações de banco de dados em src/main.py
-# Descomente e ajuste a linha com SQLALCHEMY_DATABASE_URI
-```
-
-5. Inicie o servidor:
-```bash
-python src/main.py
-```
+- **Tipo 0**: R$ 3,50 por item
+- **Tipo 9**: R$ 2,00 por item
+- **Tipos 6 e 8**: R$ 0,50 por item
 
 ## Estrutura do Projeto
 
 ```
 menezeslog_sistema/
-├── src/                    # Código-fonte principal
-│   ├── models/             # Modelos de dados
-│   │   ├── models.py       # Definições de tabelas e relações
-│   │   └── user.py         # Modelo de usuário e autenticação
-│   ├── routes/             # Rotas da API
-│   │   ├── auth.py         # Autenticação
-│   │   ├── bonus.py        # Bonificações
-│   │   ├── discount.py     # Descontos
-│   │   ├── invoice.py      # Notas fiscais
-│   │   ├── payment.py      # Pagamentos
-│   │   └── upload.py       # Upload de arquivos
-│   ├── static/             # Arquivos estáticos (HTML, CSS, JS)
-│   │   ├── assets/         # Imagens e recursos
-│   │   ├── admin_dashboard.html
-│   │   ├── bonificacoes.html
-│   │   ├── configuracoes.html
-│   │   ├── descontos.html
-│   │   ├── index.html      # Página de login
-│   │   ├── motoristas.html
-│   │   ├── relatorios.html
-│   │   └── upload.html
-│   ├── uploads/            # Diretório para arquivos enviados
-│   │   ├── csv/            # Arquivos CSV de entregas
-│   │   └── excel/          # Planilhas de referência
-│   ├── reports/            # Relatórios gerados
-│   │   └── pdf/            # PDFs de pagamento
-│   └── main.py             # Ponto de entrada da aplicação
-├── requirements.txt        # Dependências do projeto
-└── README.md               # Documentação
+├── venv/                  # Ambiente virtual Python
+├── src/                   # Código-fonte do sistema
+│   ├── models/            # Modelos de dados
+│   │   ├── user.py        # Modelo de usuário
+│   │   └── models.py      # Outros modelos (motoristas, entregas, etc.)
+│   ├── routes/            # Rotas da API
+│   │   ├── auth.py        # Autenticação
+│   │   ├── upload.py      # Upload de arquivos
+│   │   ├── bonus.py       # Bonificações
+│   │   ├── discount.py    # Descontos
+│   │   ├── payment.py     # Pagamentos
+│   │   └── invoice.py     # Notas fiscais
+│   ├── static/            # Arquivos estáticos (frontend)
+│   │   ├── css/           # Estilos
+│   │   ├── js/            # JavaScript
+│   │   └── images/        # Imagens
+│   └── main.py            # Ponto de entrada da aplicação
+└── requirements.txt       # Dependências do projeto
 ```
 
-## Configuração
+## Instalação e Execução
 
-### Valores por Tipo de Serviço
+### Pré-requisitos
 
-Os valores padrão por tipo de serviço são:
-- Tipo 0: R$ 3,50 por item
-- Tipo 9: R$ 2,00 por item
-- Tipos 6 e 8: R$ 0,50 por item
+- Python 3.11 ou superior
+- MySQL 5.7 ou superior
 
-Estes valores podem ser ajustados na página de Configurações do sistema.
+### Configuração do Ambiente
 
-### Usuários Padrão
+1. Clone o repositório:
+   ```
+   git clone [URL_DO_REPOSITORIO]
+   cd menezeslog_sistema
+   ```
 
-O sistema é inicializado com um usuário administrador:
+2. Crie e ative o ambiente virtual:
+   ```
+   python -m venv venv
+   source venv/bin/activate  # No Windows: venv\Scripts\activate
+   ```
+
+3. Instale as dependências:
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. Configure o banco de dados:
+   - Crie um banco de dados MySQL
+   - Configure as variáveis de ambiente:
+     ```
+     export DB_USERNAME=seu_usuario
+     export DB_PASSWORD=sua_senha
+     export DB_HOST=localhost
+     export DB_PORT=3306
+     export DB_NAME=nome_do_banco
+     ```
+
+5. Execute a aplicação:
+   ```
+   python src/main.py
+   ```
+
+6. Acesse o sistema em `http://localhost:5000`
+
+## Credenciais Iniciais
+
 - **Usuário**: admin
 - **Senha**: admin123
 
-Recomenda-se alterar esta senha após o primeiro acesso.
+## Fluxo de Trabalho
 
-## Uso do Sistema
+1. **Administrador**:
+   - Faz upload dos arquivos CSV de entregas
+   - Configura bonificações e descontos
+   - Aprova notas fiscais enviadas pelos motoristas
+   - Gera relatórios de pagamento
 
-### Fluxo de Trabalho Administrativo
-
-1. Faça login como administrador
-2. Acesse "Upload de Arquivos" para importar dados de entregas (CSV) e motoristas (Excel)
-3. Configure bonificações e descontos conforme necessário
-4. Visualize e aprove os pagamentos gerados
-5. Gere relatórios detalhados por motorista
-
-### Fluxo de Trabalho do Motorista
-
-1. Faça login com credenciais de motorista
-2. Visualize pagamentos disponíveis e histórico
-3. Envie nota fiscal quando solicitado
-4. Acompanhe status de pagamento
-
-## Manutenção
-
-### Backup do Banco de Dados
-
-Recomenda-se configurar backups automáticos do banco de dados MySQL:
-
-```bash
-# Exemplo de comando para backup
-mysqldump -u [usuario] -p [senha] menezeslog_db > backup_$(date +%Y%m%d).sql
-```
-
-### Rotação de Logs
-
-O sistema mantém logs de operações importantes. Configure a rotação de logs para evitar arquivos muito grandes:
-
-```bash
-# Exemplo de configuração para logrotate
-/path/to/menezeslog/logs/*.log {
-    daily
-    missingok
-    rotate 14
-    compress
-    delaycompress
-    notifempty
-    create 0640 www-data www-data
-}
-```
+2. **Motorista**:
+   - Visualiza seus pagamentos e entregas
+   - Envia notas fiscais
+   - Acompanha status de pagamentos
 
 ## Suporte
 
-Para suporte técnico ou dúvidas sobre o sistema, entre em contato com:
-- Email: suporte@menezeslog.com
-- Telefone: (XX) XXXX-XXXX
-
-## Licença
-
-Este software é propriedade da MenezesLog e seu uso é restrito conforme os termos do contrato de licença.
+Para suporte técnico ou dúvidas sobre o sistema, entre em contato com a equipe de desenvolvimento.
 
 ---
 
-Desenvolvido por Manus AI © 2025
+Desenvolvido para MenezesLog © 2025

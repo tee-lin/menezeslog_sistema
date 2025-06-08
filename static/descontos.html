@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Gerenciamento de Descontos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">Admin</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="bonificacoes.html" class="nav-link">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="descontos.html" class="nav-link active">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="nota_fiscal.html" class="nav-link">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Gerenciamento de Descontos</h1>
+                <div>
+                    <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addDiscountTypeModal">
+                        <i class="fas fa-plus me-2"></i>Novo Tipo de Desconto
+                    </button>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#applyDiscountModal">
+                        <i class="fas fa-minus-circle me-2"></i>Aplicar Desconto
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros e Busca -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-input" placeholder="Buscar por motorista ou tipo de desconto...">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <select class="form-select" id="type-filter">
+                                <option value="all">Todos os Tipos</option>
+                                <option value="multa">Multa</option>
+                                <option value="avaria">Avaria</option>
+                                <option value="adiantamento">Adiantamento</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <select class="form-select" id="status-filter">
+                                <option value="all">Todos os Status</option>
+                                <option value="active">Ativos</option>
+                                <option value="paid">Quitados</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <button class="btn btn-primary w-100" id="search-button">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abas para Tipos de Desconto e Descontos Aplicados -->
+            <ul class="nav nav-tabs mb-3" id="discountTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="types-tab" data-bs-toggle="tab" data-bs-target="#types-content" type="button" role="tab" aria-controls="types-content" aria-selected="true">Tipos de Desconto</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="applied-tab" data-bs-toggle="tab" data-bs-target="#applied-content" type="button" role="tab" aria-controls="applied-content" aria-selected="false">Descontos Aplicados</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="discountTabsContent">
+                <!-- Aba de Tipos de Desconto -->
+                <div class="tab-pane fade show active" id="types-content" role="tabpanel" aria-labelledby="types-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                            <th>Parcelamento</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="discount-types-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="types-pagination-container" class="mt-4">
+                                <!-- Paginação será inserida via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba de Descontos Aplicados -->
+                <div class="tab-pane fade" id="applied-content" role="tabpanel" aria-labelledby="applied-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Motorista</th>
+                                            <th>Tipo de Desconto</th>
+                                            <th>Valor Total</th>
+                                            <th>Parcelas</th>
+                                            <th>Valor Parcela</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applied-discounts-table">
+                                        <tr>
+                                            <td colspan="7" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="applied-pagination-container" class="mt-4">
+                                <!-- Paginação será inserida via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Adicionar/Editar Tipo de Desconto -->
+    <div class="modal fade" id="addDiscountTypeModal" tabindex="-1" aria-labelledby="addDiscountTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDiscountTypeModalLabel">Novo Tipo de Desconto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="discount-type-form">
+                        <input type="hidden" id="discount-type-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="discount-name" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="discount-name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="discount-category" class="form-label">Categoria</label>
+                                <select class="form-select" id="discount-category" required>
+                                    <option value="multa">Multa</option>
+                                    <option value="avaria">Avaria</option>
+                                    <option value="adiantamento">Adiantamento</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="discount-description" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="discount-description" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="discount-installments" class="form-label">Número Máximo de Parcelas</label>
+                                <input type="number" class="form-control" id="discount-installments" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="discount-max-value" class="form-label">Valor Máximo por Parcela (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="discount-max-value" min="1" max="100" value="30" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">Percentual máximo do salário que pode ser descontado por parcela</div>
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="discount-active" checked>
+                            <label class="form-check-label" for="discount-active">
+                                Tipo de Desconto Ativo
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-discount-type-button">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Aplicar Desconto -->
+    <div class="modal fade" id="applyDiscountModal" tabindex="-1" aria-labelledby="applyDiscountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="applyDiscountModalLabel">Aplicar Desconto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="apply-discount-form">
+                        <input type="hidden" id="applied-discount-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-driver-id" class="form-label">Motorista</label>
+                                <select class="form-select" id="apply-driver-id" required>
+                                    <option value="">Selecione um motorista...</option>
+                                    <!-- Motoristas serão carregados via JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-discount-type-id" class="form-label">Tipo de Desconto</label>
+                                <select class="form-select" id="apply-discount-type-id" required>
+                                    <option value="">Selecione um tipo de desconto...</option>
+                                    <!-- Tipos de desconto serão carregados via JS -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-total-value" class="form-label">Valor Total (R$)</label>
+                                <input type="number" class="form-control" id="apply-total-value" step="0.01" min="0.01" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-installments" class="form-label">Número de Parcelas</label>
+                                <input type="number" class="form-control" id="apply-installments" min="1" value="1" required>
+                                <div class="form-text">Máximo: <span id="max-installments">1</span> parcelas</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-start-date" class="form-label">Data de Início</label>
+                                <input type="date" class="form-control" id="apply-start-date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-installment-value" class="form-label">Valor da Parcela (R$)</label>
+                                <input type="number" class="form-control" id="apply-installment-value" step="0.01" readonly>
+                                <div class="form-text">Calculado automaticamente</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apply-notes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="apply-notes" rows="3"></textarea>
+                        </div>
+                        <div class="alert alert-warning" id="discount-warning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="discount-warning-text"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-applied-discount-button">Aplicar Desconto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Desconto -->
+    <div class="modal fade" id="viewDiscountModal" tabindex="-1" aria-labelledby="viewDiscountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewDiscountModalLabel">Detalhes do Desconto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Informações do Desconto</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Motorista:</th>
+                                    <td id="view-driver-name"></td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo de Desconto:</th>
+                                    <td id="view-discount-type"></td>
+                                </tr>
+                                <tr>
+                                    <th>Valor Total:</th>
+                                    <td id="view-total-value"></td>
+                                </tr>
+                                <tr>
+                                    <th>Parcelas:</th>
+                                    <td id="view-installments"></td>
+                                </tr>
+                                <tr>
+                                    <th>Valor da Parcela:</th>
+                                    <td id="view-installment-value"></td>
+                                </tr>
+                                <tr>
+                                    <th>Data de Início:</th>
+                                    <td id="view-start-date"></td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td id="view-status"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Observações</h6>
+                            <p id="view-notes" class="border p-2 rounded"></p>
+                            
+                            <h6 class="mt-3">Histórico de Pagamentos</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Parcela</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="view-payment-history">
+                                        <tr>
+                                            <td colspan="4" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="edit-discount-button">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir <strong id="delete-item-name"></strong>?</p>
+                    <p class="text-danger">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-button">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Variáveis globais
+        let currentTypesPage = 1;
+        let totalTypesPages = 1;
+        let currentAppliedPage = 1;
+        let totalAppliedPages = 1;
+        let itemsPerPage = 10;
+        let selectedItemId = null;
+        let selectedItemType = null; // 'type' ou 'applied'
+        let currentTab = 'types'; // 'types' ou 'applied'
+        let discountTypes = [];
+        let drivers = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dados iniciais
+            loadDiscountTypes();
+            loadAppliedDiscounts();
+            loadDriversForSelect();
+            loadDiscountTypesForSelect();
+            
+            // Configurar eventos
+            document.getElementById('search-button').addEventListener('click', function() {
+                currentTypesPage = 1;
+                currentAppliedPage = 1;
+                if (currentTab === 'types') {
+                    loadDiscountTypes();
+                } else {
+                    loadAppliedDiscounts();
+                }
+            });
+            
+            document.getElementById('save-discount-type-button').addEventListener('click', saveDiscountType);
+            document.getElementById('save-applied-discount-button').addEventListener('click', saveAppliedDiscount);
+            document.getElementById('confirm-delete-button').addEventListener('click', confirmDelete);
+            
+            // Eventos para cálculo automático de parcelas
+            document.getElementById('apply-total-value').addEventListener('input', calculateInstallmentValue);
+            document.getElementById('apply-installments').addEventListener('input', calculateInstallmentValue);
+            
+            // Eventos para navegação entre abas
+            document.getElementById('types-tab').addEventListener('shown.bs.tab', function() {
+                currentTab = 'types';
+                loadDiscountTypes();
+            });
+            
+            document.getElementById('applied-tab').addEventListener('shown.bs.tab', function() {
+                currentTab = 'applied';
+                loadAppliedDiscounts();
+            });
+            
+            // Configurar data de início com data atual
+            document.getElementById('apply-start-date').valueAsDate = new Date();
+            
+            // Evento para atualizar número máximo de parcelas ao selecionar tipo de desconto
+            document.getElementById('apply-discount-type-id').addEventListener('change', updateMaxInstallments);
+        });
+        
+        // Função para carregar tipos de desconto
+        function loadDiscountTypes() {
+            const tableBody = document.getElementById('discount-types-table');
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center"><div class="loader"></div></td></tr>';
+            
+            // Obter parâmetros de filtro
+            const searchTerm = document.getElementById('search-input').value;
+            const typeFilter = document.getElementById('type-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            
+            // Construir query string
+            let queryParams = `?page=${currentTypesPage}&limit=${itemsPerPage}`;
+            if (searchTerm) queryParams += `&search=${encodeURIComponent(searchTerm)}`;
+            if (typeFilter !== 'all') queryParams += `&type=${typeFilter}`;
+            if (statusFilter !== 'all') queryParams += `&status=${statusFilter}`;
+            
+            fetchAPI(`/api/discount/types${queryParams}`)
+                .then(data => {
+                    discountTypes = data.types;
+                    totalTypesPages = Math.ceil(data.total / itemsPerPage);
+                    
+                    if (discountTypes.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum tipo de desconto encontrado</td></tr>';
+                        document.getElementById('types-pagination-container').innerHTML = '';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    discountTypes.forEach(type => {
+                        const statusClass = type.active ? 'success' : 'danger';
+                        const statusText = type.active ? 'Ativo' : 'Inativo';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${type.name}</td>
+                                <td>${type.category}</td>
+                                <td>${type.description || '-'}</td>
+                                <td>${type.max_installments} parcelas (máx. ${type.max_installment_value}%)</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editDiscountType(${type.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="prepareDelete(${type.id}, '${type.name}', 'type')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    // Atualizar paginação
+                    updateTypesPagination();
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erro ao carregar tipos de desconto</td></tr>';
+                    console.error('Erro ao carregar tipos de desconto:', error);
+                });
+        }
+        
+        // Função para carregar descontos aplicados
+        function loadAppliedDiscounts() {
+            const tableBody = document.getElementById('applied-discounts-table');
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center"><div class="loader"></div></td></tr>';
+            
+            // Obter parâmetros de filtro
+            const searchTerm = document.getElementById('search-input').value;
+            const typeFilter = document.getElementById('type-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            
+            // Construir query string
+            let queryParams = `?page=${currentAppliedPage}&limit=${itemsPerPage}`;
+            if (searchTerm) queryParams += `&search=${encodeURIComponent(searchTerm)}`;
+            if (typeFilter !== 'all') queryParams += `&type=${typeFilter}`;
+            if (statusFilter !== 'all') queryParams += `&status=${statusFilter}`;
+            
+            fetchAPI(`/api/discount/applied${queryParams}`)
+                .then(data => {
+                    const appliedDiscounts = data.discounts;
+                    totalAppliedPages = Math.ceil(data.total / itemsPerPage);
+                    
+                    if (appliedDiscounts.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum desconto aplicado encontrado</td></tr>';
+                        document.getElementById('applied-pagination-container').innerHTML = '';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    appliedDiscounts.forEach(discount => {
+                        const statusClass = discount.status === 'active' ? 'warning' : 
+                                          discount.status === 'paid' ? 'success' : 'secondary';
+                        
+                        const statusText = discount.status === 'active' ? 'Ativo' : 
+                                         discount.status === 'paid' ? 'Quitado' : 'Cancelado';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${discount.driver_name}</td>
+                                <td>${discount.discount_type_name}</td>
+                                <td>${formatCurrency(discount.total_value)}</td>
+                                <td>${discount.installments}</td>
+                                <td>${formatCurrency(discount.installment_value)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white me-1" onclick="viewAppliedDiscount(${discount.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editAppliedDiscount(${discount.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="prepareDelete(${discount.id}, 'Desconto para ${discount.driver_name}', 'applied')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    // Atualizar paginação
+                    updateAppliedPagination();
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erro ao carregar descontos aplicados</td></tr>';
+                    console.error('Erro ao carregar descontos aplicados:', error);
+                });
+        }
+        
+        // Função para atualizar paginação de tipos de desconto
+        function updateTypesPagination() {
+            const paginationContainer = document.getElementById('types-pagination-container');
+            
+            if (totalTypesPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const pagination = createPagination(currentTypesPage, totalTypesPages, function(page) {
+                currentTypesPage = page;
+                loadDiscountTypes();
+            });
+            
+            paginationContainer.innerHTML = '';
+            paginationContainer.appendChild(pagination);
+        }
+        
+        // Função para atualizar paginação de descontos aplicados
+        function updateAppliedPagination() {
+            const paginationContainer = document.getElementById('applied-pagination-container');
+            
+            if (totalAppliedPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const pagination = createPagination(currentAppliedPage, totalAppliedPages, function(page) {
+                currentAppliedPage = page;
+                loadAppliedDiscounts();
+            });
+            
+            paginationContainer.innerHTML = '';
+            paginationContainer.appendChild(pagination);
+        }
+        
+        // Função para carregar motoristas para o select
+        function loadDriversForSelect() {
+            const driverSelect = document.getElementById('apply-driver-id');
+            
+            fetchAPI('/api/drivers?limit=1000&status=active')
+                .then(data => {
+                    drivers = data.drivers;
+                    driverSelect.innerHTML = '<option value="">Selecione um motorista...</option>';
+                    
+                    drivers.forEach(driver => {
+                        driverSelect.innerHTML += `<option value="${driver.driver_id}">${driver.name} (ID: ${driver.driver_id})</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar motoristas:', error);
+                });
+        }
+        
+        // Função para carregar tipos de desconto para o select
+        function loadDiscountTypesForSelect() {
+            const typeSelect = document.getElementById('apply-discount-type-id');
+            
+            fetchAPI('/api/discount/types?limit=1000&status=active')
+                .then(data => {
+                    discountTypes = data.types;
+                    typeSelect.innerHTML = '<option value="">Selecione um tipo de desconto...</option>';
+                    
+                    discountTypes.forEach(type => {
+                        typeSelect.innerHTML += `
+                            <option value="${type.id}" 
+                                data-max-installments="${type.max_installments}" 
+                                data-max-value="${type.max_installment_value}">
+                                ${type.name}
+                            </option>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar tipos de desconto:', error);
+                });
+        }
+        
+        // Função para atualizar número máximo de parcelas
+        function updateMaxInstallments() {
+            const typeSelect = document.getElementById('apply-discount-type-id');
+            const installmentsInput = document.getElementById('apply-installments');
+            const maxInstallmentsSpan = document.getElementById('max-installments');
+            
+            if (typeSelect.selectedIndex > 0) {
+                const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+                const maxInstallments = selectedOption.dataset.maxInstallments;
+                
+                maxInstallmentsSpan.textContent = maxInstallments;
+                installmentsInput.max = maxInstallments;
+                
+                if (parseInt(installmentsInput.value) > parseInt(maxInstallments)) {
+                    installmentsInput.value = maxInstallments;
+                }
+                
+                // Recalcular valor da parcela
+                calculateInstallmentValue();
+            } else {
+                maxInstallmentsSpan.textContent = '1';
+                installmentsInput.max = '';
+            }
+        }
+        
+        // Função para calcular valor da parcela
+        function calculateInstallmentValue() {
+            const totalValue = parseFloat(document.getElementById('apply-total-value').value) || 0;
+            const installments = parseInt(document.getElementById('apply-installments').value) || 1;
+            const installmentValueInput = document.getElementById('apply-installment-value');
+            const warningDiv = document.getElementById('discount-warning');
+            const warningText = document.getElementById('discount-warning-text');
+            
+            if (totalValue > 0 && installments > 0) {
+                const installmentValue = totalValue / installments;
+                installmentValueInput.value = installmentValue.toFixed(2);
+                
+                // Verificar se o valor da parcela excede o limite
+                const typeSelect = document.getElementById('apply-discount-type-id');
+                const driverSelect = document.getElementById('apply-driver-id');
+                
+                if (typeSelect.selectedIndex > 0 && driverSelect.selectedIndex > 0) {
+                    const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+                    const maxValue = parseFloat(selectedOption.dataset.maxValue);
+                    
+                    // Aqui você precisaria obter o salário do motorista para calcular o percentual
+                    // Como não temos essa informação, vamos assumir um valor fixo para demonstração
+                    const driverSalary = 3000; // Valor fictício
+                    
+                    const percentageOfSalary = (installmentValue / driverSalary) * 100;
+                    
+                    if (percentageOfSalary > maxValue) {
+                        warningText.textContent = `O valor da parcela (${formatCurrency(installmentValue)}) representa ${percentageOfSalary.toFixed(2)}% do salário, excedendo o limite de ${maxValue}% definido para este tipo de desconto.`;
+                        warningDiv.style.display = 'block';
+                    } else {
+                        warningDiv.style.display = 'none';
+                    }
+                } else {
+                    warningDiv.style.display = 'none';
+                }
+            } else {
+                installmentValueInput.value = '';
+                warningDiv.style.display = 'none';
+            }
+        }
+        
+        // Função para editar tipo de desconto
+        function editDiscountType(id) {
+            const type = discountTypes.find(t => t.id === id);
+            
+            if (type) {
+                document.getElementById('discount-type-id').value = type.id;
+                document.getElementById('discount-name').value = type.name;
+                document.getElementById('discount-category').value = type.category;
+                document.getElementById('discount-description').value = type.description || '';
+                document.getElementById('discount-installments').value = type.max_installments;
+                document.getElementById('discount-max-value').value = type.max_installment_value;
+                document.getElementById('discount-active').checked = type.active;
+                
+                document.getElementById('addDiscountTypeModalLabel').textContent = 'Editar Tipo de Desconto';
+                
+                const modal = new bootstrap.Modal(document.getElementById('addDiscountTypeModal'));
+                modal.show();
+            }
+        }
+        
+        // Função para visualizar desconto aplicado
+        function viewAppliedDiscount(id) {
+            fetchAPI(`/api/discount/applied/${id}`)
+                .then(discount => {
+                    document.getElementById('view-driver-name').textContent = discount.driver_name;
+                    document.getElementById('view-discount-type').textContent = discount.discount_type_name;
+                    document.getElementById('view-total-value').textContent = formatCurrency(discount.total_value);
+                    document.getElementById('view-installments').textContent = `${discount.installments} parcelas`;
+                    document.getElementById('view-installment-value').textContent = formatCurrency(discount.installment_value);
+                    document.getElementById('view-start-date').textContent = formatDate(discount.start_date);
+                    
+                    const statusClass = discount.status === 'active' ? 'warning' : 
+                                      discount.status === 'paid' ? 'success' : 'secondary';
+                    
+                    const statusText = discount.status === 'active' ? 'Ativo' : 
+                                     discount.status === 'paid' ? 'Quitado' : 'Cancelado';
+                    
+                    document.getElementById('view-status').innerHTML = `<span class="badge bg-${statusClass}">${statusText}</span>`;
+                    document.getElementById('view-notes').textContent = discount.notes || 'Nenhuma observação';
+                    
+                    // Carregar histórico de pagamentos
+                    loadDiscountPaymentHistory(id);
+                    
+                    // Configurar botão de edição
+                    document.getElementById('edit-discount-button').onclick = function() {
+                        const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewDiscountModal'));
+                        viewModal.hide();
+                        editAppliedDiscount(id);
+                    };
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('viewDiscountModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    showNotification('Erro ao carregar detalhes do desconto', 'error');
+                    console.error('Erro ao carregar detalhes do desconto:', error);
+                });
+        }
+        
+        // Função para carregar histórico de pagamentos do desconto
+        function loadDiscountPaymentHistory(id) {
+            const tableBody = document.getElementById('view-payment-history');
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI(`/api/discount/applied/${id}/payments`)
+                .then(payments => {
+                    if (payments.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum pagamento encontrado</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    payments.forEach((payment, index) => {
+                        const statusClass = payment.status === 'paid' ? 'success' : 'warning';
+                        const statusText = payment.status === 'paid' ? 'Pago' : 'Pendente';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${formatDate(payment.payment_date)}</td>
+                                <td>${formatCurrency(payment.value)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Erro ao carregar histórico de pagamentos</td></tr>';
+                    console.error('Erro ao carregar histórico de pagamentos:', error);
+                });
+        }
+        
+        // Função para editar desconto aplicado
+        function editAppliedDiscount(id) {
+            fetchAPI(`/api/discount/applied/${id}`)
+                .then(discount => {
+                    document.getElementById('applied-discount-id').value = discount.id;
+                    document.getElementById('apply-driver-id').value = discount.driver_id;
+                    document.getElementById('apply-discount-type-id').value = discount.discount_type_id;
+                    document.getElementById('apply-total-value').value = discount.total_value;
+                    document.getElementById('apply-installments').value = discount.installments;
+                    document.getElementById('apply-start-date').value = discount.start_date.split('T')[0];
+                    document.getElementById('apply-installment-value').value = discount.installment_value;
+                    document.getElementById('apply-notes').value = discount.notes || '';
+                    
+                    // Atualizar número máximo de parcelas
+                    updateMaxInstallments();
+                    
+                    document.getElementById('applyDiscountModalLabel').textContent = 'Editar Desconto Aplicado';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('applyDiscountModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    showNotification('Erro ao carregar dados do desconto', 'error');
+                    console.error('Erro ao carregar dados do desconto:', error);
+                });
+        }
+        
+        // Função para preparar exclusão
+        function prepareDelete(id, name, type) {
+            selectedItemId = id;
+            selectedItemType = type;
+            document.getElementById('delete-item-name').textContent = name;
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+            modal.show();
+        }
+        
+        // Função para confirmar exclusão
+        function confirmDelete() {
+            if (!selectedItemId || !selectedItemType) return;
+            
+            const endpoint = selectedItemType === 'type' ? 
+                `/api/discount/types/${selectedItemId}` : 
+                `/api/discount/applied/${selectedItemId}`;
+            
+            const deleteButton = document.getElementById('confirm-delete-button');
+            const originalButtonText = deleteButton.innerHTML;
+            deleteButton.disabled = true;
+            deleteButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Excluindo...';
+            
+            fetchAPI(endpoint, { method: 'DELETE' })
+                .then(() => {
+                    showNotification(`${selectedItemType === 'type' ? 'Tipo de desconto' : 'Desconto aplicado'} excluído com sucesso`, 'success');
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+                    modal.hide();
+                    
+                    if (selectedItemType === 'type') {
+                        loadDiscountTypes();
+                        loadDiscountTypesForSelect();
+                    } else {
+                        loadAppliedDiscounts();
+                    }
+                })
+                .catch(error => {
+                    showNotification('Erro ao excluir item', 'error');
+                    console.error('Erro ao excluir item:', error);
+                })
+                .finally(() => {
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = originalButtonText;
+                    selectedItemId = null;
+                    selectedItemType = null;
+                });
+        }
+        
+        // Função para salvar tipo de desconto
+        function saveDiscountType() {
+            const form = document.getElementById('discount-type-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const typeId = document.getElementById('discount-type-id').value;
+            const typeData = {
+                name: document.getElementById('discount-name').value,
+                category: document.getElementById('discount-category').value,
+                description: document.getElementById('discount-description').value,
+                max_installments: parseInt(document.getElementById('discount-installments').value),
+                max_installment_value: parseFloat(document.getElementById('discount-max-value').value),
+                active: document.getElementById('discount-active').checked
+            };
+            
+            const method = typeId ? 'PUT' : 'POST';
+            const endpoint = typeId ? `/api/discount/types/${typeId}` : '/api/discount/types';
+            
+            const saveButton = document.getElementById('save-discount-type-button');
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.disabled = true;
+            saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+            
+            fetchAPI(endpoint, { method: method, body: JSON.stringify(typeData) })
+                .then(() => {
+                    showNotification(`Tipo de desconto ${typeId ? 'atualizado' : 'criado'} com sucesso`, 'success');
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addDiscountTypeModal'));
+                    modal.hide();
+                    
+                    form.reset();
+                    document.getElementById('discount-type-id').value = '';
+                    document.getElementById('addDiscountTypeModalLabel').textContent = 'Novo Tipo de Desconto';
+                    
+                    loadDiscountTypes();
+                    loadDiscountTypesForSelect();
+                })
+                .catch(error => {
+                    showNotification('Erro ao salvar tipo de desconto', 'error');
+                    console.error('Erro ao salvar tipo de desconto:', error);
+                })
+                .finally(() => {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                });
+        }
+        
+        // Função para salvar desconto aplicado
+        function saveAppliedDiscount() {
+            const form = document.getElementById('apply-discount-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const discountId = document.getElementById('applied-discount-id').value;
+            const discountData = {
+                driver_id: document.getElementById('apply-driver-id').value,
+                discount_type_id: document.getElementById('apply-discount-type-id').value,
+                total_value: parseFloat(document.getElementById('apply-total-value').value),
+                installments: parseInt(document.getElementById('apply-installments').value),
+                start_date: document.getElementById('apply-start-date').value,
+                installment_value: parseFloat(document.getElementById('apply-installment-value').value),
+                notes: document.getElementById('apply-notes').value
+            };
+            
+            const method = discountId ? 'PUT' : 'POST';
+            const endpoint = discountId ? `/api/discount/applied/${discountId}` : '/api/discount/applied';
+            
+            const saveButton = document.getElementById('save-applied-discount-button');
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.disabled = true;
+            saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+            
+            fetchAPI(endpoint, { method: method, body: JSON.stringify(discountData) })
+                .then(() => {
+                    showNotification(`Desconto ${discountId ? 'atualizado' : 'aplicado'} com sucesso`, 'success');
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('applyDiscountModal'));
+                    modal.hide();
+                    
+                    form.reset();
+                    document.getElementById('applied-discount-id').value = '';
+                    document.getElementById('applyDiscountModalLabel').textContent = 'Aplicar Desconto';
+                    document.getElementById('apply-start-date').valueAsDate = new Date();
+                    
+                    loadAppliedDiscounts();
+                })
+                .catch(error => {
+                    showNotification('Erro ao salvar desconto aplicado', 'error');
+                    console.error('Erro ao salvar desconto aplicado:', error);
+                })
+                .finally(() => {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                });
+        }
+        
+        // Limpar formulários ao fechar modais
+        document.getElementById('addDiscountTypeModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('discount-type-form').reset();
+            document.getElementById('discount-type-id').value = '';
+            document.getElementById('addDiscountTypeModalLabel').textContent = 'Novo Tipo de Desconto';
+        });
+        
+        document.getElementById('applyDiscountModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('apply-discount-form').reset();
+            document.getElementById('applied-discount-id').value = '';
+            document.getElementById('applyDiscountModalLabel').textContent = 'Aplicar Desconto';
+            document.getElementById('apply-start-date').valueAsDate = new Date();
+            document.getElementById('discount-warning').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

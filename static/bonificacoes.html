@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Gerenciamento de Bonificações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">Admin</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="bonificacoes.html" class="nav-link active">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="descontos.html" class="nav-link">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="nota_fiscal.html" class="nav-link">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Gerenciamento de Bonificações</h1>
+                <div>
+                    <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addBonusRuleModal">
+                        <i class="fas fa-plus me-2"></i>Nova Regra de Bônus
+                    </button>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#applyBonusModal">
+                        <i class="fas fa-check-circle me-2"></i>Aplicar Bônus
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros e Busca -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="search-input" placeholder="Buscar por nome da regra ou motorista...">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <select class="form-select" id="type-filter">
+                                <option value="all">Todos os Tipos</option>
+                                <option value="performance">Performance</option>
+                                <option value="meta">Meta Atingida</option>
+                                <option value="qualidade">Qualidade</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <select class="form-select" id="status-filter">
+                                <option value="all">Todos os Status</option>
+                                <option value="active">Ativas</option>
+                                <option value="inactive">Inativas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <button class="btn btn-primary w-100" id="search-button">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abas para Regras e Bônus Aplicados -->
+            <ul class="nav nav-tabs mb-3" id="bonusTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="rules-tab" data-bs-toggle="tab" data-bs-target="#rules-content" type="button" role="tab" aria-controls="rules-content" aria-selected="true">Regras de Bonificação</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="applied-tab" data-bs-toggle="tab" data-bs-target="#applied-content" type="button" role="tab" aria-controls="applied-content" aria-selected="false">Bônus Aplicados</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="bonusTabsContent">
+                <!-- Aba de Regras de Bonificação -->
+                <div class="tab-pane fade show active" id="rules-content" role="tabpanel" aria-labelledby="rules-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome da Regra</th>
+                                            <th>Tipo</th>
+                                            <th>Valor/Percentual</th>
+                                            <th>Condições</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bonus-rules-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="rules-pagination-container" class="mt-4">
+                                <!-- Paginação será inserida via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba de Bônus Aplicados -->
+                <div class="tab-pane fade" id="applied-content" role="tabpanel" aria-labelledby="applied-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Motorista</th>
+                                            <th>Regra Aplicada</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                            <th>Observações</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applied-bonuses-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="applied-pagination-container" class="mt-4">
+                                <!-- Paginação será inserida via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Adicionar/Editar Regra de Bônus -->
+    <div class="modal fade" id="addBonusRuleModal" tabindex="-1" aria-labelledby="addBonusRuleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBonusRuleModalLabel">Nova Regra de Bonificação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bonus-rule-form">
+                        <input type="hidden" id="bonus-rule-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rule-name" class="form-label">Nome da Regra</label>
+                                <input type="text" class="form-control" id="rule-name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rule-type" class="form-label">Tipo de Bônus</label>
+                                <select class="form-select" id="rule-type" required>
+                                    <option value="performance">Performance</option>
+                                    <option value="meta">Meta Atingida</option>
+                                    <option value="qualidade">Qualidade</option>
+                                    <option value="antiguidade">Antiguidade</option>
+                                    <option value="indicacao">Indicação</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="value-type" class="form-label">Tipo de Valor</label>
+                                <select class="form-select" id="value-type" required>
+                                    <option value="fixed">Valor Fixo (R$)</option>
+                                    <option value="percentage">Percentual (%)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rule-value" class="form-label">Valor/Percentual</label>
+                                <input type="number" class="form-control" id="rule-value" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rule-conditions" class="form-label">Condições (opcional)</label>
+                            <textarea class="form-control" id="rule-conditions" rows="3" placeholder="Ex: Mínimo de 100 entregas no mês, Nenhuma reclamação no período"></textarea>
+                        </div>
+                        <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="rule-start-date" class="form-label">Data de Início (opcional)</label>
+                                <input type="date" class="form-control" id="rule-start-date">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="rule-end-date" class="form-label">Data de Fim (opcional)</label>
+                                <input type="date" class="form-control" id="rule-end-date">
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="rule-active" checked>
+                            <label class="form-check-label" for="rule-active">
+                                Regra Ativa
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-bonus-rule-button">Salvar Regra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Aplicar Bônus -->
+    <div class="modal fade" id="applyBonusModal" tabindex="-1" aria-labelledby="applyBonusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="applyBonusModalLabel">Aplicar Bônus a Motorista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="apply-bonus-form">
+                        <input type="hidden" id="applied-bonus-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-driver-id" class="form-label">Motorista</label>
+                                <select class="form-select" id="apply-driver-id" required>
+                                    <option value="">Selecione um motorista...</option>
+                                    <!-- Motoristas serão carregados via JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-rule-id" class="form-label">Regra de Bônus</label>
+                                <select class="form-select" id="apply-rule-id" required>
+                                    <option value="">Selecione uma regra...</option>
+                                    <!-- Regras serão carregadas via JS -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-bonus-value" class="form-label">Valor do Bônus (R$)</label>
+                                <input type="number" class="form-control" id="apply-bonus-value" step="0.01" required>
+                                <div class="form-text">O valor pode ser ajustado manualmente ou calculado pela regra.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apply-bonus-date" class="form-label">Data de Aplicação</label>
+                                <input type="date" class="form-control" id="apply-bonus-date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="apply-bonus-notes" class="form-label">Observações (opcional)</label>
+                            <textarea class="form-control" id="apply-bonus-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-applied-bonus-button">Aplicar Bônus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir <strong id="delete-item-name"></strong>?</p>
+                    <p class="text-danger">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-button">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Variáveis globais
+        let currentRulesPage = 1;
+        let totalRulesPages = 1;
+        let currentAppliedPage = 1;
+        let totalAppliedPages = 1;
+        let itemsPerPage = 10;
+        let selectedItemId = null;
+        let currentTab = 'rules'; // 'rules' or 'applied'
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadBonusRules();
+            loadAppliedBonuses();
+            loadDriversForSelect();
+            loadBonusRulesForSelect();
+
+            document.getElementById("search-button").addEventListener("click", function() {
+                currentRulesPage = 1;
+                currentAppliedPage = 1;
+                if (currentTab === 'rules') loadBonusRules();
+                else loadAppliedBonuses();
+            });
+
+            document.getElementById("save-bonus-rule-button").addEventListener("click", saveBonusRule);
+            document.getElementById("save-applied-bonus-button").addEventListener("click", saveAppliedBonus);
+            document.getElementById("confirm-delete-button").addEventListener("click", confirmDelete);
+
+            // Tab navigation
+            const bonusTabs = new bootstrap.Tab(document.getElementById('rules-tab'));
+            const appliedTabs = new bootstrap.Tab(document.getElementById('applied-tab'));
+
+            document.getElementById('rules-tab').addEventListener('shown.bs.tab', function (event) {
+                currentTab = 'rules';
+                loadBonusRules();
+            });
+            document.getElementById('applied-tab').addEventListener('shown.bs.tab', function (event) {
+                currentTab = 'applied';
+                loadAppliedBonuses();
+            });
+            
+            // Preencher data de aplicação com data atual
+            const applyBonusDateInput = document.getElementById('apply-bonus-date');
+            if(applyBonusDateInput) {
+                applyBonusDateInput.valueAsDate = new Date();
+            }
+        });
+
+        function loadBonusRules() {
+            const tableBody = document.getElementById("bonus-rules-table");
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center"><div class="loader"></div></td></tr>`;
+            
+            const searchTerm = document.getElementById("search-input").value;
+            const typeFilter = document.getElementById("type-filter").value;
+            const statusFilter = document.getElementById("status-filter").value;
+
+            let queryParams = `?page=${currentRulesPage}&limit=${itemsPerPage}`;
+            if (searchTerm) queryParams += `&search=${encodeURIComponent(searchTerm)}`;
+            if (typeFilter !== 'all') queryParams += `&type=${typeFilter}`;
+            if (statusFilter !== 'all') queryParams += `&status=${statusFilter}`;
+
+            fetchAPI(`/api/bonus/rules${queryParams}`)
+                .then(data => {
+                    totalRulesPages = Math.ceil(data.total / itemsPerPage);
+                    tableBody.innerHTML = "";
+                    if (data.rules.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhuma regra de bonificação encontrada.</td></tr>`;
+                        updateRulesPagination();
+                        return;
+                    }
+                    data.rules.forEach(rule => {
+                        const statusClass = rule.active ? "success" : "danger";
+                        const statusText = rule.active ? "Ativa" : "Inativa";
+                        const valueText = rule.value_type === 'fixed' ? formatCurrency(rule.value) : `${rule.value} %`;
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${rule.name}</td>
+                                <td>${rule.bonus_type}</td>
+                                <td>${valueText}</td>
+                                <td>${rule.conditions || "-"}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editBonusRule(${rule.id})"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger" onclick="prepareDelete(${rule.id}, '${rule.name}', 'rule')"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    updateRulesPagination();
+                })
+                .catch(error => {
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar regras.</td></tr>`;
+                    console.error("Erro ao carregar regras de bônus:", error);
+                });
+        }
+
+        function loadAppliedBonuses() {
+            const tableBody = document.getElementById("applied-bonuses-table");
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center"><div class="loader"></div></td></tr>`;
+            
+            const searchTerm = document.getElementById("search-input").value;
+            let queryParams = `?page=${currentAppliedPage}&limit=${itemsPerPage}`;
+            if (searchTerm) queryParams += `&search=${encodeURIComponent(searchTerm)}`;
+
+            fetchAPI(`/api/bonus/applied${queryParams}`)
+                .then(data => {
+                    totalAppliedPages = Math.ceil(data.total / itemsPerPage);
+                    tableBody.innerHTML = "";
+                    if (data.bonuses.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Nenhum bônus aplicado encontrado.</td></tr>`;
+                        updateAppliedPagination();
+                        return;
+                    }
+                    data.bonuses.forEach(bonus => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${bonus.driver_name || bonus.driver_id}</td>
+                                <td>${bonus.bonus_rule_name || bonus.bonus_rule_id}</td>
+                                <td>${formatDate(bonus.application_date)}</td>
+                                <td>${formatCurrency(bonus.value)}</td>
+                                <td>${bonus.notes || "-"}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary me-1" onclick="editAppliedBonus(${bonus.id})"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger" onclick="prepareDelete(${bonus.id}, 'Bônus para ${bonus.driver_name}', 'applied')"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    updateAppliedPagination();
+                })
+                .catch(error => {
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar bônus aplicados.</td></tr>`;
+                    console.error("Erro ao carregar bônus aplicados:", error);
+                });
+        }
+
+        function updateRulesPagination() {
+            const paginationContainer = document.getElementById("rules-pagination-container");
+            if (totalRulesPages <= 1) {
+                paginationContainer.innerHTML = "";
+                return;
+            }
+            const pagination = createPagination(currentRulesPage, totalRulesPages, (page) => {
+                currentRulesPage = page;
+                loadBonusRules();
+            });
+            paginationContainer.innerHTML = "";
+            paginationContainer.appendChild(pagination);
+        }
+
+        function updateAppliedPagination() {
+            const paginationContainer = document.getElementById("applied-pagination-container");
+            if (totalAppliedPages <= 1) {
+                paginationContainer.innerHTML = "";
+                return;
+            }
+            const pagination = createPagination(currentAppliedPage, totalAppliedPages, (page) => {
+                currentAppliedPage = page;
+                loadAppliedBonuses();
+            });
+            paginationContainer.innerHTML = "";
+            paginationContainer.appendChild(pagination);
+        }
+
+        function loadDriversForSelect() {
+            const driverSelect = document.getElementById('apply-driver-id');
+            fetchAPI('/api/drivers?limit=1000&status=active') // Assuming you want active drivers
+                .then(data => {
+                    driverSelect.innerHTML = '<option value="">Selecione um motorista...</option>';
+                    data.drivers.forEach(driver => {
+                        driverSelect.innerHTML += `<option value="${driver.driver_id}">${driver.name} (ID: ${driver.driver_id})</option>`;
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar motoristas:', error));
+        }
+
+        function loadBonusRulesForSelect() {
+            const ruleSelect = document.getElementById('apply-rule-id');
+            fetchAPI('/api/bonus/rules?limit=1000&status=active') // Assuming you want active rules
+                .then(data => {
+                    ruleSelect.innerHTML = '<option value="">Selecione uma regra...</option>';
+                    data.rules.forEach(rule => {
+                        ruleSelect.innerHTML += `<option value="${rule.id}" data-value="${rule.value}" data-type="${rule.value_type}">${rule.name}</option>`;
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar regras de bônus:', error));
+            
+            // Auto-fill bonus value based on selected rule
+            ruleSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const value = selectedOption.dataset.value;
+                const type = selectedOption.dataset.type;
+                const applyBonusValueInput = document.getElementById('apply-bonus-value');
+                
+                if (value && type === 'fixed') {
+                    applyBonusValueInput.value = parseFloat(value).toFixed(2);
+                } else {
+                    applyBonusValueInput.value = ''; // Clear if percentage or no value
+                    // Potentially calculate percentage based on driver's base salary if available
+                }
+            });
+        }
+
+        function saveBonusRule() {
+            const form = document.getElementById("bonus-rule-form");
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const ruleId = document.getElementById("bonus-rule-id").value;
+            const ruleData = {
+                name: document.getElementById("rule-name").value,
+                bonus_type: document.getElementById("rule-type").value,
+                value_type: document.getElementById("value-type").value,
+                value: parseFloat(document.getElementById("rule-value").value),
+                conditions: document.getElementById("rule-conditions").value,
+                start_date: document.getElementById("rule-start-date").value || null,
+                end_date: document.getElementById("rule-end-date").value || null,
+                active: document.getElementById("rule-active").checked
+            };
+
+            const method = ruleId ? "PUT" : "POST";
+            const endpoint = ruleId ? `/api/bonus/rules/${ruleId}` : "/api/bonus/rules";
+            const saveButton = document.getElementById("save-bonus-rule-button");
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.disabled = true;
+            saveButton.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Salvando...`;
+
+            fetchAPI(endpoint, { method: method, body: JSON.stringify(ruleData) })
+                .then(() => {
+                    showNotification(`Regra de bônus ${ruleId ? 'atualizada' : 'criada'} com sucesso!`, "success");
+                    bootstrap.Modal.getInstance(document.getElementById("addBonusRuleModal")).hide();
+                    form.reset();
+                    document.getElementById("bonus-rule-id").value = '';
+                    document.getElementById("addBonusRuleModalLabel").textContent = "Nova Regra de Bonificação";
+                    loadBonusRules();
+                    loadBonusRulesForSelect();
+                })
+                .catch(error => {
+                    showNotification(`Erro ao salvar regra: ${error.message || 'Tente novamente.'}`, "error");
+                })
+                .finally(() => {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                });
+        }
+
+        function saveAppliedBonus() {
+            const form = document.getElementById("apply-bonus-form");
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const appliedId = document.getElementById("applied-bonus-id").value;
+            const bonusData = {
+                driver_id: document.getElementById("apply-driver-id").value,
+                bonus_rule_id: document.getElementById("apply-rule-id").value,
+                value: parseFloat(document.getElementById("apply-bonus-value").value),
+                application_date: document.getElementById("apply-bonus-date").value,
+                notes: document.getElementById("apply-bonus-notes").value
+            };
+
+            const method = appliedId ? "PUT" : "POST";
+            const endpoint = appliedId ? `/api/bonus/applied/${appliedId}` : "/api/bonus/applied";
+            const saveButton = document.getElementById("save-applied-bonus-button");
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.disabled = true;
+            saveButton.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Aplicando...`;
+
+            fetchAPI(endpoint, { method: method, body: JSON.stringify(bonusData) })
+                .then(() => {
+                    showNotification(`Bônus ${appliedId ? 'atualizado' : 'aplicado'} com sucesso!`, "success");
+                    bootstrap.Modal.getInstance(document.getElementById("applyBonusModal")).hide();
+                    form.reset();
+                    document.getElementById("applied-bonus-id").value = '';
+                    document.getElementById("applyBonusModalLabel").textContent = "Aplicar Bônus a Motorista";
+                    loadAppliedBonuses();
+                })
+                .catch(error => {
+                    showNotification(`Erro ao aplicar bônus: ${error.message || 'Tente novamente.'}`, "error");
+                })
+                .finally(() => {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                });
+        }
+
+        function editBonusRule(id) {
+            fetchAPI(`/api/bonus/rules/${id}`)
+                .then(rule => {
+                    document.getElementById("bonus-rule-id").value = rule.id;
+                    document.getElementById("rule-name").value = rule.name;
+                    document.getElementById("rule-type").value = rule.bonus_type;
+                    document.getElementById("value-type").value = rule.value_type;
+                    document.getElementById("rule-value").value = rule.value;
+                    document.getElementById("rule-conditions").value = rule.conditions || "";
+                    document.getElementById("rule-start-date").value = rule.start_date ? rule.start_date.split('T')[0] : "";
+                    document.getElementById("rule-end-date").value = rule.end_date ? rule.end_date.split('T')[0] : "";
+                    document.getElementById("rule-active").checked = rule.active;
+                    document.getElementById("addBonusRuleModalLabel").textContent = "Editar Regra de Bonificação";
+                    new bootstrap.Modal(document.getElementById("addBonusRuleModal")).show();
+                })
+                .catch(error => showNotification("Erro ao carregar dados da regra.", "error"));
+        }
+
+        function editAppliedBonus(id) {
+            fetchAPI(`/api/bonus/applied/${id}`)
+                .then(bonus => {
+                    document.getElementById("applied-bonus-id").value = bonus.id;
+                    document.getElementById("apply-driver-id").value = bonus.driver_id;
+                    document.getElementById("apply-rule-id").value = bonus.bonus_rule_id;
+                    document.getElementById("apply-bonus-value").value = bonus.value;
+                    document.getElementById("apply-bonus-date").value = bonus.application_date.split('T')[0];
+                    document.getElementById("apply-bonus-notes").value = bonus.notes || "";
+                    document.getElementById("applyBonusModalLabel").textContent = "Editar Bônus Aplicado";
+                    new bootstrap.Modal(document.getElementById("applyBonusModal")).show();
+                })
+                .catch(error => showNotification("Erro ao carregar dados do bônus aplicado.", "error"));
+        }
+
+        function prepareDelete(id, name, type) {
+            selectedItemId = id;
+            selectedItemType = type; // 'rule' or 'applied'
+            document.getElementById("delete-item-name").textContent = name;
+            new bootstrap.Modal(document.getElementById("deleteConfirmationModal")).show();
+        }
+
+        function confirmDelete() {
+            if (!selectedItemId || !selectedItemType) return;
+
+            const endpoint = selectedItemType === 'rule' ? `/api/bonus/rules/${selectedItemId}` : `/api/bonus/applied/${selectedItemId}`;
+            const deleteButton = document.getElementById("confirm-delete-button");
+            const originalButtonText = deleteButton.innerHTML;
+            deleteButton.disabled = true;
+            deleteButton.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Excluindo...`;
+
+            fetchAPI(endpoint, { method: "DELETE" })
+                .then(() => {
+                    showNotification(`${selectedItemType === 'rule' ? 'Regra' : 'Bônus aplicado'} excluído com sucesso!`, "success");
+                    bootstrap.Modal.getInstance(document.getElementById("deleteConfirmationModal")).hide();
+                    if (selectedItemType === 'rule') {
+                        loadBonusRules();
+                        loadBonusRulesForSelect();
+                    } else {
+                        loadAppliedBonuses();
+                    }
+                })
+                .catch(error => {
+                    showNotification(`Erro ao excluir: ${error.message || 'Tente novamente.'}`, "error");
+                })
+                .finally(() => {
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = originalButtonText;
+                    selectedItemId = null;
+                    selectedItemType = null;
+                });
+        }
+
+        // Limpar formulários ao fechar modais
+        document.getElementById('addBonusRuleModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('bonus-rule-form').reset();
+            document.getElementById('bonus-rule-id').value = '';
+            document.getElementById('addBonusRuleModalLabel').textContent = 'Nova Regra de Bonificação';
+        });
+
+        document.getElementById('applyBonusModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('apply-bonus-form').reset();
+            document.getElementById('applied-bonus-id').value = '';
+            document.getElementById('applyBonusModalLabel').textContent = 'Aplicar Bônus a Motorista';
+            const applyBonusDateInput = document.getElementById('apply-bonus-date');
+            if(applyBonusDateInput) {
+                applyBonusDateInput.valueAsDate = new Date();
+            }
+        });
+
+    </script>
+</body>
+</html>

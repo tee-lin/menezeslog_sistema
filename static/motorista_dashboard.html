@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Dashboard do Motorista</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">M</div>
+                            <div>
+                                <div class="user-name">Motorista</div>
+                                <div class="user-role text-muted small">Motorista</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="motorista_dashboard.html" class="nav-link active">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motorista_pagamentos.html" class="nav-link">
+                        <i class="fas fa-money-bill-wave nav-icon"></i>
+                        <span>Meus Pagamentos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motorista_bonificacoes.html" class="nav-link">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motorista_descontos.html" class="nav-link">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motorista_notas.html" class="nav-link">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="perfil.html" class="nav-link">
+                        <i class="fas fa-user nav-icon"></i>
+                        <span>Meu Perfil</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <h1 class="mb-4">Bem-vindo, <span id="driver-name">Motorista</span>!</h1>
+            
+            <!-- Alertas e Notificações -->
+            <div class="alert alert-info alert-dismissible fade show" role="alert" id="welcome-alert">
+                <i class="fas fa-info-circle me-2"></i>
+                Bem-vindo ao seu painel de controle. Aqui você pode acompanhar seus pagamentos, bonificações e descontos.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+            
+            <!-- Resumo de Indicadores -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="dashboard-card bg-primary text-white">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Pagamento Atual</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="current-payment">R$ 0,00</div>
+                        <div class="dashboard-card-label">Período: <span id="current-period">-</span></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dashboard-card bg-success text-white">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Bonificações</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="current-bonuses">R$ 0,00</div>
+                        <div class="dashboard-card-label">Total do mês</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dashboard-card bg-danger text-white">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Descontos</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-minus-circle"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="current-discounts">R$ 0,00</div>
+                        <div class="dashboard-card-label">Total do mês</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráfico e Histórico -->
+            <div class="row mt-4">
+                <!-- Gráfico de Pagamentos -->
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Histórico de Pagamentos</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="paymentHistoryOptions" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentHistoryOptions">
+                                    <li><a class="dropdown-item" href="#" id="exportPaymentHistory">Exportar</a></li>
+                                    <li><a class="dropdown-item" href="#" id="refreshPaymentHistory">Atualizar</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="paymentHistoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Próximos Pagamentos -->
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Próximos Pagamentos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Valor Estimado</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="upcoming-payments">
+                                        <tr>
+                                            <td colspan="3" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <!-- Últimas Bonificações -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Últimas Bonificações</h5>
+                            <a href="motorista_bonificacoes.html" class="btn btn-sm btn-primary">Ver Todas</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Descrição</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-bonuses">
+                                        <tr>
+                                            <td colspan="3" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Últimos Descontos -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Últimos Descontos</h5>
+                            <a href="motorista_descontos.html" class="btn btn-sm btn-primary">Ver Todos</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Descrição</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-discounts">
+                                        <tr>
+                                            <td colspan="3" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notas Fiscais Recentes -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Notas Fiscais Recentes</h5>
+                            <a href="motorista_notas.html" class="btn btn-sm btn-primary">Ver Todas</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Número</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-invoices">
+                                        <tr>
+                                            <td colspan="5" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dados do motorista
+            loadDriverData();
+            
+            // Inicializar gráfico de histórico
+            initializePaymentHistoryChart();
+            
+            // Carregar tabelas
+            loadUpcomingPayments();
+            loadRecentBonuses();
+            loadRecentDiscounts();
+            loadRecentInvoices();
+        });
+        
+        // Função para carregar dados do motorista
+        function loadDriverData() {
+            const user = getUser();
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Atualizar nome do motorista
+            document.getElementById('driver-name').textContent = user.name || user.username;
+            
+            // Mostrar indicadores de carregamento
+            document.getElementById('current-payment').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            document.getElementById('current-bonuses').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            document.getElementById('current-discounts').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            
+            // Carregar pagamento atual
+            fetchAPI(`/api/payment/current?driver_id=${user.id}`)
+                .then(data => {
+                    document.getElementById('current-payment').textContent = formatCurrency(data.total_value);
+                    document.getElementById('current-period').textContent = `${formatDate(data.start_date)} - ${formatDate(data.end_date)}`;
+                })
+                .catch(error => {
+                    document.getElementById('current-payment').textContent = 'R$ 0,00';
+                    document.getElementById('current-period').textContent = '-';
+                });
+            
+            // Carregar bonificações do mês
+            fetchAPI(`/api/bonus/summary?driver_id=${user.id}&period=month`)
+                .then(data => {
+                    document.getElementById('current-bonuses').textContent = formatCurrency(data.total_bonuses);
+                })
+                .catch(error => {
+                    document.getElementById('current-bonuses').textContent = 'R$ 0,00';
+                });
+            
+            // Carregar descontos do mês
+            fetchAPI(`/api/discount/summary?driver_id=${user.id}&period=month`)
+                .then(data => {
+                    document.getElementById('current-discounts').textContent = formatCurrency(data.total_discounts);
+                })
+                .catch(error => {
+                    document.getElementById('current-discounts').textContent = 'R$ 0,00';
+                });
+        }
+        
+        // Função para inicializar gráfico de histórico de pagamentos
+        function initializePaymentHistoryChart() {
+            const user = getUser();
+            if (!user) return;
+            
+            fetchAPI(`/api/payment/history?driver_id=${user.id}&limit=6`)
+                .then(data => {
+                    const ctx = document.getElementById('paymentHistoryChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Pagamentos (R$)',
+                                data: data.values,
+                                backgroundColor: 'rgba(0, 71, 171, 0.7)',
+                                borderColor: 'rgba(0, 71, 171, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return 'R$ ' + value.toLocaleString('pt-BR');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar gráfico de histórico de pagamentos:', error);
+                });
+        }
+        
+        // Função para carregar próximos pagamentos
+        function loadUpcomingPayments() {
+            const user = getUser();
+            if (!user) return;
+            
+            const tableBody = document.getElementById('upcoming-payments');
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI(`/api/payment/upcoming?driver_id=${user.id}`)
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Nenhum pagamento futuro encontrado</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(payment => {
+                        const statusClass = payment.status === 'scheduled' ? 'info' : 
+                                          payment.status === 'processing' ? 'warning' : 'secondary';
+                        
+                        const statusText = payment.status === 'scheduled' ? 'Agendado' : 
+                                         payment.status === 'processing' ? 'Em processamento' : 'Pendente';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${formatDate(payment.payment_date)}</td>
+                                <td>${formatCurrency(payment.estimated_value)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                });
+        }
+        
+        // Função para carregar bonificações recentes
+        function loadRecentBonuses() {
+            const user = getUser();
+            if (!user) return;
+            
+            const tableBody = document.getElementById('recent-bonuses');
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI(`/api/bonus/recent?driver_id=${user.id}&limit=3`)
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Nenhuma bonificação encontrada</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(bonus => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${bonus.description}</td>
+                                <td>${formatDate(bonus.created_at)}</td>
+                                <td>${formatCurrency(bonus.value)}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                });
+        }
+        
+        // Função para carregar descontos recentes
+        function loadRecentDiscounts() {
+            const user = getUser();
+            if (!user) return;
+            
+            const tableBody = document.getElementById('recent-discounts');
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI(`/api/discount/recent?driver_id=${user.id}&limit=3`)
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Nenhum desconto encontrado</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(discount => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${discount.description}</td>
+                                <td>${formatDate(discount.created_at)}</td>
+                                <td>${formatCurrency(discount.installment_value)}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                });
+        }
+        
+        // Função para carregar notas fiscais recentes
+        function loadRecentInvoices() {
+            const user = getUser();
+            if (!user) return;
+            
+            const tableBody = document.getElementById('recent-invoices');
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI(`/api/invoice/recent?driver_id=${user.id}&limit=5`)
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma nota fiscal encontrada</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(invoice => {
+                        const statusClass = invoice.status === 'issued' ? 'success' : 
+                                          invoice.status === 'pending' ? 'warning' : 
+                                          invoice.status === 'cancelled' ? 'danger' : 'secondary';
+                        
+                        const statusText = invoice.status === 'issued' ? 'Emitida' : 
+                                         invoice.status === 'pending' ? 'Pendente' : 
+                                         invoice.status === 'cancelled' ? 'Cancelada' : 'Processando';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${invoice.invoice_number}</td>
+                                <td>${formatDate(invoice.issue_date)}</td>
+                                <td>${formatCurrency(invoice.total_value)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white" onclick="viewInvoice(${invoice.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" onclick="downloadInvoice(${invoice.id})">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                });
+        }
+        
+        // Função para visualizar nota fiscal
+        function viewInvoice(invoiceId) {
+            window.location.href = `motorista_notas.html?id=${invoiceId}&view=true`;
+        }
+        
+        // Função para baixar nota fiscal
+        function downloadInvoice(invoiceId) {
+            fetchAPI(`/api/invoice/${invoiceId}/pdf`, { responseType: 'blob' })
+                .then(response => {
+                    const url = window.URL.createObjectURL(new Blob([response]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `nota_fiscal_${invoiceId}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                })
+                .catch(error => {
+                    showNotification('Erro ao baixar nota fiscal', 'error');
+                });
+        }
+        
+        // Eventos para exportação e atualização do gráfico
+        document.getElementById('exportPaymentHistory').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implementar exportação do gráfico
+            showNotification('Exportação de gráfico não implementada', 'info');
+        });
+        
+        document.getElementById('refreshPaymentHistory').addEventListener('click', function(e) {
+            e.preventDefault();
+            initializePaymentHistoryChart();
+            showNotification('Gráfico atualizado', 'success');
+        });
+    </script>
+</body>
+</html>

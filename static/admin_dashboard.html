@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Dashboard Administrativo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info" id="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">Admin</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link active">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="bonificacoes.html" class="nav-link">
+                        <i class="fas fa-award nav-icon"></i>
+                        <span>Bonificações</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="descontos.html" class="nav-link">
+                        <i class="fas fa-minus-circle nav-icon"></i>
+                        <span>Descontos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="nota_fiscal.html" class="nav-link">
+                        <i class="fas fa-file-invoice nav-icon"></i>
+                        <span>Notas Fiscais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="configuracoes.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Configurações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="main-content">
+        <div class="container-fluid">
+            <h1 class="mb-4">Dashboard Administrativo</h1>
+            
+            <!-- Resumo de Indicadores -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="dashboard-card bg-primary text-white">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Motoristas</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="total-drivers">0</div>
+                        <div class="dashboard-card-label">Total cadastrado</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-card bg-success text-white">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Pagamentos</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="total-payments">R$ 0,00</div>
+                        <div class="dashboard-card-label">Total do mês</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-card bg-warning">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Bonificações</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="total-bonuses">R$ 0,00</div>
+                        <div class="dashboard-card-label">Total do mês</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-card bg-danger text-white">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-title">Descontos</div>
+                            <div class="dashboard-card-icon">
+                                <i class="fas fa-minus-circle"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-value" id="total-discounts">R$ 0,00</div>
+                        <div class="dashboard-card-label">Total do mês</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráficos e Tabelas -->
+            <div class="row mt-4">
+                <!-- Gráfico de Pagamentos -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Pagamentos por Mês</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="paymentChartOptions" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentChartOptions">
+                                    <li><a class="dropdown-item" href="#" id="exportPaymentChart">Exportar</a></li>
+                                    <li><a class="dropdown-item" href="#" id="refreshPaymentChart">Atualizar</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="paymentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de Tipos de Serviço -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Distribuição por Tipo de Serviço</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="serviceChartOptions" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="serviceChartOptions">
+                                    <li><a class="dropdown-item" href="#" id="exportServiceChart">Exportar</a></li>
+                                    <li><a class="dropdown-item" href="#" id="refreshServiceChart">Atualizar</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="serviceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <!-- Últimos Pagamentos -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Últimos Pagamentos</h5>
+                            <a href="relatorios.html" class="btn btn-sm btn-primary">Ver Todos</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Motorista</th>
+                                            <th>Data</th>
+                                            <th>Valor</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-payments">
+                                        <tr>
+                                            <td colspan="4" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Últimos Uploads -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Últimos Uploads</h5>
+                            <a href="upload.html" class="btn btn-sm btn-primary">Ver Todos</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Arquivo</th>
+                                            <th>Data</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-uploads">
+                                        <tr>
+                                            <td colspan="4" class="text-center">Carregando...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ações Rápidas -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Ações Rápidas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <a href="upload.html" class="btn btn-primary w-100">
+                                        <i class="fas fa-upload me-2"></i>Novo Upload
+                                    </a>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <a href="motoristas.html?new=true" class="btn btn-success w-100">
+                                        <i class="fas fa-user-plus me-2"></i>Novo Motorista
+                                    </a>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <a href="relatorios.html?generate=true" class="btn btn-info w-100 text-white">
+                                        <i class="fas fa-file-export me-2"></i>Gerar Relatório
+                                    </a>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <a href="nota_fiscal.html?new=true" class="btn btn-warning w-100">
+                                        <i class="fas fa-file-invoice me-2"></i>Nova Nota Fiscal
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="footer-text">
+                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
+                <p class="text-muted small">Versão 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dados do dashboard
+            loadDashboardData();
+            
+            // Inicializar gráficos
+            initializeCharts();
+            
+            // Carregar tabelas
+            loadRecentPayments();
+            loadRecentUploads();
+        });
+        
+        // Função para carregar dados do dashboard
+        function loadDashboardData() {
+            // Mostrar indicadores de carregamento
+            document.getElementById('total-drivers').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            document.getElementById('total-payments').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            document.getElementById('total-bonuses').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            document.getElementById('total-discounts').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            
+            // Carregar total de motoristas
+            fetchAPI('/api/drivers/count')
+                .then(data => {
+                    document.getElementById('total-drivers').textContent = data.count;
+                })
+                .catch(error => {
+                    document.getElementById('total-drivers').textContent = '0';
+                });
+            
+            // Carregar total de pagamentos do mês
+            fetchAPI('/api/payment/summary?period=month')
+                .then(data => {
+                    document.getElementById('total-payments').textContent = formatCurrency(data.total_payments);
+                })
+                .catch(error => {
+                    document.getElementById('total-payments').textContent = 'R$ 0,00';
+                });
+            
+            // Carregar total de bonificações do mês
+            fetchAPI('/api/bonus/summary?period=month')
+                .then(data => {
+                    document.getElementById('total-bonuses').textContent = formatCurrency(data.total_bonuses);
+                })
+                .catch(error => {
+                    document.getElementById('total-bonuses').textContent = 'R$ 0,00';
+                });
+            
+            // Carregar total de descontos do mês
+            fetchAPI('/api/discount/summary?period=month')
+                .then(data => {
+                    document.getElementById('total-discounts').textContent = formatCurrency(data.total_discounts);
+                })
+                .catch(error => {
+                    document.getElementById('total-discounts').textContent = 'R$ 0,00';
+                });
+        }
+        
+        // Função para inicializar gráficos
+        function initializeCharts() {
+            // Gráfico de pagamentos por mês
+            fetchAPI('/api/payment/chart?period=year')
+                .then(data => {
+                    const ctx = document.getElementById('paymentChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Pagamentos (R$)',
+                                data: data.values,
+                                backgroundColor: 'rgba(0, 71, 171, 0.7)',
+                                borderColor: 'rgba(0, 71, 171, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return 'R$ ' + value.toLocaleString('pt-BR');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar gráfico de pagamentos:', error);
+                });
+            
+            // Gráfico de tipos de serviço
+            fetchAPI('/api/payment/service-types')
+                .then(data => {
+                    const ctx = document.getElementById('serviceChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                data: data.values,
+                                backgroundColor: [
+                                    'rgba(0, 71, 171, 0.7)',
+                                    'rgba(255, 215, 0, 0.7)',
+                                    'rgba(40, 167, 69, 0.7)',
+                                    'rgba(220, 53, 69, 0.7)'
+                                ],
+                                borderColor: [
+                                    'rgba(0, 71, 171, 1)',
+                                    'rgba(255, 215, 0, 1)',
+                                    'rgba(40, 167, 69, 1)',
+                                    'rgba(220, 53, 69, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar gráfico de tipos de serviço:', error);
+                });
+        }
+        
+        // Função para carregar pagamentos recentes
+        function loadRecentPayments() {
+            const tableBody = document.getElementById('recent-payments');
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI('/api/payment/recent?limit=5')
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum pagamento encontrado</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(payment => {
+                        const statusClass = payment.status === 'paid' ? 'success' : 
+                                          payment.status === 'pending' ? 'warning' : 
+                                          payment.status === 'cancelled' ? 'danger' : 'secondary';
+                        
+                        const statusText = payment.status === 'paid' ? 'Pago' : 
+                                         payment.status === 'pending' ? 'Pendente' : 
+                                         payment.status === 'cancelled' ? 'Cancelado' : 'Processando';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${payment.driver_name}</td>
+                                <td>${formatDate(payment.payment_date)}</td>
+                                <td>${formatCurrency(payment.total_value)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                });
+        }
+        
+        // Função para carregar uploads recentes
+        function loadRecentUploads() {
+            const tableBody = document.getElementById('recent-uploads');
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="loader"></div></td></tr>';
+            
+            fetchAPI('/api/upload/recent?limit=5')
+                .then(data => {
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum upload encontrado</td></tr>';
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    data.forEach(upload => {
+                        const statusClass = upload.processed ? 'success' : 'warning';
+                        const statusText = upload.processed ? 'Processado' : 'Pendente';
+                        
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${upload.filename}</td>
+                                <td>${formatDateTime(upload.upload_date)}</td>
+                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info text-white" onclick="viewUploadDetails(${upload.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+                });
+        }
+        
+        // Função para visualizar detalhes do upload
+        function viewUploadDetails(uploadId) {
+            window.location.href = `upload.html?id=${uploadId}`;
+        }
+        
+        // Eventos para exportação de gráficos
+        document.getElementById('exportPaymentChart').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implementar exportação do gráfico
+            showNotification('Exportação de gráfico não implementada', 'info');
+        });
+        
+        document.getElementById('exportServiceChart').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implementar exportação do gráfico
+            showNotification('Exportação de gráfico não implementada', 'info');
+        });
+        
+        // Eventos para atualização de gráficos
+        document.getElementById('refreshPaymentChart').addEventListener('click', function(e) {
+            e.preventDefault();
+            initializeCharts();
+            showNotification('Gráfico atualizado', 'success');
+        });
+        
+        document.getElementById('refreshServiceChart').addEventListener('click', function(e) {
+            e.preventDefault();
+            initializeCharts();
+            showNotification('Gráfico atualizado', 'success');
+        });
+    </script>
+</body>
+</html>
