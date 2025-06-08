@@ -1,1 +1,5 @@
-from main_heroku_integrated import app
+from main_supabase_integrated import app
+
+if __name__ == "__main__":
+    app.run()
+
