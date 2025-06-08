@@ -1,743 +1,633 @@
-/**
- * MenezesLog - JavaScript principal simplificado
- * Versão: 3.0.0 - Navegação simplificada
- */
+// MenezesLog - Sistema de Gestão de Motoristas
+// Versão 2.1.0 - Integração Digital Ocean + Supabase
+// Data: 2025-06-08
+
+console.log('[MenezesLog] Inicializando aplicação v2.1.0...');
 
 // Configurações globais
-const API_BASE_URL = window.location.origin;
-const TOKEN_KEY = 'menezeslog_token';
-const USER_KEY = 'menezeslog_user';
+const API_BASE_URL = '/api';
+const VERSION = '2.1.0';
 
-// Inicialização da aplicação
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('[MenezesLog] Inicializando aplicação v3.0.0 (navegação simplificada)...');
-    console.log('[MenezesLog] URL base:', API_BASE_URL);
-    console.log('[MenezesLog] Página atual:', window.location.pathname);
+// Função para mostrar alertas
+function showAlert(message, type = 'info') {
+    console.log(`[MenezesLog] Alert ${type}:`, message);
     
-    // Verificar autenticação e inicializar
-    initApp();
-});
-
-// Inicialização da aplicação
-function initApp() {
-    // Verificar se o usuário está autenticado
-    const currentPath = window.location.pathname;
-    const isLoginPage = currentPath === '/' || currentPath === '/index.html';
+    // Remover alertas existentes
+    const existingAlerts = document.querySelectorAll('.alert');
+    existingAlerts.forEach(alert => alert.remove());
     
-    console.log('[MenezesLog] Verificando autenticação...');
-    console.log('[MenezesLog] Token presente:', !!getToken());
-    console.log('[MenezesLog] Usuário presente:', !!getCurrentUser());
+    // Criar novo alerta
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        z-index: 10000;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
     
-    if (!isAuthenticated() && !isLoginPage) {
-        // Redirecionar para login se não estiver autenticado e não estiver na página de login
-        console.log('[MenezesLog] Usuário não autenticado, redirecionando para login');
-        window.location.href = '/';
-        return;
-    } else if (isAuthenticated() && isLoginPage) {
-        // Redirecionar para dashboard se já estiver autenticado e estiver na página de login
-        console.log('[MenezesLog] Usuário já autenticado, redirecionando para dashboard');
-        const user = getCurrentUser();
-        if (user && user.role === 'admin') {
-            window.location.href = '/admin_dashboard.html';
-        } else {
-            window.location.href = '/motorista_dashboard.html';
-        }
-        return;
-    }
-    
-    // Configurar elementos da interface baseado no usuário atual
-    updateUIForCurrentUser();
-    
-    // Configurar event listeners
-    setupEventListeners();
-    
-    // Carregar dados específicos da página
-    loadPageSpecificData();
-}
-
-// Configurar event listeners
-function setupEventListeners() {
-    // Form de login
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        console.log('[MenezesLog] Configurando formulário de login');
-        loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    // Links de navegação
-    const navLinks = document.querySelectorAll('.nav-link, .sidebar-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            console.log('[MenezesLog] Link clicado:', link.href);
-            // Não é necessário preventDefault aqui, pois queremos que o link funcione normalmente
-        });
-    });
-    
-    // Botão de logout
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        console.log('[MenezesLog] Configurando botão de logout');
-        logoutBtn.addEventListener('click', handleLogout);
-    }
-}
-
-// Verificar se o usuário está autenticado
-function isAuthenticated() {
-    // SIMPLIFICADO: Sempre retorna true para permitir navegação
-    console.log('[MenezesLog] Verificação de autenticação simplificada: sempre true');
-    return true;
-}
-
-// Obter token do localStorage
-function getToken() {
-    return localStorage.getItem(TOKEN_KEY);
-}
-
-// Salvar token no localStorage
-function saveToken(token) {
-    console.log('[MenezesLog] Salvando token no localStorage');
-    localStorage.setItem(TOKEN_KEY, token);
-}
-
-// Remover token do localStorage
-function removeToken() {
-    console.log('[MenezesLog] Removendo token do localStorage');
-    localStorage.removeItem(TOKEN_KEY);
-}
-
-// Obter usuário atual do localStorage
-function getCurrentUser() {
-    const userJson = localStorage.getItem(USER_KEY);
-    if (!userJson) {
-        console.log('[MenezesLog] Nenhum usuário encontrado no localStorage');
-        // SIMPLIFICADO: Retornar usuário simulado para navegação
-        return {
-            id: 1,
-            username: 'admin',
-            email: 'admin@menezeslog.com',
-            role: 'admin',
-            name: 'Administrador',
-            driver_id: '1001',
-            active: true,
-            first_access: false
-        };
-    }
-    
-    try {
-        const user = JSON.parse(userJson);
-        console.log('[MenezesLog] Usuário recuperado do localStorage:', user);
-        return user;
-    } catch (error) {
-        console.error('[MenezesLog] Erro ao parsear usuário do localStorage:', error);
-        // SIMPLIFICADO: Retornar usuário simulado para navegação
-        return {
-            id: 1,
-            username: 'admin',
-            email: 'admin@menezeslog.com',
-            role: 'admin',
-            name: 'Administrador',
-            driver_id: '1001',
-            active: true,
-            first_access: false
-        };
-    }
-}
-
-// Salvar usuário no localStorage
-function saveUser(user) {
-    console.log('[MenezesLog] Salvando usuário no localStorage:', user);
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
-}
-
-// Remover usuário do localStorage
-function removeUser() {
-    console.log('[MenezesLog] Removendo usuário do localStorage');
-    localStorage.removeItem(USER_KEY);
-}
-
-// Atualizar interface para o usuário atual
-function updateUIForCurrentUser() {
-    const user = getCurrentUser();
-    if (!user) {
-        console.log('[MenezesLog] Nenhum usuário autenticado para atualizar UI');
-        return;
-    }
-    
-    console.log('[MenezesLog] Atualizando UI para usuário:', user.username);
-    
-    // Atualizar nome do usuário na interface
-    const userNameElements = document.querySelectorAll('.user-name');
-    userNameElements.forEach(el => {
-        el.textContent = user.name || user.username;
-    });
-    
-    // Atualizar elementos específicos baseado no papel do usuário
-    if (user.role === 'admin') {
-        // Mostrar elementos apenas para admin
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'block';
-        });
-        document.querySelectorAll('.driver-only').forEach(el => {
-            el.style.display = 'none';
-        });
-    } else {
-        // Esconder elementos apenas para admin
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('.driver-only').forEach(el => {
-            el.style.display = 'block';
-        });
-    }
-}
-
-// Manipular login
-async function handleLogin(e) {
-    e.preventDefault();
-    
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    if (!username || !password) {
-        showMessage('Preencha todos os campos', 'error');
-        return;
-    }
-    
-    console.log('[MenezesLog] Tentando login para usuário:', username);
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao fazer login');
-        }
-        
-        console.log('[MenezesLog] Login bem-sucedido:', data);
-        
-        // Limpar qualquer dado antigo
-        removeToken();
-        removeUser();
-        
-        // Salvar token e usuário
-        saveToken(data.token);
-        saveUser(data.user);
-        
-        // Verificar se os dados foram salvos corretamente
-        const savedToken = getToken();
-        const savedUser = getCurrentUser();
-        
-        console.log('[MenezesLog] Token salvo:', !!savedToken);
-        console.log('[MenezesLog] Usuário salvo:', !!savedUser);
-        
-        // Redirecionar para a página apropriada
-        if (data.user.role === 'admin') {
-            window.location.href = '/admin_dashboard.html';
-        } else {
-            window.location.href = '/motorista_dashboard.html';
-        }
-    } catch (error) {
-        console.error('[MenezesLog] Erro de login:', error);
-        showMessage(error.message || 'Falha na autenticação', 'error');
-    }
-}
-
-// Manipular logout
-function handleLogout(e) {
-    e.preventDefault();
-    
-    console.log('[MenezesLog] Realizando logout');
-    
-    // Limpar dados de autenticação
-    removeToken();
-    removeUser();
-    
-    // Redirecionar para login
-    window.location.href = '/';
-}
-
-// Fazer requisição API autenticada
-async function apiRequest(endpoint, method = 'GET', body = null) {
-    // SIMPLIFICADO: Não verificar autenticação
-    
-    // Normalizar endpoint
-    let normalizedEndpoint = endpoint;
-    
-    // Remover barra inicial se presente
-    if (normalizedEndpoint.startsWith('/')) {
-        normalizedEndpoint = normalizedEndpoint.substring(1);
-    }
-    
-    // Remover 'api/' duplicado
-    if (normalizedEndpoint.startsWith('api/')) {
-        // Já tem o prefixo api/, não adicionar novamente
-    } else {
-        normalizedEndpoint = 'api/' + normalizedEndpoint;
-    }
-    
-    const url = `${API_BASE_URL}/${normalizedEndpoint}`;
-    console.log(`[MenezesLog] Fazendo requisição ${method} para ${url}`);
-    
-    const token = getToken();
-    
-    const headers = {
-        'Content-Type': 'application/json'
+    // Cores baseadas no tipo
+    const colors = {
+        'success': '#28a745',
+        'error': '#dc3545',
+        'warning': '#ffc107',
+        'info': '#17a2b8'
     };
     
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
+    alertDiv.style.backgroundColor = colors[type] || colors.info;
+    alertDiv.textContent = message;
     
-    const options = {
-        method,
-        headers
-    };
-    
-    if (body && (method === 'POST' || method === 'PUT')) {
-        options.body = JSON.stringify(body);
-    }
-    
-    try {
-        const response = await fetch(url, options);
-        
-        // SIMPLIFICADO: Não redirecionar para login em caso de erro 401
-        
-        let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            console.error('[MenezesLog] Erro ao parsear resposta JSON:', e);
-            // Retornar dados simulados em caso de erro
-            return getSimulatedData(endpoint);
-        }
-        
-        if (!response.ok) {
-            console.error(`[MenezesLog] Erro na requisição para ${url}:`, data.error);
-            // Retornar dados simulados em caso de erro
-            return getSimulatedData(endpoint);
-        }
-        
-        return data;
-    } catch (error) {
-        console.error(`[MenezesLog] Erro na requisição para ${url}:`, error);
-        
-        // Retornar dados simulados em caso de erro
-        return getSimulatedData(endpoint);
-    }
-}
-
-// Obter dados simulados para endpoints
-function getSimulatedData(endpoint) {
-    console.log('[MenezesLog] Usando dados simulados para:', endpoint);
-    
-    // Dados simulados para diferentes endpoints
-    const simulatedData = {
-        'drivers': {
-            drivers: [
-                {"driver_id": "1001", "name": "João Silva", "status": "active", "balance": 1250.50},
-                {"driver_id": "1002", "name": "Maria Oliveira", "status": "active", "balance": 980.25},
-                {"driver_id": "1003", "name": "Pedro Santos", "status": "inactive", "balance": 0.00}
-            ],
-            total: 3
-        },
-        'payment/current': {
-            name: "João Silva",
-            balance: 1250.50,
-            payments: [
-                {date: "2025-06-01", description: "Pagamento Mensal", amount: 1250.50, status: "Pago"},
-                {date: "2025-05-01", description: "Pagamento Mensal", amount: 1180.25, status: "Pago"}
-            ]
-        },
-        'payment/history': {
-            payments: [
-                {date: "2025-06-01", description: "Pagamento Mensal", amount: 1250.50, status: "Pago"},
-                {date: "2025-05-01", description: "Pagamento Mensal", amount: 1180.25, status: "Pago"},
-                {date: "2025-04-01", description: "Pagamento Mensal", amount: 1150.75, status: "Pago"}
-            ]
-        },
-        'payment/upcoming': {
-            payments: [
-                {date: "2025-07-01", description: "Pagamento Mensal (Estimado)", amount: 1300.00, status: "Pendente"}
-            ]
-        },
-        'bonus/summary': {
-            total: 350.25,
-            count: 5
-        },
-        'bonus/recent': {
-            bonuses: [
-                {date: "2025-06-15", description: "Bônus por Pontualidade", amount: 150.00},
-                {date: "2025-06-10", description: "Bônus por Volume", amount: 200.25}
-            ]
-        },
-        'discount/summary': {
-            total: 120.50,
-            count: 3
-        },
-        'discount/recent': {
-            discounts: [
-                {date: "2025-06-12", description: "Desconto por Atraso", amount: 50.00},
-                {date: "2025-06-05", description: "Desconto por Dano", amount: 70.50}
-            ]
-        },
-        'invoice/recent': {
-            invoices: [
-                {id: "INV-2025-001", date: "2025-06-01", amount: 1250.50, status: "Paga"},
-                {id: "INV-2025-002", date: "2025-05-01", amount: 1180.25, status: "Paga"}
-            ]
-        },
-        'settings/general': {
-            company_name: "MenezesLog",
-            default_currency: "BRL",
-            timezone: "America/Sao_Paulo"
-        }
-    };
-    
-    // Verificar se temos dados simulados para este endpoint
-    for (const key in simulatedData) {
-        if (endpoint.includes(key)) {
-            return simulatedData[key];
-        }
-    }
-    
-    // Dados genéricos se não encontrar correspondência específica
-    return {
-        status: "success",
-        message: "Dados simulados genéricos",
-        data: []
-    };
-}
-
-// Mostrar mensagem na interface
-function showMessage(message, type = 'info') {
-    console.log(`[MenezesLog] Mensagem (${type}): ${message}`);
-    
-    // Verificar se o elemento de mensagem existe
-    let messageContainer = document.getElementById('message-container');
-    
-    // Se não existir, criar
-    if (!messageContainer) {
-        messageContainer = document.createElement('div');
-        messageContainer.id = 'message-container';
-        messageContainer.style.position = 'fixed';
-        messageContainer.style.top = '20px';
-        messageContainer.style.right = '20px';
-        messageContainer.style.zIndex = '9999';
-        document.body.appendChild(messageContainer);
-    }
-    
-    // Criar elemento de mensagem
-    const messageElement = document.createElement('div');
-    messageElement.className = `alert alert-${type === 'error' ? 'danger' : type}`;
-    messageElement.textContent = message;
-    
-    // Adicionar à container
-    messageContainer.appendChild(messageElement);
+    document.body.appendChild(alertDiv);
     
     // Remover após 5 segundos
     setTimeout(() => {
-        messageElement.remove();
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
     }, 5000);
 }
 
-// Carregar dados específicos da página atual
-function loadPageSpecificData() {
-    const currentPath = window.location.pathname;
-    console.log('[MenezesLog] Carregando dados específicos para:', currentPath);
-    
-    // Obter o usuário atual e seu driver_id
-    const user = getCurrentUser();
-    const driverId = user ? user.driver_id : '1001'; // Valor padrão para navegação simplificada
-    
-    console.log('[MenezesLog] Driver ID do usuário atual:', driverId);
-    
-    // Dashboard Admin
-    if (currentPath.includes('admin_dashboard')) {
-        loadAdminDashboard();
-    }
-    
-    // Dashboard Motorista
-    else if (currentPath.includes('motorista_dashboard')) {
-        loadDriverDashboard(driverId);
-    }
-    
-    // Página de Motoristas
-    else if (currentPath.includes('motoristas')) {
-        loadDriversPage();
-    }
-    
-    // Página de Bonificações
-    else if (currentPath.includes('bonificacoes')) {
-        loadBonusPage(driverId);
-    }
-    
-    // Página de Descontos
-    else if (currentPath.includes('descontos')) {
-        loadDiscountsPage(driverId);
-    }
-    
-    // Página de Upload
-    else if (currentPath.includes('upload')) {
-        loadUploadPage();
-    }
-    
-    // Página de Relatórios
-    else if (currentPath.includes('relatorios')) {
-        loadReportsPage();
-    }
-    
-    // Página de Nota Fiscal
-    else if (currentPath.includes('nota_fiscal')) {
-        loadInvoicePage(driverId);
-    }
-    
-    // Página de Configurações
-    else if (currentPath.includes('configuracoes')) {
-        loadSettingsPage();
+// Função para fazer requisições à API
+async function fetchAPI(endpoint, options = {}) {
+    try {
+        const token = localStorage.getItem('token');
+        const url = endpoint.startsWith('/') ? endpoint : `${API_BASE_URL}/${endpoint}`;
+        
+        // Normalizar URL para evitar duplicação de /api/
+        const normalizedUrl = url.replace('/api/api/', '/api/');
+        
+        console.log(`[MenezesLog] Fazendo requisição para: ${normalizedUrl}`);
+        
+        const defaultOptions = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            }
+        };
+        
+        const response = await fetch(normalizedUrl, { ...defaultOptions, ...options });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log(`[MenezesLog] Resposta recebida de ${normalizedUrl}:`, data);
+        return data;
+        
+    } catch (error) {
+        console.error(`[MenezesLog] Erro na requisição para ${endpoint}:`, error);
+        throw new Error('Ocorreu um erro na requisição');
     }
 }
 
-// Funções específicas para cada página
-
-// Dashboard Admin
-function loadAdminDashboard() {
-    console.log('[MenezesLog] Carregando dashboard admin');
+// Função de login corrigida
+async function handleLogin(event) {
+    event.preventDefault();
     
-    // Carregar dados do dashboard
-    apiRequest('drivers')
-        .then(data => {
-            console.log('[MenezesLog] Dados de motoristas recebidos:', data);
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    console.log('[MenezesLog] Iniciando login para:', email);
+    
+    if (!email || !password) {
+        showAlert('Por favor, preencha email e senha', 'error');
+        return;
+    }
+    
+    try {
+        console.log('[MenezesLog] Enviando requisição de login...');
+        
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                email: email, 
+                password: password 
+            })
+        });
+        
+        console.log('[MenezesLog] Resposta recebida, status:', response.status);
+        
+        const data = await response.json();
+        console.log('[MenezesLog] Dados da resposta:', data);
+        
+        if (response.ok && data.success && data.user && data.token) {
+            console.log('[MenezesLog] Login bem-sucedido!');
             
-            // Atualizar contadores
-            const totalDriversElement = document.getElementById('total-drivers');
-            if (totalDriversElement) {
-                totalDriversElement.textContent = data.total || 0;
+            // FORÇAR salvamento no localStorage
+            try {
+                localStorage.clear(); // Limpar dados antigos
+                
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('token', data.token);
+                
+                // Verificar se foi salvo
+                const savedUser = localStorage.getItem('user');
+                const savedToken = localStorage.getItem('token');
+                
+                console.log('[MenezesLog] Dados salvos no localStorage:');
+                console.log('User:', savedUser);
+                console.log('Token:', savedToken);
+                
+                if (!savedUser || !savedToken) {
+                    throw new Error('Falha ao salvar dados no localStorage');
+                }
+                
+                // Redirecionar baseado no role
+                console.log('[MenezesLog] Redirecionando usuário, role:', data.user.role);
+                
+                if (data.user.role === 'admin' || data.user.role === 'manager') {
+                    console.log('[MenezesLog] Redirecionando para dashboard admin');
+                    window.location.href = '/admin_dashboard.html';
+                } else {
+                    console.log('[MenezesLog] Redirecionando para dashboard motorista');
+                    window.location.href = '/motorista_dashboard.html';
+                }
+                
+            } catch (storageError) {
+                console.error('[MenezesLog] Erro ao salvar no localStorage:', storageError);
+                showAlert('Erro ao salvar dados de login', 'error');
             }
             
-            // Atualizar tabela de motoristas
-            const tableBody = document.querySelector('#drivers-table tbody');
-            if (tableBody && data.drivers) {
-                tableBody.innerHTML = '';
-                data.drivers.forEach(driver => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${driver.driver_id}</td>
-                        <td>${driver.name}</td>
-                        <td>${driver.status === 'active' ? 'Ativo' : 'Inativo'}</td>
-                        <td>R$ ${driver.balance.toFixed(2)}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary">Detalhes</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+        } else {
+            console.error('[MenezesLog] Erro no login:', data.error);
+            showAlert(data.error || 'Credenciais inválidas', 'error');
+        }
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro na requisição de login:', error);
+        showAlert('Erro de conexão. Tente novamente.', 'error');
+    }
+}
+
+// Função para verificar autenticação
+function checkAuthentication() {
+    console.log('[MenezesLog] Verificando autenticação...');
+    
+    try {
+        const userStr = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        
+        console.log('[MenezesLog] Dados do localStorage:');
+        console.log('User string:', userStr);
+        console.log('Token:', token);
+        
+        if (!userStr || !token) {
+            console.log('[MenezesLog] Dados de autenticação não encontrados');
+            window.location.href = '/';
+            return false;
+        }
+        
+        const user = JSON.parse(userStr);
+        console.log('[MenezesLog] Usuário autenticado:', user);
+        
+        if (!user || !user.id) {
+            console.log('[MenezesLog] Dados de usuário inválidos');
+            localStorage.clear();
+            window.location.href = '/';
+            return false;
+        }
+        
+        console.log('[MenezesLog] Autenticação válida para:', user.email, 'Role:', user.role);
+        return true;
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao verificar autenticação:', error);
+        localStorage.clear();
+        window.location.href = '/';
+        return false;
+    }
+}
+
+// Função para inicializar informações do usuário
+function initializeUserInfo() {
+    console.log('[MenezesLog] Inicializando informações do usuário...');
+    
+    if (!checkAuthentication()) {
+        return;
+    }
+    
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        console.log('[MenezesLog] Inicializando interface para usuário:', user);
+        
+        // Atualizar nome do usuário
+        const userNameElement = document.getElementById('user-name');
+        if (userNameElement) {
+            const displayName = user.first_name && user.last_name 
+                ? `${user.first_name} ${user.last_name}` 
+                : user.username || user.email;
+            userNameElement.textContent = displayName;
+            console.log('[MenezesLog] Nome definido:', displayName);
+        }
+        
+        // Atualizar role do usuário
+        const userRoleElement = document.getElementById('user-role');
+        if (userRoleElement) {
+            const roleNames = {
+                'admin': 'Administrador',
+                'manager': 'Gerente', 
+                'driver': 'Motorista',
+                'user': 'Usuário'
+            };
+            
+            const roleName = roleNames[user.role] || user.role || 'Usuário';
+            userRoleElement.textContent = roleName;
+            console.log('[MenezesLog] Role definido:', roleName);
+        }
+        
+        // Configurar driver_id
+        if (user.role === 'driver') {
+            localStorage.setItem('driver_id', user.id.toString());
+        } else {
+            localStorage.setItem('driver_id', '1'); // ID padrão para admin
+        }
+        
+        console.log('[MenezesLog] Driver ID definido:', localStorage.getItem('driver_id'));
+        console.log('[MenezesLog] Inicialização concluída com sucesso');
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao inicializar usuário:', error);
+        localStorage.clear();
+        window.location.href = '/';
+    }
+}
+
+// Função para logout
+function handleLogout() {
+    console.log('[MenezesLog] Fazendo logout...');
+    localStorage.clear();
+    window.location.href = '/';
+}
+
+// Função para carregar dados do dashboard
+async function loadDashboardData() {
+    console.log('[MenezesLog] Carregando dados do dashboard...');
+    
+    if (!checkAuthentication()) {
+        return;
+    }
+    
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const driverId = localStorage.getItem('driver_id') || user.id;
+        
+        console.log('[MenezesLog] Carregando dados para driver ID:', driverId);
+        
+        // Carregar dados em paralelo com fallback para dados simulados
+        const promises = [
+            loadPaymentData(driverId),
+            loadBonusData(driverId),
+            loadDiscountData(driverId),
+            loadRecentInvoices(driverId)
+        ];
+        
+        await Promise.allSettled(promises);
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao carregar dados do dashboard:', error);
+        showAlert('Erro ao carregar dados do dashboard', 'warning');
+    }
+}
+
+// Função para carregar dados de pagamento
+async function loadPaymentData(driverId) {
+    try {
+        console.log('[MenezesLog] Carregando dados de pagamento...');
+        
+        // Tentar carregar dados reais da API
+        try {
+            const data = await fetchAPI(`payment/current?driver_id=${driverId}`);
+            updatePaymentUI(data);
+        } catch (apiError) {
+            console.log('[MenezesLog] API não disponível, usando dados simulados');
+            // Dados simulados para demonstração
+            const simulatedData = {
+                current_month: {
+                    gross_amount: 5500.00,
+                    bonuses: 300.00,
+                    discounts: 150.00,
+                    net_amount: 5650.00
+                },
+                last_payment: {
+                    date: '2024-11-15',
+                    amount: 5200.00
+                }
+            };
+            updatePaymentUI(simulatedData);
+        }
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao carregar dados de pagamento:', error);
+    }
+}
+
+// Função para atualizar UI de pagamento
+function updatePaymentUI(data) {
+    try {
+        const elements = {
+            'gross-amount': data.current_month?.gross_amount,
+            'bonus-amount': data.current_month?.bonuses,
+            'discount-amount': data.current_month?.discounts,
+            'net-amount': data.current_month?.net_amount,
+            'last-payment-date': data.last_payment?.date,
+            'last-payment-amount': data.last_payment?.amount
+        };
+        
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element && value !== undefined) {
+                if (id.includes('amount')) {
+                    element.textContent = `R$ ${value.toFixed(2).replace('.', ',')}`;
+                } else if (id.includes('date')) {
+                    element.textContent = new Date(value).toLocaleDateString('pt-BR');
+                } else {
+                    element.textContent = value;
+                }
             }
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar dados do dashboard:', error);
         });
-}
-
-// Dashboard Motorista
-function loadDriverDashboard(driverId) {
-    console.log('[MenezesLog] Carregando dashboard do motorista:', driverId);
-    
-    // Carregar dados do motorista
-    apiRequest(`payment/current?driver_id=${driverId}`)
-        .then(data => {
-            console.log('[MenezesLog] Dados do motorista recebidos:', data);
-            updateDriverDashboardUI(data);
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar dados do motorista:', error);
-        });
-}
-
-// Atualizar UI do dashboard do motorista
-function updateDriverDashboardUI(data) {
-    // Atualizar informações do motorista
-    const driverNameElement = document.getElementById('driver-name');
-    if (driverNameElement) {
-        driverNameElement.textContent = data.name || "Motorista";
-    }
-    
-    const driverBalanceElement = document.getElementById('driver-balance');
-    if (driverBalanceElement) {
-        driverBalanceElement.textContent = `R$ ${(data.balance || 0).toFixed(2)}`;
-    }
-    
-    // Atualizar histórico de pagamentos
-    const tableBody = document.querySelector('#payments-table tbody');
-    if (tableBody && data.payments) {
-        tableBody.innerHTML = '';
-        data.payments.forEach(payment => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${payment.date}</td>
-                <td>${payment.description}</td>
-                <td>R$ ${payment.amount.toFixed(2)}</td>
-                <td>${payment.status}</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    } else if (tableBody) {
-        // Dados simulados se não houver pagamentos
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center">Nenhum pagamento encontrado</td>
-            </tr>
-        `;
+        
+        console.log('[MenezesLog] UI de pagamento atualizada');
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao atualizar UI de pagamento:', error);
     }
 }
 
-// Página de Motoristas
-function loadDriversPage() {
-    console.log('[MenezesLog] Carregando página de motoristas');
-    
-    // Carregar lista de motoristas
-    apiRequest('drivers')
-        .then(data => {
-            console.log('[MenezesLog] Lista de motoristas recebida:', data);
-            
-            // Atualizar tabela de motoristas
-            const tableBody = document.querySelector('#drivers-list tbody');
-            if (tableBody && data.drivers) {
-                tableBody.innerHTML = '';
-                data.drivers.forEach(driver => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${driver.driver_id}</td>
-                        <td>${driver.name}</td>
-                        <td>${driver.status === 'active' ? 'Ativo' : 'Inativo'}</td>
-                        <td>R$ ${driver.balance.toFixed(2)}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary">Editar</button>
-                            <button class="btn btn-sm btn-danger">Desativar</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar lista de motoristas:', error);
-        });
-}
-
-// Página de Bonificações
-function loadBonusPage(driverId) {
-    console.log('[MenezesLog] Carregando página de bonificações');
-    
-    // Carregar bonificações
-    apiRequest('bonus/list')
-        .then(data => {
-            console.log('[MenezesLog] Lista de bonificações recebida:', data);
-            
-            // Implementar atualização da UI
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar bonificações:', error);
-        });
-}
-
-// Página de Descontos
-function loadDiscountsPage(driverId) {
-    console.log('[MenezesLog] Carregando página de descontos');
-    
-    // Carregar descontos
-    apiRequest('discount/list')
-        .then(data => {
-            console.log('[MenezesLog] Lista de descontos recebida:', data);
-            
-            // Implementar atualização da UI
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar descontos:', error);
-        });
-}
-
-// Página de Upload
-function loadUploadPage() {
-    console.log('[MenezesLog] Carregando página de upload');
-    
-    // Configurar formulário de upload
-    const uploadForm = document.getElementById('upload-form');
-    if (uploadForm) {
-        uploadForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Implementar lógica de upload
-            showMessage('Funcionalidade de upload em desenvolvimento', 'info');
-        });
+// Função para carregar dados de bonificação
+async function loadBonusData(driverId) {
+    try {
+        console.log('[MenezesLog] Carregando dados de bonificação...');
+        
+        try {
+            const data = await fetchAPI(`bonus/summary?driver_id=${driverId}&period=month`);
+            updateBonusUI(data);
+        } catch (apiError) {
+            // Dados simulados
+            const simulatedData = {
+                total_bonuses: 300.00,
+                bonuses: [
+                    { type: 'Pontualidade', amount: 150.00 },
+                    { type: 'Economia de Combustível', amount: 100.00 },
+                    { type: 'Avaliação do Cliente', amount: 50.00 }
+                ]
+            };
+            updateBonusUI(simulatedData);
+        }
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao carregar dados de bonificação:', error);
     }
 }
 
-// Página de Relatórios
-function loadReportsPage() {
-    console.log('[MenezesLog] Carregando página de relatórios');
-    
-    // Carregar relatórios
-    apiRequest('reports/list')
-        .then(data => {
-            console.log('[MenezesLog] Lista de relatórios recebida:', data);
-            
-            // Implementar atualização da UI
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar relatórios:', error);
-        });
+// Função para atualizar UI de bonificação
+function updateBonusUI(data) {
+    try {
+        const totalElement = document.getElementById('total-bonus');
+        if (totalElement && data.total_bonuses) {
+            totalElement.textContent = `R$ ${data.total_bonuses.toFixed(2).replace('.', ',')}`;
+        }
+        
+        const listElement = document.getElementById('bonus-list');
+        if (listElement && data.bonuses) {
+            listElement.innerHTML = data.bonuses.map(bonus => 
+                `<div class="bonus-item">
+                    <span>${bonus.type}</span>
+                    <span>R$ ${bonus.amount.toFixed(2).replace('.', ',')}</span>
+                </div>`
+            ).join('');
+        }
+        
+        console.log('[MenezesLog] UI de bonificação atualizada');
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao atualizar UI de bonificação:', error);
+    }
 }
 
-// Página de Nota Fiscal
-function loadInvoicePage(driverId) {
-    console.log('[MenezesLog] Carregando página de nota fiscal');
-    
-    // Carregar notas fiscais
-    apiRequest('invoice/list')
-        .then(data => {
-            console.log('[MenezesLog] Lista de notas fiscais recebida:', data);
-            
-            // Implementar atualização da UI
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar notas fiscais:', error);
-        });
+// Função para carregar dados de desconto
+async function loadDiscountData(driverId) {
+    try {
+        console.log('[MenezesLog] Carregando dados de desconto...');
+        
+        try {
+            const data = await fetchAPI(`discount/summary?driver_id=${driverId}`);
+            updateDiscountUI(data);
+        } catch (apiError) {
+            // Dados simulados
+            const simulatedData = {
+                total_discounts: 150.00,
+                discounts: [
+                    { type: 'Multa de Trânsito', amount: 100.00 },
+                    { type: 'Manutenção', amount: 50.00 }
+                ]
+            };
+            updateDiscountUI(simulatedData);
+        }
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao carregar dados de desconto:', error);
+    }
 }
 
-// Página de Configurações
-function loadSettingsPage() {
-    console.log('[MenezesLog] Carregando página de configurações');
-    
-    // Carregar configurações
-    apiRequest('settings/general')
-        .then(data => {
-            console.log('[MenezesLog] Configurações gerais recebidas:', data);
-            
-            // Implementar atualização da UI
-            const companyNameInput = document.getElementById('company-name');
-            if (companyNameInput && data.company_name) {
-                companyNameInput.value = data.company_name;
-            }
-        })
-        .catch(error => {
-            console.error('[MenezesLog] Erro ao carregar configurações:', error);
-        });
+// Função para atualizar UI de desconto
+function updateDiscountUI(data) {
+    try {
+        const totalElement = document.getElementById('total-discount');
+        if (totalElement && data.total_discounts) {
+            totalElement.textContent = `R$ ${data.total_discounts.toFixed(2).replace('.', ',')}`;
+        }
+        
+        const listElement = document.getElementById('discount-list');
+        if (listElement && data.discounts) {
+            listElement.innerHTML = data.discounts.map(discount => 
+                `<div class="discount-item">
+                    <span>${discount.type}</span>
+                    <span>R$ ${discount.amount.toFixed(2).replace('.', ',')}</span>
+                </div>`
+            ).join('');
+        }
+        
+        console.log('[MenezesLog] UI de desconto atualizada');
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao atualizar UI de desconto:', error);
+    }
 }
+
+// Função para carregar notas fiscais recentes
+async function loadRecentInvoices(driverId) {
+    try {
+        console.log('[MenezesLog] Carregando notas fiscais recentes...');
+        
+        try {
+            const data = await fetchAPI(`invoice/recent?driver_id=${driverId}&limit=5`);
+            updateInvoicesUI(data);
+        } catch (apiError) {
+            // Dados simulados
+            const simulatedData = {
+                invoices: [
+                    { id: 1, number: 'NF-001', date: '2024-11-01', amount: 1200.00, status: 'Emitida' },
+                    { id: 2, number: 'NF-002', date: '2024-11-15', amount: 1350.00, status: 'Emitida' },
+                    { id: 3, number: 'NF-003', date: '2024-11-30', amount: 1100.00, status: 'Pendente' }
+                ]
+            };
+            updateInvoicesUI(simulatedData);
+        }
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao carregar notas fiscais:', error);
+    }
+}
+
+// Função para atualizar UI de notas fiscais
+function updateInvoicesUI(data) {
+    try {
+        const listElement = document.getElementById('recent-invoices');
+        if (listElement && data.invoices) {
+            listElement.innerHTML = data.invoices.map(invoice => 
+                `<div class="invoice-item">
+                    <div class="invoice-number">${invoice.number}</div>
+                    <div class="invoice-date">${new Date(invoice.date).toLocaleDateString('pt-BR')}</div>
+                    <div class="invoice-amount">R$ ${invoice.amount.toFixed(2).replace('.', ',')}</div>
+                    <div class="invoice-status status-${invoice.status.toLowerCase()}">${invoice.status}</div>
+                </div>`
+            ).join('');
+        }
+        
+        console.log('[MenezesLog] UI de notas fiscais atualizada');
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao atualizar UI de notas fiscais:', error);
+    }
+}
+
+// Função para carregar lista de motoristas
+async function loadDriversList() {
+    try {
+        console.log('[MenezesLog] Carregando lista de motoristas...');
+        
+        try {
+            const data = await fetchAPI('drivers');
+            updateDriversListUI(data);
+        } catch (apiError) {
+            // Dados simulados
+            const simulatedData = {
+                drivers: [
+                    { id: 1, name: 'João Silva', cpf: '123.456.789-00', status: 'active', phone: '(11) 99999-9999' },
+                    { id: 2, name: 'Maria Santos', cpf: '987.654.321-00', status: 'active', phone: '(11) 88888-8888' },
+                    { id: 3, name: 'Pedro Oliveira', cpf: '456.789.123-00', status: 'inactive', phone: '(11) 77777-7777' }
+                ]
+            };
+            updateDriversListUI(simulatedData);
+        }
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao carregar lista de motoristas:', error);
+    }
+}
+
+// Função para atualizar UI da lista de motoristas
+function updateDriversListUI(data) {
+    try {
+        const tableBody = document.getElementById('drivers-table-body');
+        if (tableBody && data.drivers) {
+            tableBody.innerHTML = data.drivers.map(driver => 
+                `<tr>
+                    <td>${driver.name}</td>
+                    <td>${driver.cpf}</td>
+                    <td>${driver.phone || 'N/A'}</td>
+                    <td>
+                        <span class="status-badge status-${driver.status}">
+                            ${driver.status === 'active' ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editDriver(${driver.id})">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDriver(${driver.id})">Excluir</button>
+                    </td>
+                </tr>`
+            ).join('');
+        }
+        
+        console.log('[MenezesLog] UI da lista de motoristas atualizada');
+        
+    } catch (error) {
+        console.error('[MenezesLog] Erro ao atualizar UI da lista de motoristas:', error);
+    }
+}
+
+// Funções para gerenciamento de motoristas
+function editDriver(driverId) {
+    console.log('[MenezesLog] Editando motorista:', driverId);
+    showAlert('Funcionalidade de edição em desenvolvimento', 'info');
+}
+
+function deleteDriver(driverId) {
+    console.log('[MenezesLog] Excluindo motorista:', driverId);
+    if (confirm('Tem certeza que deseja excluir este motorista?')) {
+        showAlert('Funcionalidade de exclusão em desenvolvimento', 'info');
+    }
+}
+
+// Inicialização quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[MenezesLog] DOM carregado, inicializando aplicação...');
+    
+    // Verificar se estamos na página de login
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        console.log('[MenezesLog] Página de login detectada');
+        loginForm.addEventListener('submit', handleLogin);
+        return;
+    }
+    
+    // Para outras páginas, verificar autenticação e inicializar
+    if (checkAuthentication()) {
+        initializeUserInfo();
+        
+        // Carregar dados específicos da página
+        const currentPage = window.location.pathname;
+        console.log('[MenezesLog] Página atual:', currentPage);
+        
+        if (currentPage.includes('dashboard')) {
+            loadDashboardData();
+        } else if (currentPage.includes('motoristas')) {
+            loadDriversList();
+        }
+        
+        // Configurar botão de logout
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', handleLogout);
+        }
+    }
+});
 
 // Exportar funções para uso global
 window.MenezesLog = {
-    apiRequest,
-    showMessage,
-    loadAdminDashboard,
-    loadDriverDashboard,
-    isAuthenticated,
-    getCurrentUser,
-    handleLogout
+    version: VERSION,
+    showAlert,
+    fetchAPI,
+    handleLogin,
+    handleLogout,
+    checkAuthentication,
+    initializeUserInfo,
+    loadDashboardData,
+    loadDriversList,
+    editDriver,
+    deleteDriver
 };
+
+console.log('[MenezesLog] Aplicação inicializada com sucesso!');
+
