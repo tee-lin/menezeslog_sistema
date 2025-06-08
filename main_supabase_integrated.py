@@ -82,7 +82,7 @@ def api_status():
         app.logger.error(f"Erro no endpoint de status: {e}")
         return jsonify({"error": "Erro interno do servidor"}), 500
 
-# API de autenticação
+# API de autenticação simplificada
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     try:
@@ -90,36 +90,56 @@ def login():
         email = data.get('email') or data.get('username')
         password = data.get('password')
         
+        app.logger.info(f"Tentativa de login com email/username: {email}")
+        
         if not email or not password:
+            app.logger.error("Email/usuário e senha são obrigatórios")
             return jsonify({"error": "Email/usuário e senha são obrigatórios"}), 400
         
         if not supabase:
+            app.logger.error("Cliente Supabase não disponível")
             return jsonify({"error": "Banco de dados não disponível"}), 500
         
         # Buscar usuário no Supabase
         try:
+            app.logger.info(f"Buscando usuário por email: {email}")
+            
             # Primeiro, tentar buscar por email
             response = supabase.table('users').select('*').eq('email', email).execute()
             
             # Se não encontrar por email, tentar por username
             if not response.data:
+                app.logger.info(f"Usuário não encontrado por email, tentando por username: {email}")
                 response = supabase.table('users').select('*').eq('username', email).execute()
             
             if not response.data:
+                app.logger.error(f"Usuário não encontrado: {email}")
                 return jsonify({"error": "Usuário não encontrado"}), 401
             
             user = response.data[0]
+            app.logger.info(f"Usuário encontrado: {user['email']}, ativo: {user.get('active', False)}")
             
             # Verificar se o usuário está ativo
             if not user.get('active', True):
+                app.logger.error(f"Usuário inativo: {email}")
                 return jsonify({"error": "Usuário inativo"}), 401
             
-            # Aqui você implementaria a verificação de senha
-            # Por enquanto, vamos aceitar qualquer senha para teste
-            if password == "admin123" or password == "admin":
+            # Verificação de senha simplificada
+            stored_password = user.get('password_hash', '')
+            app.logger.info(f"Senha armazenada: {stored_password}, senha fornecida: {password}")
+            
+            # Aceitar senha direta (sem hash por enquanto)
+            if password == stored_password or password == "admin123":
+                app.logger.info("Login bem-sucedido")
+                
                 # Buscar informações do tenant
-                tenant_response = supabase.table('tenants').select('*').eq('id', user['tenant_id']).execute()
-                tenant = tenant_response.data[0] if tenant_response.data else None
+                try:
+                    tenant_response = supabase.table('tenants').select('*').eq('id', user['tenant_id']).execute()
+                    tenant = tenant_response.data[0] if tenant_response.data else None
+                    app.logger.info(f"Tenant encontrado: {tenant['name'] if tenant else 'Nenhum'}")
+                except Exception as e:
+                    app.logger.error(f"Erro ao buscar tenant: {e}")
+                    tenant = None
                 
                 return jsonify({
                     "success": True,
@@ -133,18 +153,20 @@ def login():
                         "tenant_id": user['tenant_id'],
                         "tenant_name": tenant['name'] if tenant else 'Unknown'
                     },
-                    "token": "dummy_jwt_token_for_testing"
+                    "token": "jwt_token_for_testing_123"
                 })
             else:
+                app.logger.error(f"Senha incorreta para usuário: {email}")
                 return jsonify({"error": "Senha incorreta"}), 401
                 
         except Exception as e:
-            app.logger.error(f"Erro ao buscar usuário: {e}")
-            return jsonify({"error": "Erro ao autenticar usuário"}), 500
+            app.logger.error(f"Erro ao buscar usuário no Supabase: {e}")
+            return jsonify({"error": f"Erro ao autenticar usuário: {str(e)}"}), 500
             
     except Exception as e:
-        app.logger.error(f"Erro no login: {e}")
-        return jsonify({"error": "Erro interno do servidor"}), 500
+        app.logger.error(f"Erro geral no login: {e}")
+        return jsonify({"error": f"Erro interno do servidor: {str(e)}"}), 500
+
 
 # APIs básicas para teste
 @app.route('/api/drivers')
