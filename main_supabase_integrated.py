@@ -1,5 +1,5 @@
-# MenezesLog SaaS v6.3.1 - CORREÇÃO DE REGRESSÃO
-# Mantém APIs funcionando + Restaura planilha DE-PARA
+# MenezesLog SaaS v6.3.2 - CORREÇÃO DEFINITIVA
+# Corrige leitura do Excel - PROBLEMA IDENTIFICADO E RESOLVIDO
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -150,12 +150,12 @@ def get_motoristas():
 
 @app.route('/api/motoristas/upload', methods=['POST'])
 def upload_motoristas():
-    """Upload da planilha DE-PARA de motoristas - VERSÃO CORRIGIDA"""
+    """Upload da planilha DE-PARA de motoristas - VERSÃO CORRIGIDA DEFINITIVA"""
     try:
         empresa_id = 1
         init_empresa_data(empresa_id)
         
-        app.logger.info("=== INÍCIO UPLOAD MOTORISTAS ===")
+        app.logger.info("=== INÍCIO UPLOAD MOTORISTAS v6.3.2 ===")
         
         if 'file' not in request.files:
             return jsonify({'error': 'Nenhum arquivo enviado'}), 400
@@ -182,46 +182,52 @@ def upload_motoristas():
                 
                 app.logger.info(f"Planilha carregada. Dimensões: {sheet.max_row} linhas x {sheet.max_column} colunas")
                 
-                # Ler cabeçalhos (primeira linha)
+                # Ler cabeçalhos (primeira linha) - MÉTODO CORRETO
                 headers = []
-                for cell in sheet[1]:
+                for col_num in range(1, sheet.max_column + 1):
+                    cell = sheet.cell(row=1, column=col_num)
                     headers.append(str(cell.value) if cell.value is not None else '')
                 
                 app.logger.info(f"Cabeçalhos encontrados: {headers}")
                 
-                # Processar dados (a partir da linha 2)
+                # Processar dados (a partir da linha 2) - MÉTODO CORRETO
                 for row_num in range(2, sheet.max_row + 1):
                     try:
-                        row = sheet[row_num]
-                        
-                        # Criar dicionário da linha
+                        # Ler dados da linha - MÉTODO CORRETO
                         linha_data = {}
-                        for col_idx, cell in enumerate(row):
-                            if col_idx < len(headers):
-                                linha_data[headers[col_idx]] = str(cell.value) if cell.value is not None else ''
+                        for col_num in range(1, sheet.max_column + 1):
+                            cell = sheet.cell(row=row_num, column=col_num)
+                            if col_num <= len(headers):
+                                col_name = headers[col_num - 1]  # -1 porque headers é 0-based
+                                linha_data[col_name] = cell.value
+                        
+                        app.logger.info(f"Linha {row_num} dados brutos: {linha_data}")
                         
                         # Procurar ID do motorista
                         id_motorista = None
-                        for col_name in ['ID', 'id', 'Id', 'ID_MOTORISTA', 'id_motorista', 'Código', 'codigo', 'CODIGO']:
-                            if col_name in linha_data and linha_data[col_name]:
+                        for col_name in ['ID do motorista', 'ID', 'id', 'Id', 'ID_MOTORISTA', 'id_motorista', 'Código', 'codigo', 'CODIGO']:
+                            if col_name in linha_data and linha_data[col_name] is not None:
                                 try:
-                                    id_motorista = int(float(linha_data[col_name]))  # float primeiro para lidar com decimais
+                                    if isinstance(linha_data[col_name], (int, float)):
+                                        id_motorista = int(linha_data[col_name])
+                                    else:
+                                        id_motorista = int(float(str(linha_data[col_name])))
                                     break
                                 except (ValueError, TypeError):
                                     continue
                         
                         # Procurar nome do motorista
                         nome_motorista = None
-                        for col_name in ['NOME', 'nome', 'Nome', 'NOME_MOTORISTA', 'nome_motorista', 'Motorista', 'MOTORISTA']:
-                            if col_name in linha_data and linha_data[col_name]:
+                        for col_name in ['Nome do motorista', 'NOME', 'nome', 'Nome', 'NOME_MOTORISTA', 'nome_motorista', 'Motorista', 'MOTORISTA']:
+                            if col_name in linha_data and linha_data[col_name] is not None:
                                 nome_motorista = str(linha_data[col_name]).strip()
-                                if nome_motorista and nome_motorista != 'None':
+                                if nome_motorista and nome_motorista != 'None' and nome_motorista != '':
                                     break
                         
-                        app.logger.info(f"Linha {row_num}: ID={id_motorista}, Nome={nome_motorista}")
+                        app.logger.info(f"Linha {row_num}: ID={id_motorista}, Nome='{nome_motorista}'")
                         
                         if not id_motorista or not nome_motorista:
-                            app.logger.warning(f"Linha {row_num}: Dados inválidos - ID={id_motorista}, Nome={nome_motorista}")
+                            app.logger.warning(f"Linha {row_num}: Dados inválidos - ID={id_motorista}, Nome='{nome_motorista}'")
                             motoristas_erro += 1
                             continue
                         
@@ -236,7 +242,7 @@ def upload_motoristas():
                             # Atualizar dados existentes
                             motorista_existente['nome_motorista'] = nome_motorista
                             motorista_existente['updated_at'] = datetime.now().isoformat()
-                            app.logger.info(f"Motorista {id_motorista} atualizado: {nome_motorista}")
+                            app.logger.info(f"✅ Motorista {id_motorista} ATUALIZADO: {nome_motorista}")
                         else:
                             # Criar novo motorista
                             motorista = {
@@ -246,7 +252,7 @@ def upload_motoristas():
                                 'updated_at': datetime.now().isoformat()
                             }
                             motoristas_db[empresa_id].append(motorista)
-                            app.logger.info(f"Motorista {id_motorista} criado: {nome_motorista}")
+                            app.logger.info(f"✅ Motorista {id_motorista} CRIADO: {nome_motorista}")
                             
                             # Inicializar tarifas padrão
                             if id_motorista not in tarifas_db[empresa_id]:
@@ -256,7 +262,7 @@ def upload_motoristas():
                         
                     except Exception as e:
                         motoristas_erro += 1
-                        app.logger.error(f"Erro ao processar linha {row_num}: {str(e)}")
+                        app.logger.error(f"❌ Erro ao processar linha {row_num}: {str(e)}")
                         continue
                 
                 app.logger.info(f"Processamento Excel concluído: {motoristas_processados} processados, {motoristas_erro} erros")
@@ -266,7 +272,7 @@ def upload_motoristas():
                 return jsonify({'error': f'Erro ao processar arquivo Excel: {str(e)}'}), 500
         
         else:
-            # Processar CSV
+            # Processar CSV (mantido para compatibilidade)
             app.logger.info("Processando arquivo CSV...")
             file_content, encoding_usado = detectar_encoding(file_content_bytes)
             
@@ -279,7 +285,7 @@ def upload_motoristas():
                     try:
                         # Procurar ID do motorista
                         id_motorista = None
-                        for col in ['ID', 'id', 'Id', 'ID_MOTORISTA', 'id_motorista', 'Código', 'codigo']:
+                        for col in ['ID do motorista', 'ID', 'id', 'Id', 'ID_MOTORISTA', 'id_motorista', 'Código', 'codigo']:
                             if col in linha and linha[col]:
                                 try:
                                     id_motorista = int(linha[col])
@@ -289,7 +295,7 @@ def upload_motoristas():
                         
                         # Procurar nome do motorista
                         nome_motorista = None
-                        for col in ['NOME', 'nome', 'Nome', 'NOME_MOTORISTA', 'nome_motorista', 'Motorista', 'MOTORISTA']:
+                        for col in ['Nome do motorista', 'NOME', 'nome', 'Nome', 'NOME_MOTORISTA', 'nome_motorista', 'Motorista', 'MOTORISTA']:
                             if col in linha and linha[col]:
                                 nome_motorista = str(linha[col]).strip()
                                 break
@@ -342,10 +348,10 @@ def upload_motoristas():
             'total_motoristas': total_motoristas
         }
         
-        app.logger.info(f"=== RESULTADO FINAL ===")
-        app.logger.info(f"Motoristas processados: {motoristas_processados}")
-        app.logger.info(f"Motoristas com erro: {motoristas_erro}")
-        app.logger.info(f"Total de motoristas no sistema: {total_motoristas}")
+        app.logger.info(f"=== RESULTADO FINAL v6.3.2 ===")
+        app.logger.info(f"✅ Motoristas processados: {motoristas_processados}")
+        app.logger.info(f"❌ Motoristas com erro: {motoristas_erro}")
+        app.logger.info(f"📊 Total de motoristas no sistema: {total_motoristas}")
         app.logger.info(f"=== FIM UPLOAD MOTORISTAS ===")
         
         return jsonify({
@@ -854,8 +860,9 @@ if __name__ == '__main__':
     empresa_id = 1
     init_empresa_data(empresa_id)
     
-    app.logger.info("🚀 MenezesLog SaaS v6.3.1 - CORREÇÃO DE REGRESSÃO iniciado!")
-    app.logger.info("🔧 Planilha DE-PARA restaurada + APIs de grupos funcionando")
+    app.logger.info("🚀 MenezesLog SaaS v6.3.2 - CORREÇÃO DEFINITIVA iniciado!")
+    app.logger.info("🔧 Leitura de Excel CORRIGIDA - Problema identificado e resolvido")
+    app.logger.info("✅ APIs de grupos funcionando + Planilha DE-PARA funcionando")
     app.logger.info("🇧🇷 Suporte completo a encoding brasileiro")
     
     app.run(host='0.0.0.0', port=5000, debug=False)
