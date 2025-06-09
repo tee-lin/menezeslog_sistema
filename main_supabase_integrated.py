@@ -10,7 +10,7 @@ from supabase import create_client, Client
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 # Inicializar aplicação Flask
-app = Flask(__name__, static_folder='src/static')
+app = Flask(__name__, static_folder='static')
 CORS(app)  # Habilitar CORS para todas as rotas
 
 # Configuração do Supabase
