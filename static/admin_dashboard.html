@@ -3,10 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[v3.0.0] MenezesLog - Dashboard Administrativo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>MenezesLog SaaS - Dashboard v6.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Melhorias no design SaaS */
+        .nav-menu .nav-item .nav-link {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 2px 8px;
+        }
+        
+        .nav-menu .nav-item .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-menu .nav-item .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #fff;
+        }
+        
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .stats-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .saas-badge {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .icon-awbs { background: linear-gradient(45deg, #ffc107, #ff8f00); color: white; }
+        .icon-ciclos { background: linear-gradient(45deg, #28a745, #20c997); color: white; }
+        .icon-upload { background: linear-gradient(45deg, #007bff, #0056b3); color: white; }
+        .icon-relatorios { background: linear-gradient(45deg, #6f42c1, #5a2d91); color: white; }
+    </style>
 </head>
 <body>
     <!-- Cabeçalho -->
@@ -20,6 +95,7 @@
                     <div class="logo">
                         <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
                     </div>
+                    <span class="saas-badge ms-2">SaaS v6.0</span>
                 </div>
                 <div class="user-info" id="user-info">
                     <div class="dropdown">
@@ -27,7 +103,7 @@
                             <div class="avatar me-2">A</div>
                             <div>
                                 <div class="user-name">Administrador</div>
-                                <div class="user-role text-muted small">Admin</div>
+                                <div class="user-role text-muted small">SaaS v6.0 - AWBs & Ciclos</div>
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -42,7 +118,7 @@
         </div>
     </header>
 
-    <!-- Navegação Lateral -->
+    <!-- Navegação Lateral COMPLETA SaaS -->
     <aside class="sidebar" id="sidebar">
         <nav class="sidebar-nav">
             <ul class="nav-menu">
@@ -56,6 +132,32 @@
                     <a href="motoristas.html" class="nav-link">
                         <i class="fas fa-truck nav-icon"></i>
                         <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="prestadores.html" class="nav-link">
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <span>Prestadores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="tarifas.html" class="nav-link">
+                        <i class="fas fa-money-bill-wave nav-icon"></i>
+                        <span>Tarifas</span>
+                    </a>
+                </li>
+                <!-- NOVO: AWBs -->
+                <li class="nav-item">
+                    <a href="awbs.html" class="nav-link">
+                        <i class="fas fa-barcode nav-icon"></i>
+                        <span>AWBs</span>
+                    </a>
+                </li>
+                <!-- NOVO: Ciclos de Pagamento -->
+                <li class="nav-item">
+                    <a href="ciclos.html" class="nav-link">
+                        <i class="fas fa-calendar-alt nav-icon"></i>
+                        <span>Ciclos de Pagamento</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -99,133 +201,211 @@
     </aside>
 
     <!-- Conteúdo Principal -->
-    <main class="main-content" id="main-content">
+    <main class="main-content">
         <div class="container-fluid">
-            <h1 class="mb-4">Dashboard Administrativo</h1>
-            
-            <!-- Resumo de Indicadores -->
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="dashboard-card bg-primary text-white">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-title">Motoristas</div>
-                            <div class="dashboard-card-icon">
-                                <i class="fas fa-truck"></i>
+            <!-- Título da Página -->
+            <div class="page-header">
+                <h1 class="page-title">Dashboard SaaS v6.0</h1>
+                <p class="page-subtitle">Sistema completo com controle de AWBs únicos e ciclos de pagamento</p>
+            </div>
+
+            <!-- Cards de Estatísticas -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stats-card card">
+                        <div class="stats-card-body card-body">
+                            <div class="stats-card-title d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Total de AWBs</h6>
+                                <i class="fas fa-barcode text-primary fa-2x"></i>
+                            </div>
+                            <div class="stats-card-value mt-2">
+                                <h3 class="mb-0" id="total-awbs">
+                                    <span class="loading-spinner"></span>
+                                </h3>
+                            </div>
+                            <div class="stats-card-footer mt-2">
+                                <span class="text-success">
+                                    <i class="fas fa-arrow-up"></i> Códigos únicos
+                                </span>
                             </div>
                         </div>
-                        <div class="dashboard-card-value" id="total-drivers">0</div>
-                        <div class="dashboard-card-label">Total cadastrado</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="dashboard-card bg-success text-white">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-title">Pagamentos</div>
-                            <div class="dashboard-card-icon">
-                                <i class="fas fa-money-bill-wave"></i>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stats-card card">
+                        <div class="stats-card-body card-body">
+                            <div class="stats-card-title d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">AWBs Não Pagas</h6>
+                                <i class="fas fa-clock text-warning fa-2x"></i>
+                            </div>
+                            <div class="stats-card-value mt-2">
+                                <h3 class="mb-0" id="awbs-nao-pagas">
+                                    <span class="loading-spinner"></span>
+                                </h3>
+                            </div>
+                            <div class="stats-card-footer mt-2">
+                                <span class="text-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> Pendentes
+                                </span>
                             </div>
                         </div>
-                        <div class="dashboard-card-value" id="total-payments">R$ 0,00</div>
-                        <div class="dashboard-card-label">Total do mês</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="dashboard-card bg-warning">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-title">Bonificações</div>
-                            <div class="dashboard-card-icon">
-                                <i class="fas fa-award"></i>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stats-card card">
+                        <div class="stats-card-body card-body">
+                            <div class="stats-card-title d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Valor Pendente</h6>
+                                <i class="fas fa-dollar-sign text-danger fa-2x"></i>
+                            </div>
+                            <div class="stats-card-value mt-2">
+                                <h3 class="mb-0" id="valor-pendente">
+                                    <span class="loading-spinner"></span>
+                                </h3>
+                            </div>
+                            <div class="stats-card-footer mt-2">
+                                <span class="text-danger">
+                                    <i class="fas fa-money-bill-wave"></i> A pagar
+                                </span>
                             </div>
                         </div>
-                        <div class="dashboard-card-value" id="total-bonuses">R$ 0,00</div>
-                        <div class="dashboard-card-label">Total do mês</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="dashboard-card bg-danger text-white">
-                        <div class="dashboard-card-header">
-                            <div class="dashboard-card-title">Descontos</div>
-                            <div class="dashboard-card-icon">
-                                <i class="fas fa-minus-circle"></i>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stats-card card">
+                        <div class="stats-card-body card-body">
+                            <div class="stats-card-title d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Total de Motoristas</h6>
+                                <i class="fas fa-truck text-info fa-2x"></i>
+                            </div>
+                            <div class="stats-card-value mt-2">
+                                <h3 class="mb-0" id="total-drivers">
+                                    <span class="loading-spinner"></span>
+                                </h3>
+                            </div>
+                            <div class="stats-card-footer mt-2">
+                                <span class="text-info">
+                                    <i class="fas fa-users"></i> Cadastrados
+                                </span>
                             </div>
                         </div>
-                        <div class="dashboard-card-value" id="total-discounts">R$ 0,00</div>
-                        <div class="dashboard-card-label">Total do mês</div>
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Funcionalidades SaaS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="mb-3">🚀 Funcionalidades SaaS v6.0</h5>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-awbs">
+                            <i class="fas fa-barcode"></i>
+                        </div>
+                        <h6>Gestão de AWBs</h6>
+                        <p class="text-muted small mb-3">Controle de códigos únicos com proteção contra duplicatas</p>
+                        <a href="awbs.html" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>
+                            Ver AWBs
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-ciclos">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h6>Ciclos de Pagamento</h6>
+                        <p class="text-muted small mb-3">Períodos configuráveis: semanal, quinzenal, mensal</p>
+                        <a href="ciclos.html" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-plus me-1"></i>
+                            Gerar Ciclo
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-upload">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h6>Upload Inteligente</h6>
+                        <p class="text-muted small mb-3">Processamento com detecção automática de duplicatas</p>
+                        <a href="upload.html" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-cloud-upload-alt me-1"></i>
+                            Upload CSV
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-relatorios">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h6>Relatórios Avançados</h6>
+                        <p class="text-muted small mb-3">Análises por ciclo, motorista e prestador</p>
+                        <a href="relatorios.html" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Ver Relatórios
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Gráficos e Tabelas -->
-            <div class="row mt-4">
+            <div class="row">
                 <!-- Gráfico de Pagamentos -->
-                <div class="col-md-6">
+                <div class="col-xl-8 col-lg-7">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Pagamentos por Mês</h5>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="paymentChartOptions" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentChartOptions">
-                                    <li><a class="dropdown-item" href="#" id="exportPaymentChart">Exportar</a></li>
-                                    <li><a class="dropdown-item" href="#" id="refreshPaymentChart">Atualizar</a></li>
-                                </ul>
-                            </div>
+                        <div class="card-header">
+                            <h5 class="card-title">Evolução dos Pagamentos</h5>
                         </div>
                         <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="paymentChart"></canvas>
-                            </div>
+                            <canvas id="paymentsChart" height="300"></canvas>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Gráfico de Tipos de Serviço -->
-                <div class="col-md-6">
+
+                <!-- Status das AWBs -->
+                <div class="col-xl-4 col-lg-5">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Distribuição por Tipo de Serviço</h5>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="serviceChartOptions" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="serviceChartOptions">
-                                    <li><a class="dropdown-item" href="#" id="exportServiceChart">Exportar</a></li>
-                                    <li><a class="dropdown-item" href="#" id="refreshServiceChart">Atualizar</a></li>
-                                </ul>
-                            </div>
+                        <div class="card-header">
+                            <h5 class="card-title">Status das AWBs</h5>
                         </div>
                         <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="serviceChart"></canvas>
-                            </div>
+                            <canvas id="awbsChart" height="300"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Tabelas de Dados -->
             <div class="row mt-4">
-                <!-- Últimos Pagamentos -->
-                <div class="col-md-6">
+                <!-- Ciclos Recentes -->
+                <div class="col-xl-6">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Últimos Pagamentos</h5>
-                            <a href="relatorios.html" class="btn btn-sm btn-primary">Ver Todos</a>
+                        <div class="card-header">
+                            <h5 class="card-title">Ciclos de Pagamento Recentes</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Motorista</th>
-                                            <th>Data</th>
+                                            <th>Período</th>
+                                            <th>AWBs</th>
                                             <th>Valor</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="recent-payments">
+                                    <tbody id="recent-ciclos">
                                         <tr>
-                                            <td colspan="4" class="text-center">Carregando...</td>
+                                            <td colspan="4" class="text-center">
+                                                <span class="loading-spinner"></span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -233,28 +413,29 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Últimos Uploads -->
-                <div class="col-md-6">
+
+                <!-- Uploads Recentes -->
+                <div class="col-xl-6">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Últimos Uploads</h5>
-                            <a href="upload.html" class="btn btn-sm btn-primary">Ver Todos</a>
+                        <div class="card-header">
+                            <h5 class="card-title">Uploads Recentes</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>Arquivo</th>
+                                            <th>AWBs Novas</th>
+                                            <th>Duplicadas</th>
                                             <th>Data</th>
-                                            <th>Status</th>
-                                            <th>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="recent-uploads">
                                         <tr>
-                                            <td colspan="4" class="text-center">Carregando...</td>
+                                            <td colspan="4" class="text-center">
+                                                <span class="loading-spinner"></span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -263,34 +444,50 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Ações Rápidas -->
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Ações Rápidas</h5>
+                            <h5 class="card-title">Ações Rápidas SaaS</h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <a href="upload.html" class="btn btn-primary w-100">
-                                        <i class="fas fa-upload me-2"></i>Novo Upload
+                                <div class="col-md-2 mb-3">
+                                    <a href="upload.html" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-upload me-2"></i>
+                                        Upload CSV
                                     </a>
                                 </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <a href="motoristas.html?new=true" class="btn btn-success w-100">
-                                        <i class="fas fa-user-plus me-2"></i>Novo Motorista
+                                <div class="col-md-2 mb-3">
+                                    <a href="awbs.html" class="btn btn-warning btn-lg w-100">
+                                        <i class="fas fa-barcode me-2"></i>
+                                        Ver AWBs
                                     </a>
                                 </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <a href="relatorios.html?generate=true" class="btn btn-info w-100 text-white">
-                                        <i class="fas fa-file-export me-2"></i>Gerar Relatório
+                                <div class="col-md-2 mb-3">
+                                    <a href="ciclos.html" class="btn btn-success btn-lg w-100">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        Ciclos
                                     </a>
                                 </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <a href="nota_fiscal.html?new=true" class="btn btn-warning w-100">
-                                        <i class="fas fa-file-invoice me-2"></i>Nova Nota Fiscal
+                                <div class="col-md-2 mb-3">
+                                    <a href="prestadores.html" class="btn btn-info btn-lg w-100">
+                                        <i class="fas fa-users-cog me-2"></i>
+                                        Prestadores
+                                    </a>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <a href="tarifas.html" class="btn btn-secondary btn-lg w-100">
+                                        <i class="fas fa-money-bill-wave me-2"></i>
+                                        Tarifas
+                                    </a>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <a href="relatorios.html" class="btn btn-dark btn-lg w-100">
+                                        <i class="fas fa-chart-bar me-2"></i>
+                                        Relatórios
                                     </a>
                                 </div>
                             </div>
@@ -301,259 +498,186 @@
         </div>
     </main>
 
-    <!-- Rodapé -->
-    <footer class="footer">
-        <div class="container-fluid">
-            <div class="footer-text">
-                <p>© 2025 MenezesLog - Sistema de Pagamento de Motoristas</p>
-                <p class="text-muted small">Versão 1.0.0</p>
-            </div>
-        </div>
-    </footer>
-
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/main.js"></script>
     <script>
+        // Inicialização específica do dashboard SaaS
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Dashboard] Sistema SaaS v6.0 carregado!');
+            
             // Carregar dados do dashboard
             loadDashboardData();
             
-            // Inicializar gráficos
-            initializeCharts();
-            
-            // Carregar tabelas
-            loadRecentPayments();
-            loadRecentUploads();
+            // Configurar gráficos
+            setupCharts();
         });
-        
-        // Função para carregar dados do dashboard
+
         function loadDashboardData() {
-            // Mostrar indicadores de carregamento
-            document.getElementById('total-drivers').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-            document.getElementById('total-payments').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-            document.getElementById('total-bonuses').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-            document.getElementById('total-discounts').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-            
-            // Carregar total de motoristas
-            fetchAPI('/api/drivers/count')
+            // Carregar estatísticas
+            loadAwbsStatistics();
+            loadDriversCount();
+            loadRecentCiclos();
+            loadRecentUploads();
+        }
+
+        function loadAwbsStatistics() {
+            fetch('/api/awbs/estatisticas')
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById('total-drivers').textContent = data.count;
+                    if (data.success) {
+                        const stats = data.data;
+                        document.getElementById('total-awbs').textContent = stats.total_awbs;
+                        document.getElementById('awbs-nao-pagas').textContent = stats.awbs_nao_pagas;
+                        document.getElementById('valor-pendente').textContent = 
+                            'R$ ' + stats.valor_total_nao_pago.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                    }
                 })
                 .catch(error => {
-                    document.getElementById('total-drivers').textContent = '0';
-                });
-            
-            // Carregar total de pagamentos do mês
-            fetchAPI('/api/payment/summary?period=month')
-                .then(data => {
-                    document.getElementById('total-payments').textContent = formatCurrency(data.total_payments);
-                })
-                .catch(error => {
-                    document.getElementById('total-payments').textContent = 'R$ 0,00';
-                });
-            
-            // Carregar total de bonificações do mês
-            fetchAPI('/api/bonus/summary?period=month')
-                .then(data => {
-                    document.getElementById('total-bonuses').textContent = formatCurrency(data.total_bonuses);
-                })
-                .catch(error => {
-                    document.getElementById('total-bonuses').textContent = 'R$ 0,00';
-                });
-            
-            // Carregar total de descontos do mês
-            fetchAPI('/api/discount/summary?period=month')
-                .then(data => {
-                    document.getElementById('total-discounts').textContent = formatCurrency(data.total_discounts);
-                })
-                .catch(error => {
-                    document.getElementById('total-discounts').textContent = 'R$ 0,00';
+                    console.error('Erro ao carregar estatísticas de AWBs:', error);
+                    document.getElementById('total-awbs').textContent = '0';
+                    document.getElementById('awbs-nao-pagas').textContent = '0';
+                    document.getElementById('valor-pendente').textContent = 'R$ 0,00';
                 });
         }
-        
-        // Função para inicializar gráficos
-        function initializeCharts() {
-            // Gráfico de pagamentos por mês
-            fetchAPI('/api/payment/chart?period=year')
+
+        function loadDriversCount() {
+            fetch('/api/drivers/count')
+                .then(response => response.json())
                 .then(data => {
-                    const ctx = document.getElementById('paymentChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: data.labels,
-                            datasets: [{
-                                label: 'Pagamentos (R$)',
-                                data: data.values,
-                                backgroundColor: 'rgba(0, 71, 171, 0.7)',
-                                borderColor: 'rgba(0, 71, 171, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        callback: function(value) {
-                                            return 'R$ ' + value.toLocaleString('pt-BR');
+                    if (data.success) {
+                        document.getElementById('total-drivers').textContent = data.count;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar contagem de motoristas:', error);
+                    document.getElementById('total-drivers').textContent = '0';
+                });
+        }
+
+        function loadRecentCiclos() {
+            fetch('/api/ciclos')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('recent-ciclos');
+                        const html = data.data.slice(0, 5).map(ciclo => {
+                            const dataInicio = new Date(ciclo.data_inicio).toLocaleDateString('pt-BR');
+                            const statusBadge = ciclo.status === 'FECHADO' ? 
+                                '<span class="badge bg-success">FECHADO</span>' : 
+                                '<span class="badge bg-warning">ABERTO</span>';
+                            
+                            return `
+                                <tr>
+                                    <td>${ciclo.periodo}<br><small class="text-muted">${dataInicio}</small></td>
+                                    <td>${ciclo.total_awbs}</td>
+                                    <td>R$ ${ciclo.valor_total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                                    <td>${statusBadge}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                        tbody.innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">Nenhum ciclo encontrado</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar ciclos recentes:', error);
+                });
+        }
+
+        function loadRecentUploads() {
+            fetch('/api/upload/history')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('recent-uploads');
+                        const html = data.data.slice(0, 5).map(upload => `
+                            <tr>
+                                <td>${upload.filename}</td>
+                                <td><span class="badge bg-success">${upload.awbs_novas || 0}</span></td>
+                                <td><span class="badge bg-warning">${upload.awbs_duplicadas || 0}</span></td>
+                                <td>${new Date(upload.created_at).toLocaleDateString('pt-BR')}</td>
+                            </tr>
+                        `).join('');
+                        tbody.innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">Nenhum upload recente</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar uploads recentes:', error);
+                });
+        }
+
+        function setupCharts() {
+            // Gráfico de pagamentos
+            fetch('/api/payment/chart')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const ctx = document.getElementById('paymentsChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: data.data.labels,
+                                datasets: [{
+                                    label: 'Pagamentos (R$)',
+                                    data: data.data.values,
+                                    borderColor: '#007bff',
+                                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return 'R$ ' + value.toLocaleString('pt-BR');
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 })
                 .catch(error => {
-                    console.error('Erro ao carregar gráfico de pagamentos:', error);
+                    console.error('Erro ao carregar dados do gráfico:', error);
                 });
-            
-            // Gráfico de tipos de serviço
-            fetchAPI('/api/payment/service-types')
-                .then(data => {
-                    const ctx = document.getElementById('serviceChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: data.labels,
-                            datasets: [{
-                                data: data.values,
-                                backgroundColor: [
-                                    'rgba(0, 71, 171, 0.7)',
-                                    'rgba(255, 215, 0, 0.7)',
-                                    'rgba(40, 167, 69, 0.7)',
-                                    'rgba(220, 53, 69, 0.7)'
-                                ],
-                                borderColor: [
-                                    'rgba(0, 71, 171, 1)',
-                                    'rgba(255, 215, 0, 1)',
-                                    'rgba(40, 167, 69, 1)',
-                                    'rgba(220, 53, 69, 1)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom'
-                                }
+
+            // Gráfico de AWBs (Donut)
+            loadAwbsStatistics().then(() => {
+                const ctx2 = document.getElementById('awbsChart').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Não Pagas', 'Pagas'],
+                        datasets: [{
+                            data: [
+                                parseInt(document.getElementById('awbs-nao-pagas').textContent) || 0,
+                                parseInt(document.getElementById('total-awbs').textContent) - parseInt(document.getElementById('awbs-nao-pagas').textContent) || 0
+                            ],
+                            backgroundColor: ['#ffc107', '#28a745'],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
                             }
                         }
-                    });
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar gráfico de tipos de serviço:', error);
-                });
-        }
-        
-        // Função para carregar pagamentos recentes
-        function loadRecentPayments() {
-            const tableBody = document.getElementById('recent-payments');
-            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="loader"></div></td></tr>';
-            
-            fetchAPI('/api/payment/recent?limit=5')
-                .then(data => {
-                    if (data.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum pagamento encontrado</td></tr>';
-                        return;
                     }
-                    
-                    tableBody.innerHTML = '';
-                    data.forEach(payment => {
-                        const statusClass = payment.status === 'paid' ? 'success' : 
-                                          payment.status === 'pending' ? 'warning' : 
-                                          payment.status === 'cancelled' ? 'danger' : 'secondary';
-                        
-                        const statusText = payment.status === 'paid' ? 'Pago' : 
-                                         payment.status === 'pending' ? 'Pendente' : 
-                                         payment.status === 'cancelled' ? 'Cancelado' : 'Processando';
-                        
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td>${payment.driver_name}</td>
-                                <td>${formatDate(payment.payment_date)}</td>
-                                <td>${formatCurrency(payment.total_value)}</td>
-                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
-                            </tr>
-                        `;
-                    });
-                })
-                .catch(error => {
-                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Erro ao carregar dados</td></tr>';
                 });
+            });
         }
-        
-        // Função para carregar uploads recentes
-        function loadRecentUploads() {
-            const tableBody = document.getElementById('recent-uploads');
-            tableBody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="loader"></div></td></tr>';
-            
-            fetchAPI('/api/upload/recent?limit=5')
-                .then(data => {
-                    if (data.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum upload encontrado</td></tr>';
-                        return;
-                    }
-                    
-                    tableBody.innerHTML = '';
-                    data.forEach(upload => {
-                        const statusClass = upload.processed ? 'success' : 'warning';
-                        const statusText = upload.processed ? 'Processado' : 'Pendente';
-                        
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td>${upload.filename}</td>
-                                <td>${formatDateTime(upload.upload_date)}</td>
-                                <td><span class="badge bg-${statusClass}">${statusText}</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info text-white" onclick="viewUploadDetails(${upload.id})">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                })
-                .catch(error => {
-                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Erro ao carregar dados</td></tr>';
-                });
-        }
-        
-        // Função para visualizar detalhes do upload
-        function viewUploadDetails(uploadId) {
-            window.location.href = `upload.html?id=${uploadId}`;
-        }
-        
-        // Eventos para exportação de gráficos
-        document.getElementById('exportPaymentChart').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Implementar exportação do gráfico
-            showNotification('Exportação de gráfico não implementada', 'info');
-        });
-        
-        document.getElementById('exportServiceChart').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Implementar exportação do gráfico
-            showNotification('Exportação de gráfico não implementada', 'info');
-        });
-        
-        // Eventos para atualização de gráficos
-        document.getElementById('refreshPaymentChart').addEventListener('click', function(e) {
-            e.preventDefault();
-            initializeCharts();
-            showNotification('Gráfico atualizado', 'success');
-        });
-        
-        document.getElementById('refreshServiceChart').addEventListener('click', function(e) {
-            e.preventDefault();
-            initializeCharts();
-            showNotification('Gráfico atualizado', 'success');
-        });
     </script>
 </body>
 </html>
+

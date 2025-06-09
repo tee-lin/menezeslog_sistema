@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenezesLog - Gestão de AWBs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos para AWBs */
+        .awb-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #007bff;
+        }
+        
+        .awb-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .awb-card.nao-paga {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+        
+        .awb-card.paga {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+        
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+        }
+        
+        .status-nao-paga {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-paga {
+            background: #d1edff;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+        }
+        
+        .filtro-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .awb-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .tipo-servico-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+        }
+        
+        .tipo-0 { background: #e3f2fd; color: #1976d2; }
+        .tipo-9 { background: #f3e5f5; color: #7b1fa2; }
+        .tipo-6, .tipo-8 { background: #e8f5e8; color: #388e3c; }
+        
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box .form-control {
+            padding-left: 2.5rem;
+        }
+        
+        .search-box .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-light me-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="logo">
+                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <div class="avatar me-2">A</div>
+                            <div>
+                                <div class="user-name">Administrador</div>
+                                <div class="user-role text-muted small">SaaS v6.0</div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Lateral -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="admin_dashboard.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="motoristas.html" class="nav-link">
+                        <i class="fas fa-truck nav-icon"></i>
+                        <span>Motoristas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="prestadores.html" class="nav-link">
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <span>Prestadores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="tarifas.html" class="nav-link">
+                        <i class="fas fa-money-bill-wave nav-icon"></i>
+                        <span>Tarifas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="awbs.html" class="nav-link active">
+                        <i class="fas fa-barcode nav-icon"></i>
+                        <span>AWBs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="ciclos.html" class="nav-link">
+                        <i class="fas fa-calendar-alt nav-icon"></i>
+                        <span>Ciclos de Pagamento</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="upload.html" class="nav-link">
+                        <i class="fas fa-upload nav-icon"></i>
+                        <span>Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="relatorios.html" class="nav-link">
+                        <i class="fas fa-chart-bar nav-icon"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container-fluid">
+            <!-- Título da Página -->
+            <div class="page-header">
+                <h1 class="page-title">Gestão de AWBs</h1>
+                <p class="page-subtitle">Controle de códigos únicos e status de pagamento</p>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">Total de AWBs</h6>
+                                    <h3 class="mb-0" id="total-awbs">-</h3>
+                                </div>
+                                <div class="text-primary">
+                                    <i class="fas fa-barcode fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">Não Pagas</h6>
+                                    <h3 class="mb-0" id="awbs-nao-pagas">-</h3>
+                                </div>
+                                <div class="text-warning">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">Pagas</h6>
+                                    <h3 class="mb-0" id="awbs-pagas">-</h3>
+                                </div>
+                                <div class="text-success">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">% Pagas</h6>
+                                    <h3 class="mb-0" id="percentual-pagas">-</h3>
+                                </div>
+                                <div class="text-info">
+                                    <i class="fas fa-percentage fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtro-section">
+                <h6 class="mb-3"><i class="fas fa-filter me-2"></i>Filtros</h6>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="filtro-status">
+                            <option value="">Todos</option>
+                            <option value="NAO_PAGA">Não Pagas</option>
+                            <option value="PAGA">Pagas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Motorista ID</label>
+                        <input type="number" class="form-control" id="filtro-motorista" placeholder="ID do motorista">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Buscar AWB</label>
+                        <div class="search-box">
+                            <input type="text" class="form-control" id="buscar-awb" placeholder="Digite o código AWB">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Ações</label>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" id="btn-aplicar-filtros">
+                                <i class="fas fa-search me-1"></i>
+                                Filtrar
+                            </button>
+                            <button class="btn btn-outline-secondary" id="btn-limpar-filtros">
+                                <i class="fas fa-times me-1"></i>
+                                Limpar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de AWBs -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Lista de AWBs</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="pagination-info" id="pagination-info">
+                                    Carregando...
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm" id="btn-refresh-awbs">
+                                    <i class="fas fa-sync-alt me-1"></i>
+                                    Atualizar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="lista-awbs">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Carregando AWBs...</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Paginação -->
+                            <nav aria-label="Paginação AWBs" id="pagination-container" style="display: none;">
+                                <ul class="pagination justify-content-center" id="pagination">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Detalhes AWB -->
+    <div class="modal fade" id="modalDetalhesAwb" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes da AWB</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="detalhes-awb-conteudo">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Carregando detalhes...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Variáveis globais
+        let paginaAtual = 1;
+        let totalPaginas = 1;
+        let filtrosAtivos = {};
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[AWBs] Sistema de gestão de AWBs v6.0 carregado!');
+            
+            // Verificar parâmetros da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('motorista_id')) {
+                document.getElementById('filtro-motorista').value = urlParams.get('motorista_id');
+            }
+            
+            // Carregar dados iniciais
+            carregarEstatisticas();
+            carregarAwbs();
+            
+            // Event listeners
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Filtros
+            document.getElementById('btn-aplicar-filtros').addEventListener('click', aplicarFiltros);
+            document.getElementById('btn-limpar-filtros').addEventListener('click', limparFiltros);
+            document.getElementById('btn-refresh-awbs').addEventListener('click', () => carregarAwbs());
+
+            // Enter na busca
+            document.getElementById('buscar-awb').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    aplicarFiltros();
+                }
+            });
+
+            // Enter no filtro de motorista
+            document.getElementById('filtro-motorista').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    aplicarFiltros();
+                }
+            });
+        }
+
+        function carregarEstatisticas() {
+            fetch('/api/awbs/estatisticas')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const stats = data.data;
+                        
+                        document.getElementById('total-awbs').textContent = stats.total_awbs;
+                        document.getElementById('awbs-nao-pagas').textContent = stats.awbs_nao_pagas;
+                        document.getElementById('awbs-pagas').textContent = stats.awbs_pagas;
+                        document.getElementById('percentual-pagas').textContent = stats.percentual_pagas.toFixed(1) + '%';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar estatísticas:', error);
+                });
+        }
+
+        function aplicarFiltros() {
+            filtrosAtivos = {
+                status: document.getElementById('filtro-status').value,
+                motorista_id: document.getElementById('filtro-motorista').value,
+                awb: document.getElementById('buscar-awb').value
+            };
+            
+            paginaAtual = 1;
+            carregarAwbs();
+        }
+
+        function limparFiltros() {
+            document.getElementById('filtro-status').value = '';
+            document.getElementById('filtro-motorista').value = '';
+            document.getElementById('buscar-awb').value = '';
+            
+            filtrosAtivos = {};
+            paginaAtual = 1;
+            carregarAwbs();
+        }
+
+        function carregarAwbs() {
+            // Construir URL com filtros
+            const params = new URLSearchParams({
+                page: paginaAtual,
+                limit: 20
+            });
+
+            if (filtrosAtivos.status) params.append('status', filtrosAtivos.status);
+            if (filtrosAtivos.motorista_id) params.append('motorista_id', filtrosAtivos.motorista_id);
+
+            fetch(`/api/awbs?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderizarAwbs(data.data);
+                        atualizarPaginacao(data.pagination);
+                        atualizarInfoPaginacao(data.pagination);
+                    } else {
+                        document.getElementById('lista-awbs').innerHTML = 
+                            '<div class="text-center py-4"><p class="text-muted">Erro ao carregar AWBs</p></div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar AWBs:', error);
+                    document.getElementById('lista-awbs').innerHTML = 
+                        '<div class="text-center py-4"><p class="text-muted">Erro ao carregar AWBs</p></div>';
+                });
+        }
+
+        function renderizarAwbs(awbs) {
+            const container = document.getElementById('lista-awbs');
+            
+            if (awbs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-barcode fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Nenhuma AWB encontrada</h5>
+                        <p class="text-muted">Tente ajustar os filtros ou fazer upload de novos arquivos</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Filtrar por AWB se especificado
+            let awbsFiltradas = awbs;
+            if (filtrosAtivos.awb) {
+                const termoBusca = filtrosAtivos.awb.toLowerCase();
+                awbsFiltradas = awbs.filter(awb => 
+                    awb.awb.toLowerCase().includes(termoBusca)
+                );
+            }
+
+            const html = awbsFiltradas.map(awb => {
+                const statusClass = awb.status === 'PAGA' ? 'paga' : 'nao-paga';
+                const statusBadgeClass = awb.status === 'PAGA' ? 'status-paga' : 'status-nao-paga';
+                const tipoServicoClass = `tipo-${awb.tipo_servico}`;
+                
+                const dataEntrega = awb.data_entrega ? new Date(awb.data_entrega).toLocaleDateString('pt-BR') : '-';
+                const dataCriacao = new Date(awb.created_at).toLocaleDateString('pt-BR');
+                
+                return `
+                    <div class="awb-card card mb-2 ${statusClass}">
+                        <div class="card-body py-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <div class="awb-code">${awb.awb}</div>
+                                    <small class="text-muted">AWB</small>
+                                </div>
+                                <div class="col-md-1">
+                                    <span class="badge ${tipoServicoClass} tipo-servico-badge">
+                                        Tipo ${awb.tipo_servico}
+                                    </span>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="text-center">
+                                        <strong>ID ${awb.id_motorista}</strong>
+                                        <br><small class="text-muted">Motorista</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="text-center">
+                                        <strong>R$ ${awb.valor_pagamento.toFixed(2)}</strong>
+                                        <br><small class="text-muted">Valor</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <span class="status-badge ${statusBadgeClass}">
+                                        <i class="fas ${awb.status === 'PAGA' ? 'fa-check-circle' : 'fa-clock'} me-1"></i>
+                                        ${awb.status === 'PAGA' ? 'PAGA' : 'NÃO PAGA'}
+                                    </span>
+                                </div>
+                                <div class="col-md-2">
+                                    <small class="text-muted">${dataCriacao}</small>
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="verDetalhesAwb('${awb.awb}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function atualizarPaginacao(pagination) {
+            totalPaginas = pagination.pages;
+            const container = document.getElementById('pagination');
+            
+            if (totalPaginas <= 1) {
+                document.getElementById('pagination-container').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('pagination-container').style.display = 'block';
+
+            let html = '';
+
+            // Botão anterior
+            html += `
+                <li class="page-item ${paginaAtual === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="irParaPagina(${paginaAtual - 1})">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+
+            // Páginas
+            const inicio = Math.max(1, paginaAtual - 2);
+            const fim = Math.min(totalPaginas, paginaAtual + 2);
+
+            if (inicio > 1) {
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="irParaPagina(1)">1</a></li>`;
+                if (inicio > 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            for (let i = inicio; i <= fim; i++) {
+                html += `
+                    <li class="page-item ${i === paginaAtual ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="irParaPagina(${i})">${i}</a>
+                    </li>
+                `;
+            }
+
+            if (fim < totalPaginas) {
+                if (fim < totalPaginas - 1) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="irParaPagina(${totalPaginas})">${totalPaginas}</a></li>`;
+            }
+
+            // Botão próximo
+            html += `
+                <li class="page-item ${paginaAtual === totalPaginas ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="irParaPagina(${paginaAtual + 1})">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function atualizarInfoPaginacao(pagination) {
+            const inicio = (pagination.page - 1) * pagination.limit + 1;
+            const fim = Math.min(pagination.page * pagination.limit, pagination.total);
+            
+            document.getElementById('pagination-info').textContent = 
+                `Mostrando ${inicio}-${fim} de ${pagination.total} AWBs`;
+        }
+
+        function irParaPagina(pagina) {
+            if (pagina < 1 || pagina > totalPaginas || pagina === paginaAtual) return;
+            
+            paginaAtual = pagina;
+            carregarAwbs();
+        }
+
+        function verDetalhesAwb(awb) {
+            const modal = new bootstrap.Modal(document.getElementById('modalDetalhesAwb'));
+            modal.show();
+            
+            // Simular carregamento de detalhes
+            setTimeout(() => {
+                const html = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Informações da AWB</h6>
+                            <p><strong>Código:</strong> ${awb}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-warning">NÃO PAGA</span></p>
+                            <p><strong>Motorista ID:</strong> 123</p>
+                            <p><strong>Tipo de Serviço:</strong> 0 (Encomendas)</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Valores</h6>
+                            <p><strong>Tarifa:</strong> R$ 3,50</p>
+                            <p><strong>Valor Pagamento:</strong> R$ 3,50</p>
+                            <p><strong>Data Criação:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mt-3">Dados Originais</h6>
+                    <div class="bg-light p-3 rounded">
+                        <small class="text-muted">Dados do CSV original seriam exibidos aqui...</small>
+                    </div>
+                `;
+                
+                document.getElementById('detalhes-awb-conteudo').innerHTML = html;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
+
