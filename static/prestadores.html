@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <style>
+        /* CORREÇÃO CRÍTICA: Z-index do modal */
+        .modal {
+            z-index: 1060 !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+        
+        .modal-dialog {
+            z-index: 1070 !important;
+            position: relative;
+        }
+        
         /* Estilos específicos da página Prestadores */
         .prestador-card {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -92,6 +106,7 @@
         .btn-criar-grupo:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            color: white;
         }
         
         .grupo-badge {
@@ -122,6 +137,18 @@
         .nav-icon {
             width: 20px;
             text-align: center;
+        }
+        
+        /* Garantir que botões do modal sejam clicáveis */
+        .modal-footer .btn {
+            z-index: 1080 !important;
+            position: relative;
+        }
+        
+        .modal-body .form-control,
+        .modal-body .form-select {
+            z-index: 1075 !important;
+            position: relative;
         }
     </style>
 </head>
@@ -372,38 +399,38 @@
         </div>
     </main>
 
-    <!-- Modal Criar Grupo -->
-    <div class="modal fade" id="modalCriarGrupo" tabindex="-1">
-        <div class="modal-dialog">
+    <!-- Modal Criar Grupo - CORRIGIDO -->
+    <div class="modal fade" id="modalCriarGrupo" tabindex="-1" aria-labelledby="modalCriarGrupoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title" id="modalCriarGrupoLabel">
                         <i class="fas fa-users-cog me-2"></i>
                         Criar Grupo de Prestadores
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="form-criar-grupo">
                         <div class="mb-3">
-                            <label class="form-label">Motorista Principal</label>
+                            <label for="motorista-principal" class="form-label">Motorista Principal</label>
                             <select class="form-select" id="motorista-principal" required>
                                 <option value="">Selecione o motorista principal</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Nome do Prestador</label>
+                            <label for="nome-prestador" class="form-label">Nome do Prestador</label>
                             <input type="text" class="form-control" id="nome-prestador" placeholder="Nome será preenchido automaticamente" readonly>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Motoristas Ajudantes (opcional)</label>
-                            <select class="form-select" id="motoristas-ajudantes" multiple>
+                            <label for="motoristas-ajudantes" class="form-label">Motoristas Ajudantes (opcional)</label>
+                            <select class="form-select" id="motoristas-ajudantes" multiple size="4">
                                 <!-- Preenchido dinamicamente -->
                             </select>
                             <div class="form-text">Segure Ctrl para selecionar múltiplos motoristas</div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observações</label>
+                            <label for="observacoes" class="form-label">Observações</label>
                             <textarea class="form-control" id="observacoes" rows="3" placeholder="Observações sobre o grupo..."></textarea>
                         </div>
                     </form>
@@ -745,7 +772,6 @@
         // Criar grupo
         function criarGrupo() {
             const form = document.getElementById('form-criar-grupo');
-            const formData = new FormData(form);
             
             const data = {
                 motorista_principal: parseInt(document.getElementById('motorista-principal').value),
