@@ -1,5 +1,5 @@
-# MenezesLog SaaS - Sistema Completo com Controle de AWBs
-# Versão 6.1.0 - CORREÇÃO: Data/Hora da Entrega como Referência
+# MenezesLog SaaS - Sistema Completo DEFINITIVO
+# Versão 6.2.0 - TODAS AS APIs IMPLEMENTADAS
 # Data: 2025-06-09
 
 import os
@@ -40,7 +40,7 @@ motoristas_db = {}  # {empresa_id: [motoristas]}
 tarifas_db = {}  # {empresa_id: {id_motorista: {tipo_servico: valor}}}
 prestadores_db = {}  # {empresa_id: [prestadores]}
 
-# Tabela principal de AWBs - ATUALIZADA com data_entrega como referência
+# Tabela principal de AWBs - USANDO DATA DE ENTREGA
 awbs_db = {}  # {awb: {dados_completos, empresa_id, status, ciclo_pagamento_id, data_entrega_real}}
 
 # Tabela de ciclos de pagamento
@@ -879,7 +879,7 @@ def get_ciclo_detalhes(ciclo_id):
     except Exception as e:
         return jsonify({'error': f'Erro interno: {str(e)}'}), 500
 
-# ==================== APIs DE MOTORISTAS (mantidas) ====================
+# ==================== APIs DE MOTORISTAS ====================
 
 @app.route('/api/motoristas/upload', methods=['POST'])
 def upload_motoristas():
@@ -960,6 +960,396 @@ def get_motoristas():
         
     except Exception as e:
         return jsonify({'error': f'Erro ao buscar motoristas: {str(e)}'}), 500
+
+# ==================== APIs DE PRESTADORES ====================
+
+@app.route('/api/prestadores', methods=['GET'])
+def get_prestadores():
+    """Lista todos os prestadores"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        return jsonify({
+            'success': True,
+            'data': prestadores_db[empresa_id],
+            'total': len(prestadores_db[empresa_id])
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar prestadores: {str(e)}'}), 500
+
+@app.route('/api/prestadores', methods=['POST'])
+def create_prestador():
+    """Criar novo prestador/grupo"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        data = request.get_json()
+        
+        # Validar dados obrigatórios
+        if not data.get('nome_prestador'):
+            return jsonify({'error': 'Nome do prestador é obrigatório'}), 400
+        
+        if not data.get('motorista_principal'):
+            return jsonify({'error': 'Motorista principal é obrigatório'}), 400
+        
+        # Verificar se motorista principal existe
+        motorista_principal = None
+        for motorista in motoristas_db[empresa_id]:
+            if motorista['id_motorista'] == data['motorista_principal']:
+                motorista_principal = motorista
+                break
+        
+        if not motorista_principal:
+            return jsonify({'error': 'Motorista principal não encontrado'}), 400
+        
+        # Criar prestador
+        prestador_id = len(prestadores_db[empresa_id]) + 1
+        prestador = {
+            'id': prestador_id,
+            'nome_prestador': data['nome_prestador'],
+            'motorista_principal': data['motorista_principal'],
+            'motoristas_ajudantes': data.get('motoristas_ajudantes', []),
+            'observacoes': data.get('observacoes', ''),
+            'empresa_id': empresa_id,
+            'ativo': True,
+            'created_at': datetime.datetime.now().isoformat(),
+            'updated_at': datetime.datetime.now().isoformat()
+        }
+        
+        prestadores_db[empresa_id].append(prestador)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Prestador criado com sucesso!',
+            'data': prestador
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
+
+@app.route('/api/prestadores/<int:prestador_id>', methods=['PUT'])
+def update_prestador(prestador_id):
+    """Atualizar prestador"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        data = request.get_json()
+        
+        # Encontrar prestador
+        prestador = None
+        for p in prestadores_db[empresa_id]:
+            if p['id'] == prestador_id:
+                prestador = p
+                break
+        
+        if not prestador:
+            return jsonify({'error': 'Prestador não encontrado'}), 404
+        
+        # Atualizar dados
+        prestador.update({
+            'nome_prestador': data.get('nome_prestador', prestador['nome_prestador']),
+            'motorista_principal': data.get('motorista_principal', prestador['motorista_principal']),
+            'motoristas_ajudantes': data.get('motoristas_ajudantes', prestador['motoristas_ajudantes']),
+            'observacoes': data.get('observacoes', prestador['observacoes']),
+            'ativo': data.get('ativo', prestador['ativo']),
+            'updated_at': datetime.datetime.now().isoformat()
+        })
+        
+        return jsonify({
+            'success': True,
+            'message': 'Prestador atualizado com sucesso!',
+            'data': prestador
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
+
+@app.route('/api/prestadores/<int:prestador_id>', methods=['DELETE'])
+def delete_prestador(prestador_id):
+    """Deletar prestador"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        # Encontrar e remover prestador
+        prestador_removido = None
+        for i, p in enumerate(prestadores_db[empresa_id]):
+            if p['id'] == prestador_id:
+                prestador_removido = prestadores_db[empresa_id].pop(i)
+                break
+        
+        if not prestador_removido:
+            return jsonify({'error': 'Prestador não encontrado'}), 404
+        
+        return jsonify({
+            'success': True,
+            'message': 'Prestador removido com sucesso!',
+            'data': prestador_removido
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
+
+@app.route('/api/prestadores/estatisticas', methods=['GET'])
+def get_prestadores_estatisticas():
+    """Estatísticas dos prestadores"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        total_prestadores = len(prestadores_db[empresa_id])
+        total_motoristas = len(motoristas_db[empresa_id])
+        
+        # Contar motoristas em grupos
+        motoristas_em_grupos = set()
+        for prestador in prestadores_db[empresa_id]:
+            if prestador.get('ativo', True):
+                motoristas_em_grupos.add(prestador['motorista_principal'])
+                for ajudante in prestador.get('motoristas_ajudantes', []):
+                    motoristas_em_grupos.add(ajudante)
+        
+        motoristas_individuais = total_motoristas - len(motoristas_em_grupos)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_prestadores': total_prestadores,
+                'total_motoristas': total_motoristas,
+                'motoristas_em_grupos': len(motoristas_em_grupos),
+                'motoristas_individuais': motoristas_individuais
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao calcular estatísticas: {str(e)}'}), 500
+
+# ==================== APIs DE TARIFAS ====================
+
+@app.route('/api/tarifas', methods=['GET'])
+def get_tarifas():
+    """Lista tarifas personalizadas"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        # Organizar tarifas por motorista
+        tarifas_organizadas = []
+        
+        for motorista in motoristas_db[empresa_id]:
+            id_motorista = motorista['id_motorista']
+            nome_motorista = motorista['nome_motorista']
+            
+            # Buscar tarifas personalizadas
+            tarifas_motorista = tarifas_db[empresa_id].get(id_motorista, {})
+            
+            # Criar objeto com tarifas (personalizadas ou padrão)
+            tarifa_data = {
+                'id_motorista': id_motorista,
+                'nome_motorista': nome_motorista,
+                'tarifas': {
+                    0: tarifas_motorista.get(0, TARIFAS_PADRAO[0]),  # Encomendas
+                    9: tarifas_motorista.get(9, TARIFAS_PADRAO[9]),  # Cards
+                    6: tarifas_motorista.get(6, TARIFAS_PADRAO[6]),  # Revistas
+                    8: tarifas_motorista.get(8, TARIFAS_PADRAO[8])   # Revistas
+                },
+                'tem_personalizacao': len(tarifas_motorista) > 0,
+                'grupo': 'Personalizado' if len(tarifas_motorista) > 0 else 'Padrão'
+            }
+            
+            # Determinar se é Premium (todas as tarifas acima do padrão)
+            if len(tarifas_motorista) > 0:
+                todas_acima = all(
+                    tarifas_motorista.get(tipo, TARIFAS_PADRAO[tipo]) > TARIFAS_PADRAO[tipo]
+                    for tipo in [0, 9, 6, 8]
+                    if tipo in tarifas_motorista
+                )
+                if todas_acima:
+                    tarifa_data['grupo'] = 'Premium'
+            
+            tarifas_organizadas.append(tarifa_data)
+        
+        return jsonify({
+            'success': True,
+            'data': tarifas_organizadas,
+            'tarifas_padrao': TARIFAS_PADRAO
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar tarifas: {str(e)}'}), 500
+
+@app.route('/api/tarifas/grupos', methods=['GET'])
+def get_tarifas_grupos():
+    """Grupos de tarifas (Premium, Personalizado, Padrão)"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        grupos = {
+            'Premium': [],
+            'Personalizado': [],
+            'Padrão': []
+        }
+        
+        for motorista in motoristas_db[empresa_id]:
+            id_motorista = motorista['id_motorista']
+            nome_motorista = motorista['nome_motorista']
+            
+            # Buscar tarifas personalizadas
+            tarifas_motorista = tarifas_db[empresa_id].get(id_motorista, {})
+            
+            if len(tarifas_motorista) == 0:
+                grupos['Padrão'].append({'id_motorista': id_motorista, 'nome_motorista': nome_motorista})
+            else:
+                # Verificar se é Premium
+                todas_acima = all(
+                    tarifas_motorista.get(tipo, TARIFAS_PADRAO[tipo]) > TARIFAS_PADRAO[tipo]
+                    for tipo in [0, 9, 6, 8]
+                    if tipo in tarifas_motorista
+                )
+                
+                if todas_acima:
+                    grupos['Premium'].append({'id_motorista': id_motorista, 'nome_motorista': nome_motorista})
+                else:
+                    grupos['Personalizado'].append({'id_motorista': id_motorista, 'nome_motorista': nome_motorista})
+        
+        return jsonify({
+            'success': True,
+            'data': grupos
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar grupos: {str(e)}'}), 500
+
+@app.route('/api/tarifas/<int:id_motorista>', methods=['PUT'])
+def update_tarifa_motorista(id_motorista):
+    """Atualizar tarifa de um motorista"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        data = request.get_json()
+        
+        # Validar se motorista existe
+        motorista_existe = any(
+            m['id_motorista'] == id_motorista 
+            for m in motoristas_db[empresa_id]
+        )
+        
+        if not motorista_existe:
+            return jsonify({'error': 'Motorista não encontrado'}), 404
+        
+        # Validar dados
+        tipo_servico = data.get('tipo_servico')
+        valor = data.get('valor')
+        
+        if tipo_servico not in [0, 6, 8, 9]:
+            return jsonify({'error': 'Tipo de serviço inválido'}), 400
+        
+        if not isinstance(valor, (int, float)) or valor < 0:
+            return jsonify({'error': 'Valor inválido'}), 400
+        
+        # Inicializar tarifas do motorista se não existir
+        if id_motorista not in tarifas_db[empresa_id]:
+            tarifas_db[empresa_id][id_motorista] = {}
+        
+        # Atualizar tarifa
+        tarifas_db[empresa_id][id_motorista][tipo_servico] = float(valor)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Tarifa atualizada! Tipo {tipo_servico}: R$ {valor:.2f}',
+            'data': {
+                'id_motorista': id_motorista,
+                'tipo_servico': tipo_servico,
+                'valor': float(valor)
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
+
+@app.route('/api/tarifas/<int:id_motorista>/<int:tipo_servico>', methods=['PUT'])
+def update_tarifa_motorista_tipo(id_motorista, tipo_servico):
+    """Atualizar tarifa específica de um motorista (formato alternativo)"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        data = request.get_json()
+        
+        # Validar se motorista existe
+        motorista_existe = any(
+            m['id_motorista'] == id_motorista 
+            for m in motoristas_db[empresa_id]
+        )
+        
+        if not motorista_existe:
+            return jsonify({'error': 'Motorista não encontrado'}), 404
+        
+        # Validar dados
+        valor = data.get('valor')
+        
+        if tipo_servico not in [0, 6, 8, 9]:
+            return jsonify({'error': 'Tipo de serviço inválido'}), 400
+        
+        if not isinstance(valor, (int, float)) or valor < 0:
+            return jsonify({'error': 'Valor inválido'}), 400
+        
+        # Inicializar tarifas do motorista se não existir
+        if id_motorista not in tarifas_db[empresa_id]:
+            tarifas_db[empresa_id][id_motorista] = {}
+        
+        # Atualizar tarifa
+        tarifas_db[empresa_id][id_motorista][tipo_servico] = float(valor)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Tarifa atualizada! Tipo {tipo_servico}: R$ {valor:.2f}',
+            'data': {
+                'id_motorista': id_motorista,
+                'tipo_servico': tipo_servico,
+                'valor': float(valor)
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
+
+@app.route('/api/tarifas/<int:id_motorista>/reset', methods=['POST'])
+def reset_tarifa_motorista(id_motorista):
+    """Resetar tarifas de um motorista para o padrão"""
+    try:
+        empresa_id = get_empresa_id()
+        inicializar_empresa(empresa_id)
+        
+        # Validar se motorista existe
+        motorista_existe = any(
+            m['id_motorista'] == id_motorista 
+            for m in motoristas_db[empresa_id]
+        )
+        
+        if not motorista_existe:
+            return jsonify({'error': 'Motorista não encontrado'}), 404
+        
+        # Remover tarifas personalizadas
+        if id_motorista in tarifas_db[empresa_id]:
+            del tarifas_db[empresa_id][id_motorista]
+        
+        return jsonify({
+            'success': True,
+            'message': 'Tarifas resetadas para o padrão!',
+            'data': {
+                'id_motorista': id_motorista,
+                'tarifas_padrao': TARIFAS_PADRAO
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro interno: {str(e)}'}), 500
 
 # ==================== APIs DO DASHBOARD ====================
 
