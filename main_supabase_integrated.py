@@ -1,5 +1,5 @@
-# MenezesLog SaaS v7.0 FINAL - PERSISTÊNCIA COMPLETA
-# RESOLVE TODOS OS PROBLEMAS - DADOS NUNCA MAIS SE PERDEM
+# MenezesLog SaaS v7.1 FINAL - CORRIGE DELIMITADOR CSV BRASILEIRO
+# DETECTA AUTOMATICAMENTE VÍRGULA OU PONTO E VÍRGULA
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -160,6 +160,38 @@ def detectar_encoding(file_content_bytes):
         content = file_content_bytes.decode('utf-8', errors='replace')
         return content, 'utf-8'
 
+def detectar_delimitador_csv(content):
+    """Detecta automaticamente o delimitador do CSV - SUPORTE BRASILEIRO"""
+    try:
+        # Pegar primeira linha (cabeçalho)
+        primeira_linha = content.split('\n')[0]
+        
+        # Contar delimitadores comuns
+        delimitadores = {
+            ';': primeira_linha.count(';'),  # Ponto e vírgula (padrão brasileiro)
+            ',': primeira_linha.count(','),  # Vírgula (padrão internacional)
+            '\t': primeira_linha.count('\t'), # Tab
+            '|': primeira_linha.count('|')   # Pipe
+        }
+        
+        # Encontrar delimitador mais comum
+        delimitador = max(delimitadores, key=delimitadores.get)
+        count = delimitadores[delimitador]
+        
+        app.logger.info(f"Delimitadores encontrados: {delimitadores}")
+        app.logger.info(f"Delimitador escolhido: '{delimitador}' (aparece {count} vezes)")
+        
+        # Se nenhum delimitador foi encontrado, usar vírgula como padrão
+        if count == 0:
+            app.logger.warning("Nenhum delimitador encontrado, usando vírgula como padrão")
+            return ','
+        
+        return delimitador
+        
+    except Exception as e:
+        app.logger.error(f"Erro na detecção de delimitador: {str(e)}")
+        return ','  # Fallback para vírgula
+
 def allowed_file(filename):
     """Verifica se o arquivo é permitido"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -214,7 +246,7 @@ def upload_motoristas():
     try:
         empresa_id = 1
         
-        app.logger.info("=== INÍCIO UPLOAD MOTORISTAS v7.0 PERSISTENTE ===")
+        app.logger.info("=== INÍCIO UPLOAD MOTORISTAS v7.1 PERSISTENTE ===")
         
         if 'file' not in request.files:
             return jsonify({'error': 'Nenhum arquivo enviado'}), 400
@@ -344,7 +376,7 @@ def upload_motoristas():
             'total_motoristas': total_motoristas
         }
         
-        app.logger.info(f"=== RESULTADO FINAL v7.0 PERSISTENTE ===")
+        app.logger.info(f"=== RESULTADO FINAL v7.1 PERSISTENTE ===")
         app.logger.info(f"✅ Motoristas processados: {motoristas_processados}")
         app.logger.info(f"❌ Motoristas com erro: {motoristas_erro}")
         app.logger.info(f"📊 Total de motoristas no sistema: {total_motoristas}")
@@ -583,11 +615,11 @@ def get_prestadores_estatisticas():
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
-    """Upload de arquivo CSV/Excel de entregas - VERSÃO PERSISTENTE"""
+    """Upload de arquivo CSV/Excel de entregas - VERSÃO v7.1 COM DETECÇÃO DE DELIMITADOR"""
     try:
         empresa_id = 1
         
-        app.logger.info("=== INÍCIO UPLOAD ENTREGAS v7.0 PERSISTENTE ===")
+        app.logger.info("=== INÍCIO UPLOAD ENTREGAS v7.1 COM DETECÇÃO DE DELIMITADOR ===")
         
         if 'file' not in request.files:
             return jsonify({'error': 'Nenhum arquivo enviado'}), 400
@@ -616,30 +648,35 @@ def upload_file():
         file_content, encoding_usado = detectar_encoding(file_content_bytes)
         app.logger.info(f"Arquivo processado com encoding: {encoding_usado}")
         
+        # DETECTAR DELIMITADOR AUTOMATICAMENTE
+        delimitador = detectar_delimitador_csv(file_content)
+        app.logger.info(f"🎯 Delimitador detectado: '{delimitador}'")
+        
         try:
-            # Processar CSV
-            csv_reader = csv.DictReader(io.StringIO(file_content))
+            # Processar CSV com delimitador correto
+            csv_reader = csv.DictReader(io.StringIO(file_content), delimiter=delimitador)
             dados = list(csv_reader)
             app.logger.info(f"CSV carregado com {len(dados)} linhas")
             app.logger.info(f"Colunas encontradas: {csv_reader.fieldnames}")
             
             for linha_num, linha in enumerate(dados, start=2):
                 try:
-                    # Procurar AWB
+                    # Procurar AWB com múltiplas variações
                     awb = None
-                    for col in ['AWB', 'awb', 'Awb', 'AWB_CODE', 'awb_code', 'Código AWB', 'codigo_awb']:
+                    for col in ['AWB', 'awb', 'Awb', 'AWB_CODE', 'awb_code', 'Código AWB', 'codigo_awb', 'Codigo de Rastreamento', 'Tracking Code']:
                         if col in linha and linha[col]:
                             awb = str(linha[col]).strip()
-                            break
+                            if awb and awb != 'None' and awb != '':
+                                break
                     
                     if not awb:
                         app.logger.warning(f"Linha {linha_num}: AWB não encontrada")
                         entregas_erro += 1
                         continue
                     
-                    # Procurar ID do motorista
+                    # Procurar ID do motorista com múltiplas variações
                     id_motorista = None
-                    for col in ['ID_MOTORISTA', 'id_motorista', 'Motorista', 'MOTORISTA', 'ID do motorista', 'id_do_motorista']:
+                    for col in ['ID do motorista', 'ID_MOTORISTA', 'id_motorista', 'Motorista', 'MOTORISTA', 'ID_DRIVER', 'driver_id']:
                         if col in linha and linha[col]:
                             try:
                                 id_motorista = int(linha[col])
@@ -660,7 +697,7 @@ def upload_file():
                     
                     # Procurar tipo de serviço
                     tipo_servico = 0  # Padrão: encomendas
-                    for col in ['TIPO_SERVICO', 'tipo_servico', 'Tipo', 'TIPO', 'Serviço', 'servico']:
+                    for col in ['Tipo de Serviço', 'TIPO_SERVICO', 'tipo_servico', 'Tipo', 'TIPO', 'Serviço', 'servico', 'Service Type']:
                         if col in linha and linha[col]:
                             try:
                                 tipo_servico = int(linha[col])
@@ -670,10 +707,11 @@ def upload_file():
                     
                     # Procurar data/hora da entrega
                     data_entrega = None
-                    for col in ['DATA_ENTREGA', 'data_entrega', 'Data', 'DATA', 'Data/Hora', 'data_hora', 'TIMESTAMP']:
+                    for col in ['Data/Hora Status do último status', 'DATA_ENTREGA', 'data_entrega', 'Data', 'DATA', 'Data/Hora', 'data_hora', 'TIMESTAMP']:
                         if col in linha and linha[col]:
                             data_entrega = str(linha[col]).strip()
-                            break
+                            if data_entrega and data_entrega != 'None' and data_entrega != '':
+                                break
                     
                     if not data_entrega:
                         data_entrega = datetime.now().isoformat()
@@ -741,7 +779,7 @@ def upload_file():
             'total_awbs': total_awbs
         }
         
-        app.logger.info(f"=== RESULTADO FINAL UPLOAD ENTREGAS v7.0 ===")
+        app.logger.info(f"=== RESULTADO FINAL UPLOAD ENTREGAS v7.1 ===")
         app.logger.info(f"✅ Entregas processadas: {entregas_processadas}")
         app.logger.info(f"❌ Entregas com erro: {entregas_erro}")
         app.logger.info(f"🆕 AWBs novas criadas: {awbs_novas}")
@@ -846,11 +884,11 @@ def get_payment_chart():
 # ==================== INICIALIZAÇÃO ====================
 
 if __name__ == '__main__':
-    app.logger.info("🚀 MenezesLog SaaS v7.0 FINAL - PERSISTÊNCIA COMPLETA iniciado!")
+    app.logger.info("🚀 MenezesLog SaaS v7.1 FINAL - DETECÇÃO AUTOMÁTICA DE DELIMITADOR iniciado!")
     app.logger.info("💾 DADOS NUNCA MAIS SE PERDEM - Salvos em arquivos JSON")
-    app.logger.info("✅ UPLOADS FUNCIONANDO - CSV processado e AWBs salvas")
+    app.logger.info("✅ UPLOADS FUNCIONANDO - CSV com vírgula OU ponto e vírgula")
     app.logger.info("✅ PRESTADORES FUNCIONANDO - Grupos mantidos após refresh")
-    app.logger.info("🇧🇷 Suporte completo a encoding brasileiro")
+    app.logger.info("🇧🇷 Suporte completo a encoding brasileiro + delimitadores")
     app.logger.info("🎯 SISTEMA 100% OPERACIONAL")
     
     app.run(host='0.0.0.0', port=5000, debug=False)
