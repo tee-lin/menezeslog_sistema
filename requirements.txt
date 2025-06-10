@@ -6,4 +6,5 @@ python-dateutil==2.8.2
 openpyxl==3.1.2
 chardet==5.2.0
 supabase==2.15.2
+numpy==1.24.3
 pandas==2.0.3
