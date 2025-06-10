@@ -3,539 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload de Arquivos - MenezesLog</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Upload - MenezesLog SaaS</title>
+    <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
-    <style>
-        .upload-area {
-            border: 2px dashed #dee2e6;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-        }
-        
-        .upload-area.drag-over {
-            border-color: #0d6efd;
-            background-color: #e7f3ff;
-        }
-        
-        .upload-area:hover {
-            border-color: #0d6efd;
-        }
-        
-        .file-input {
-            display: none;
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-        }
-        
-        .progress-container {
-            display: none;
-            margin-top: 1rem;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            min-width: 300px;
-        }
-    </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="assets/logo.png" alt="MenezesLog" height="30" class="me-2">
-                MenezesLog
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="admin_dashboard.html">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="motoristas.html">
-                            <i class="fas fa-users"></i> Motoristas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="upload.html">
-                            <i class="fas fa-upload"></i> Upload
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="relatorios.html">
-                            <i class="fas fa-chart-bar"></i> Relatórios
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="configuracoes.html">
-                            <i class="fas fa-cog"></i> Configurações
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i> <span id="user-name">Administrador</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+    <!-- Menu Lateral -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-truck"></i> MenezesLog</h3>
         </div>
+        <ul class="sidebar-menu">
+            <li><a href="admin_dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
+            <li><a href="upload.html" class="active"><i class="fas fa-upload"></i> Upload</a></li>
+            <li><a href="tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
+            <li><a href="ciclos.html"><i class="fas fa-calendar"></i> Ciclos</a></li>
+            <li><a href="awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
+        </ul>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="fas fa-upload text-primary"></i> Upload de Arquivos</h2>
-                </div>
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-upload"></i> Upload de Arquivos</h1>
+                <p>Faça upload de arquivos CSV de entregas para processamento</p>
+            </div>
 
-                <!-- Upload Form -->
-                <div class="card mb-4">
+            <!-- Status do Sistema -->
+            <div class="system-status">
+                <div class="status-card">
+                    <div class="status-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="status-content">
+                        <h4>Status do Supabase</h4>
+                        <span id="supabase-status" class="status-badge">Verificando...</span>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <div class="status-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="status-content">
+                        <h4>Entregadores Cadastrados</h4>
+                        <span id="motoristas-count" class="status-number">0</span>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <div class="status-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="status-content">
+                        <h4>Versão do Sistema</h4>
+                        <span class="status-badge">v7.5 FINAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Upload -->
+            <div class="upload-section">
+                <div class="upload-card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-file-upload"></i> Enviar Novo Arquivo
-                        </h5>
+                        <h3><i class="fas fa-file-csv"></i> Upload de CSV de Entregas</h3>
+                        <p>Arraste e solte seu arquivo CSV ou clique para selecionar</p>
                     </div>
-                    <div class="card-body">
-                        <form id="upload-form" enctype="multipart/form-data">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="file-type" class="form-label">Tipo de Arquivo</label>
-                                        <select class="form-select" id="file-type" name="file-type">
-                                            <option value="pagamentos">Pagamentos</option>
-                                            <option value="entregas">Entregas</option>
-                                            <option value="motoristas">Motoristas</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Descrição</label>
-                                        <input type="text" class="form-control" id="description" name="description" placeholder="Descrição do arquivo">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Selecione o arquivo</label>
-                                <div class="upload-area" id="drop-zone">
-                                    <div class="upload-icon">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                    </div>
-                                    <h5>Arraste e solte seu arquivo aqui</h5>
-                                    <p class="text-muted">ou clique para selecionar</p>
-                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('file-input').click()">
-                                        <i class="fas fa-folder-open"></i> Escolher arquivo
-                                    </button>
-                                    <input type="file" id="file-input" name="file" class="file-input" accept=".csv,.xls,.xlsx" required>
-                                    <div class="mt-2">
-                                        <small class="text-muted">Formatos aceitos: CSV, XLS, XLSX (máx. 10MB)</small>
-                                    </div>
-                                </div>
-                                <div id="file-info" class="mt-2" style="display: none;">
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-file"></i> <span id="file-name"></span> (<span id="file-size"></span>)
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="process-immediately" checked>
-                                <label class="form-check-label" for="process-immediately">
-                                    Processar imediatamente após upload
-                                </label>
-                            </div>
-
-                            <div class="progress-container">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                                </div>
-                                <div class="text-center mt-2">
-                                    <small class="text-muted">Processando arquivo...</small>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-upload"></i> Enviar Arquivo
-                            </button>
-                        </form>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h4>Arraste seu arquivo CSV aqui</h4>
+                            <p>ou <span class="upload-link">clique para selecionar</span></p>
+                            <small>Formatos suportados: CSV, Excel (.xlsx, .xls)</small>
+                        </div>
+                        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display: none;">
                     </div>
-                </div>
 
-                <!-- Upload History -->
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-history"></i> Histórico de Uploads
-                        </h5>
-                        <div>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadUploadHistory()">
-                                <i class="fas fa-sync-alt"></i> Atualizar
-                            </button>
-                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
-                                <i class="fas fa-filter"></i> Filtrar
+                    <!-- Informações do Arquivo -->
+                    <div id="fileInfo" class="file-info" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file"></i>
+                            <div class="file-text">
+                                <strong id="fileName"></strong>
+                                <span id="fileSize"></span>
+                            </div>
+                            <button id="removeFile" class="btn-remove">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="upload-history-table">
-                                <thead>
-                                    <tr>
-                                        <th>Arquivo</th>
-                                        <th>Tipo</th>
-                                        <th>Data de Upload</th>
-                                        <th>Tamanho</th>
-                                        <th>Status</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted">
-                                            <i class="fas fa-spinner fa-spin"></i> Carregando histórico...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+                    <!-- Botão de Upload -->
+                    <div class="upload-actions">
+                        <button id="uploadBtn" class="btn btn-primary" disabled>
+                            <i class="fas fa-upload"></i> Processar Arquivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div id="progressSection" class="progress-section" style="display: none;">
+                <div class="progress-card">
+                    <h4><i class="fas fa-cog fa-spin"></i> Processando Arquivo...</h4>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressText">Iniciando processamento...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados -->
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <div class="results-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Resultados do Processamento</h3>
+                    </div>
+                    <div class="results-grid">
+                        <div class="result-item">
+                            <div class="result-icon success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="result-content">
+                                <h4 id="processedCount">0</h4>
+                                <p>Entregas Processadas</p>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="result-content">
+                                <h4 id="errorCount">0</h4>
+                                <p>Erros Encontrados</p>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon info">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="result-content">
+                                <h4 id="processingTime">0s</h4>
+                                <p>Tempo de Processamento</p>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon info">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div class="result-content">
+                                <h4 id="performance">0</h4>
+                                <p>Linhas/Segundo</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="results-message">
+                        <p id="resultMessage"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Uploads -->
+            <div class="history-section">
+                <div class="history-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Histórico de Uploads</h3>
+                    </div>
+                    <div class="history-content">
+                        <div id="historyList" class="history-list">
+                            <p class="no-history">Nenhum upload realizado ainda</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js"></script>
+    </main>
 
     <script>
-        // Função showNotification que estava faltando
-        function showNotification(message, type = 'info') {
-            console.log(`[Notification] ${type.toUpperCase()}: ${message}`);
-            
-            // Criar notificação visual
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} notification`;
-            notification.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>${type.charAt(0).toUpperCase() + type.slice(1)}:</strong> ${message}
-                    </div>
-                    <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remover após 5 segundos
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
+        // Variáveis globais
+        let selectedFile = null;
+
+        // Elementos DOM
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const progressSection = document.getElementById('progressSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarStatusSistema();
+            configurarUpload();
+        });
+
+        // Verificar status do sistema
+        async function verificarStatusSistema() {
+            try {
+                // Status do Supabase
+                const statusResponse = await fetch('/api/status');
+                if (statusResponse.ok) {
+                    const statusData = await statusResponse.json();
+                    const supabaseStatus = document.getElementById('supabase-status');
+                    supabaseStatus.textContent = statusData.data.supabase_connected ? 'Conectado' : 'Desconectado';
+                    supabaseStatus.className = statusData.data.supabase_connected ? 'status-badge success' : 'status-badge error';
                 }
-            }, 5000);
+
+                // Contagem de motoristas
+                const motoristasResponse = await fetch('/api/motoristas/count');
+                if (motoristasResponse.ok) {
+                    const motoristasData = await motoristasResponse.json();
+                    document.getElementById('motoristas-count').textContent = motoristasData.count || 0;
+                }
+
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+                document.getElementById('supabase-status').textContent = 'Erro';
+                document.getElementById('supabase-status').className = 'status-badge error';
+            }
         }
 
-        // Função para fazer upload
-        async function uploadFile(formData) {
+        // Configurar funcionalidade de upload
+        function configurarUpload() {
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    selecionarArquivo(files[0]);
+                }
+            });
+
+            // Click para selecionar
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    selecionarArquivo(e.target.files[0]);
+                }
+            });
+
+            // Remover arquivo
+            document.getElementById('removeFile').addEventListener('click', () => {
+                removerArquivo();
+            });
+
+            // Upload
+            uploadBtn.addEventListener('click', () => {
+                if (selectedFile) {
+                    processarArquivo();
+                }
+            });
+        }
+
+        // Selecionar arquivo
+        function selecionarArquivo(file) {
+            selectedFile = file;
+            
+            // Mostrar informações do arquivo
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatarTamanho(file.size);
+            
+            fileInfo.style.display = 'block';
+            uploadBtn.disabled = false;
+            
+            // Esconder resultados anteriores
+            resultsSection.style.display = 'none';
+        }
+
+        // Remover arquivo
+        function removerArquivo() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            uploadBtn.disabled = true;
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+        }
+
+        // Processar arquivo
+        async function processarArquivo() {
+            if (!selectedFile) return;
+
+            // Mostrar progress
+            progressSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            uploadBtn.disabled = true;
+
+            // Simular progresso
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 90) progress = 90;
+                atualizarProgresso(progress, 'Processando dados...');
+            }, 500);
+
             try {
-                const response = await fetch('/api/upload', {  // URL CORRETA (sem duplicação)
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const startTime = Date.now();
+                const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData
                 });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
-                }
-                
+
+                clearInterval(progressInterval);
+                atualizarProgresso(100, 'Processamento concluído!');
+
                 const result = await response.json();
-                return result;
-                
+                const endTime = Date.now();
+                const totalTime = (endTime - startTime) / 1000;
+
+                setTimeout(() => {
+                    progressSection.style.display = 'none';
+                    mostrarResultados(result, totalTime);
+                }, 1000);
+
             } catch (error) {
+                clearInterval(progressInterval);
                 console.error('Erro no upload:', error);
-                throw error;
+                
+                setTimeout(() => {
+                    progressSection.style.display = 'none';
+                    mostrarErro('Erro ao processar arquivo: ' + error.message);
+                }, 1000);
             }
+
+            uploadBtn.disabled = false;
         }
 
-        // Função para carregar histórico
-        async function loadUploadHistory() {
-            try {
-                const response = await fetch('/api/upload/history?page=1&limit=10');  // URL CORRETA
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.success && result.data && Array.isArray(result.data)) {
-                    displayUploadHistory(result.data);
-                } else {
-                    // Dados simulados com estrutura correta
-                    displayUploadHistory([
-                        {
-                            id: '1',
-                            filename: 'exemplo.csv',
-                            processed_at: '2025-06-09T00:00:00',
-                            total_entregas: 100,
-                            total_motoristas: 5,
-                            total_pagamentos: 350.00,
-                            status: 'processed'
-                        }
-                    ]);
-                }
-                
-            } catch (error) {
-                console.error('Erro ao carregar histórico:', error);
-                
-                // Fallback com dados simulados
-                displayUploadHistory([
-                    {
-                        id: '1',
-                        filename: 'exemplo.csv',
-                        processed_at: '2025-06-09T00:00:00',
-                        total_entregas: 100,
-                        total_motoristas: 5,
-                        total_pagamentos: 350.00,
-                        status: 'processed'
-                    }
-                ]);
-            }
+        // Atualizar progresso
+        function atualizarProgresso(percent, text) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
+            document.getElementById('progressText').textContent = text;
         }
 
-        // Função para exibir histórico
-        function displayUploadHistory(uploads) {
-            const tbody = document.querySelector('#upload-history-table tbody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (!uploads || uploads.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Nenhum upload encontrado</td></tr>';
-                return;
+        // Mostrar resultados
+        function mostrarResultados(result, totalTime) {
+            if (result.success) {
+                document.getElementById('processedCount').textContent = result.data.entregas_processadas || 0;
+                document.getElementById('errorCount').textContent = result.data.entregas_erro || 0;
+                document.getElementById('processingTime').textContent = totalTime.toFixed(1) + 's';
+                document.getElementById('performance').textContent = result.data.performance_linhas_por_segundo || 0;
+                document.getElementById('resultMessage').textContent = result.message || 'Processamento concluído com sucesso!';
+                document.getElementById('resultMessage').className = 'success-message';
+            } else {
+                mostrarErro(result.error || 'Erro desconhecido');
             }
             
-            uploads.forEach(upload => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <i class="fas fa-file-csv text-success me-2"></i>
-                        ${upload.filename || 'N/A'}
-                    </td>
-                    <td><span class="badge bg-primary">Pagamentos</span></td>
-                    <td>${new Date(upload.processed_at).toLocaleString('pt-BR')}</td>
-                    <td>${(upload.total_entregas || 0).toLocaleString()} entregas</td>
-                    <td><span class="badge bg-success">Processado</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary" onclick="viewUploadDetails('${upload.id}')">
-                            <i class="fas fa-eye"></i> Ver
-                        </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="downloadUpload('${upload.id}')">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
+            resultsSection.style.display = 'block';
+            
+            // Atualizar status do sistema
+            setTimeout(verificarStatusSistema, 2000);
         }
 
-        // Função para ver detalhes do upload
-        function viewUploadDetails(uploadId) {
-            showNotification(`Visualizando detalhes do upload ${uploadId}`, 'info');
-            // Implementar visualização de detalhes
+        // Mostrar erro
+        function mostrarErro(message) {
+            document.getElementById('processedCount').textContent = '0';
+            document.getElementById('errorCount').textContent = '-';
+            document.getElementById('processingTime').textContent = '-';
+            document.getElementById('performance').textContent = '-';
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultMessage').className = 'error-message';
+            
+            resultsSection.style.display = 'block';
         }
 
-        // Função para download
-        function downloadUpload(uploadId) {
-            showNotification(`Iniciando download do upload ${uploadId}`, 'info');
-            // Implementar download
+        // Formatar tamanho do arquivo
+        function formatarTamanho(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Carregar histórico ao carregar a página
-            loadUploadHistory();
-            
-            // Configurar input de arquivo
-            const fileInput = document.getElementById('file-input');
-            const fileInfo = document.getElementById('file-info');
-            const fileName = document.getElementById('file-name');
-            const fileSize = document.getElementById('file-size');
-            
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    fileName.textContent = file.name;
-                    fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                    fileInfo.style.display = 'block';
-                } else {
-                    fileInfo.style.display = 'none';
-                }
-            });
-            
-            // Configurar formulário de upload
-            const uploadForm = document.getElementById('upload-form');
-            if (uploadForm) {
-                uploadForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    const fileInput = document.getElementById('file-input');
-                    const file = fileInput.files[0];
-                    
-                    if (!file) {
-                        showNotification('Por favor, selecione um arquivo', 'error');
-                        return;
-                    }
-                    
-                    // Validar tipo de arquivo
-                    const allowedTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-                    if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.csv')) {
-                        showNotification('Tipo de arquivo não permitido. Use CSV, XLS ou XLSX', 'error');
-                        return;
-                    }
-                    
-                    // Validar tamanho (10MB)
-                    if (file.size > 10 * 1024 * 1024) {
-                        showNotification('Arquivo muito grande. Máximo 10MB permitido', 'error');
-                        return;
-                    }
-                    
-                    // Criar FormData
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    
-                    // Mostrar loading
-                    const submitBtn = this.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.innerHTML;
-                    const progressContainer = document.querySelector('.progress-container');
-                    const progressBar = document.querySelector('.progress-bar');
-                    
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processando...';
-                    progressContainer.style.display = 'block';
-                    
-                    // Simular progresso
-                    let progress = 0;
-                    const progressInterval = setInterval(() => {
-                        progress += Math.random() * 30;
-                        if (progress > 90) progress = 90;
-                        progressBar.style.width = progress + '%';
-                    }, 200);
-                    
-                    try {
-                        const result = await uploadFile(formData);
-                        
-                        // Completar progresso
-                        clearInterval(progressInterval);
-                        progressBar.style.width = '100%';
-                        
-                        if (result.success) {
-                            showNotification(`Arquivo ${file.name} processado com sucesso!`, 'success');
-                            
-                            // Mostrar estatísticas
-                            if (result.data && result.data.stats) {
-                                const stats = result.data.stats;
-                                showNotification(
-                                    `Processadas ${stats.total_entregas} entregas de ${stats.total_motoristas} motoristas. Total: R$ ${stats.total_pagamentos.toFixed(2)}`,
-                                    'info'
-                                );
-                            }
-                            
-                            // Limpar formulário
-                            uploadForm.reset();
-                            fileInfo.style.display = 'none';
-                            
-                            // Recarregar histórico
-                            setTimeout(() => {
-                                loadUploadHistory();
-                                
-                                // Redirecionar para dashboard após 3 segundos
-                                setTimeout(() => {
-                                    showNotification('Redirecionando para o dashboard...', 'info');
-                                    window.location.href = '/admin_dashboard.html';
-                                }, 3000);
-                            }, 1000);
-                            
-                        } else {
-                            showNotification(`Erro: ${result.error || 'Erro desconhecido'}`, 'error');
-                        }
-                        
-                    } catch (error) {
-                        clearInterval(progressInterval);
-                        showNotification(`Erro no upload: ${error.message}`, 'error');
-                    } finally {
-                        // Restaurar botão
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                        progressContainer.style.display = 'none';
-                        progressBar.style.width = '0%';
-                    }
-                });
-            }
-            
-            // Configurar drag & drop
-            const dropZone = document.getElementById('drop-zone');
-            if (dropZone) {
-                dropZone.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.classList.add('drag-over');
-                });
-                
-                dropZone.addEventListener('dragleave', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('drag-over');
-                });
-                
-                dropZone.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('drag-over');
-                    
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        const fileInput = document.getElementById('file-input');
-                        fileInput.files = files;
-                        
-                        // Trigger change event
-                        const event = new Event('change', { bubbles: true });
-                        fileInput.dispatchEvent(event);
-                    }
-                });
-                
-                dropZone.addEventListener('click', function(e) {
-                    if (e.target === this || e.target.closest('.upload-icon, h5, p')) {
-                        document.getElementById('file-input').click();
-                    }
-                });
-            }
-        });
-
-        console.log('[Upload] Página carregada com sucesso!');
     </script>
 </body>
 </html>

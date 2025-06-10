@@ -1,5 +1,5 @@
-# SISTEMA v7.4 BEAST MODE - OTIMIZADO PARA 300K LINHAS + SUPABASE
-# BATCH INSERTS MASSIVOS + PROCESSAMENTO ASSÍNCRONO + PERFORMANCE EXTREMA
+# SISTEMA v7.5 FINAL - TIMEOUT ESTENDIDO + TODAS AS APIs SUPABASE
+# BACKEND COMPLETO COM TODAS AS FUNCIONALIDADES
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -22,16 +22,16 @@ import queue
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app)
 
-# Configuração de logging ULTRA MÍNIMA
-logging.basicConfig(level=logging.ERROR)  # Só erros críticos
-app.logger.setLevel(logging.ERROR)
+# Configuração de logging OTIMIZADA
+logging.basicConfig(level=logging.WARNING)
+app.logger.setLevel(logging.WARNING)
 
-# Configurações BEAST MODE
+# Configurações FINAIS
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
-BATCH_SIZE = 5000  # Lotes maiores para Supabase
-SUPABASE_BATCH_SIZE = 1000  # Inserções em lote no Supabase
-MAX_WORKERS = 3  # Threads paralelas
+BATCH_SIZE = 5000
+SUPABASE_BATCH_SIZE = 1000
+MAX_WORKERS = 3
 
 # Criar pastas se não existirem
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -44,7 +44,7 @@ TARIFAS_PADRAO = {
     8: 0.50   # Revistas
 }
 
-# ==================== CONFIGURAÇÃO SUPABASE OTIMIZADA ====================
+# ==================== CONFIGURAÇÃO SUPABASE ====================
 
 try:
     from supabase import create_client, Client
@@ -58,7 +58,7 @@ except ImportError:
 supabase_client = None
 
 def init_supabase():
-    """Inicializa conexão com Supabase com pool de conexões"""
+    """Inicializa conexão com Supabase"""
     global supabase_client
     
     if not SUPABASE_AVAILABLE:
@@ -73,7 +73,6 @@ def init_supabase():
             print("❌ Credenciais do Supabase não configuradas")
             return False
         
-        # Criar cliente com configurações otimizadas
         supabase_client = create_client(supabase_url, supabase_key)
         
         # Testar conexão
@@ -88,9 +87,10 @@ def init_supabase():
 # Inicializar Supabase
 SUPABASE_CONNECTED = init_supabase()
 
-# ==================== CACHE GLOBAL ULTRA OTIMIZADO ====================
+# ==================== CACHE GLOBAL ====================
 _cache_motoristas = {}
 _cache_tarifas = {}
+_cache_prestadores = {}
 _cache_timestamp = 0
 
 def invalidate_cache():
@@ -98,28 +98,25 @@ def invalidate_cache():
     global _cache_timestamp
     _cache_timestamp = time.time()
 
-# ==================== FUNÇÕES SUPABASE BATCH OTIMIZADAS ====================
+# ==================== FUNÇÕES SUPABASE OTIMIZADAS ====================
 
 def get_motoristas_supabase_cached(empresa_id=1):
-    """Carrega motoristas do Supabase com cache agressivo"""
+    """Carrega motoristas do Supabase com cache"""
     global _cache_motoristas, _cache_timestamp
     
     cache_key = f"motoristas_{empresa_id}"
     current_time = time.time()
     
-    # Cache válido por 10 minutos (mais tempo)
-    if cache_key in _cache_motoristas and (current_time - _cache_timestamp) < 600:
+    if cache_key in _cache_motoristas and (current_time - _cache_timestamp) < 300:
         return _cache_motoristas[cache_key]
     
     try:
         if not SUPABASE_CONNECTED:
             return []
         
-        # Buscar todos os motoristas de uma vez
         result = supabase_client.table('motoristas').select('*').eq('empresa_id', empresa_id).execute()
         motoristas = result.data if result.data else []
         
-        # Atualizar cache
         _cache_motoristas[cache_key] = motoristas
         _cache_timestamp = current_time
         
@@ -129,13 +126,82 @@ def get_motoristas_supabase_cached(empresa_id=1):
         print(f"❌ Erro ao carregar motoristas: {str(e)}")
         return []
 
+def get_prestadores_supabase_cached(empresa_id=1):
+    """Carrega prestadores do Supabase com cache"""
+    global _cache_prestadores, _cache_timestamp
+    
+    cache_key = f"prestadores_{empresa_id}"
+    current_time = time.time()
+    
+    if cache_key in _cache_prestadores and (current_time - _cache_timestamp) < 300:
+        return _cache_prestadores[cache_key]
+    
+    try:
+        if not SUPABASE_CONNECTED:
+            return []
+        
+        result = supabase_client.table('prestadores').select('*').eq('empresa_id', empresa_id).execute()
+        prestadores = result.data if result.data else []
+        
+        _cache_prestadores[cache_key] = prestadores
+        _cache_timestamp = current_time
+        
+        return prestadores
+        
+    except Exception as e:
+        print(f"❌ Erro ao carregar prestadores: {str(e)}")
+        return []
+
+def get_awbs_count_supabase(empresa_id=1):
+    """Conta AWBs no Supabase"""
+    try:
+        if not SUPABASE_CONNECTED:
+            return 0
+        
+        result = supabase_client.table('awbs').select('count').eq('empresa_id', empresa_id).execute()
+        return len(result.data) if result.data else 0
+        
+    except Exception as e:
+        print(f"❌ Erro ao contar AWBs: {str(e)}")
+        return 0
+
+def get_tarifas_supabase_cached(empresa_id=1):
+    """Carrega tarifas do Supabase com cache"""
+    global _cache_tarifas, _cache_timestamp
+    
+    cache_key = f"tarifas_{empresa_id}"
+    current_time = time.time()
+    
+    if cache_key in _cache_tarifas and (current_time - _cache_timestamp) < 300:
+        return _cache_tarifas[cache_key]
+    
+    try:
+        if not SUPABASE_CONNECTED:
+            return {}
+        
+        result = supabase_client.table('tarifas').select('*').eq('empresa_id', empresa_id).execute()
+        
+        tarifas_dict = {}
+        if result.data:
+            for tarifa in result.data:
+                motorista_id = str(tarifa['id_motorista'])
+                if motorista_id not in tarifas_dict:
+                    tarifas_dict[motorista_id] = {}
+                tarifas_dict[motorista_id][tarifa['tipo_servico']] = float(tarifa['valor'])
+        
+        _cache_tarifas[cache_key] = tarifas_dict
+        return tarifas_dict
+        
+    except Exception as e:
+        print(f"❌ Erro ao carregar tarifas: {str(e)}")
+        return {}
+
 def save_motoristas_supabase_batch(motoristas, empresa_id=1):
-    """Salva motoristas no Supabase usando UPSERT em lote"""
+    """Salva motoristas no Supabase usando UPSERT"""
     try:
         if not SUPABASE_CONNECTED:
             return False
         
-        # Preparar dados para upsert
         motoristas_data = []
         for motorista in motoristas:
             motorista_data = {
@@ -147,7 +213,6 @@ def save_motoristas_supabase_batch(motoristas, empresa_id=1):
             }
             motoristas_data.append(motorista_data)
         
-        # UPSERT em lote (insert ou update)
         supabase_client.table('motoristas').upsert(
             motoristas_data,
             on_conflict='empresa_id,id_motorista'
@@ -161,17 +226,15 @@ def save_motoristas_supabase_batch(motoristas, empresa_id=1):
         return False
 
 def save_awbs_supabase_batch(awbs_list, empresa_id=1):
-    """Salva AWBs no Supabase usando UPSERT em lotes massivos"""
+    """Salva AWBs no Supabase usando UPSERT em lotes"""
     try:
         if not SUPABASE_CONNECTED or not awbs_list:
             return False
         
-        # Processar em lotes de 1000 para evitar timeout
         total_saved = 0
         for i in range(0, len(awbs_list), SUPABASE_BATCH_SIZE):
             batch = awbs_list[i:i + SUPABASE_BATCH_SIZE]
             
-            # Preparar dados do lote
             awbs_data = []
             for awb_data in batch:
                 awb_record = {
@@ -188,7 +251,6 @@ def save_awbs_supabase_batch(awbs_list, empresa_id=1):
                 }
                 awbs_data.append(awb_record)
             
-            # UPSERT em lote
             supabase_client.table('awbs').upsert(
                 awbs_data,
                 on_conflict='empresa_id,awb'
@@ -200,47 +262,13 @@ def save_awbs_supabase_batch(awbs_list, empresa_id=1):
         return True
         
     except Exception as e:
-        print(f"❌ Erro ao salvar AWBs em lote: {str(e)}")
+        print(f"❌ Erro ao salvar AWBs: {str(e)}")
         return False
 
-def get_tarifas_supabase_cached(empresa_id=1):
-    """Carrega tarifas do Supabase com cache agressivo"""
-    global _cache_tarifas, _cache_timestamp
-    
-    cache_key = f"tarifas_{empresa_id}"
-    current_time = time.time()
-    
-    # Cache válido por 10 minutos
-    if cache_key in _cache_tarifas and (current_time - _cache_timestamp) < 600:
-        return _cache_tarifas[cache_key]
-    
-    try:
-        if not SUPABASE_CONNECTED:
-            return {}
-        
-        result = supabase_client.table('tarifas').select('*').eq('empresa_id', empresa_id).execute()
-        
-        # Converter para formato esperado
-        tarifas_dict = {}
-        if result.data:
-            for tarifa in result.data:
-                motorista_id = str(tarifa['id_motorista'])
-                if motorista_id not in tarifas_dict:
-                    tarifas_dict[motorista_id] = {}
-                tarifas_dict[motorista_id][tarifa['tipo_servico']] = float(tarifa['valor'])
-        
-        # Atualizar cache
-        _cache_tarifas[cache_key] = tarifas_dict
-        return tarifas_dict
-        
-    except Exception as e:
-        print(f"❌ Erro ao carregar tarifas: {str(e)}")
-        return {}
-
-# ==================== PROCESSAMENTO ASSÍNCRONO BEAST MODE ====================
+# ==================== PROCESSAMENTO ASSÍNCRONO ====================
 
 class ProcessadorAssincronoBeastMode:
-    """Processador assíncrono ultra otimizado para 300K linhas"""
+    """Processador assíncrono ultra otimizado"""
     
     def __init__(self):
         self.progress_queue = queue.Queue()
@@ -256,11 +284,9 @@ class ProcessadorAssincronoBeastMode:
         
         print(f"🚀 BEAST MODE: Processando {total_linhas} linhas com {MAX_WORKERS} threads")
         
-        # Dividir dados em chunks para processamento paralelo
         chunk_size = BATCH_SIZE
         chunks = [dados_csv[i:i + chunk_size] for i in range(0, total_linhas, chunk_size)]
         
-        # Processar chunks em paralelo
         futures = []
         for chunk_idx, chunk in enumerate(chunks):
             future = self.executor.submit(
@@ -269,24 +295,21 @@ class ProcessadorAssincronoBeastMode:
             )
             futures.append(future)
         
-        # Coletar resultados
         for future in futures:
             try:
-                chunk_result = future.result(timeout=30)  # 30s por chunk
+                chunk_result = future.result(timeout=60)  # 60s por chunk
                 entregas_processadas += chunk_result['processadas']
                 entregas_erro += chunk_result['erros']
                 awbs_processadas.extend(chunk_result['awbs'])
                 
-                # Salvar em lotes no Supabase para evitar perda
                 if len(awbs_processadas) >= SUPABASE_BATCH_SIZE * 2:
                     save_awbs_supabase_batch(awbs_processadas, empresa_id)
-                    awbs_processadas = []  # Limpar lista após salvar
+                    awbs_processadas = []
                 
             except Exception as e:
                 print(f"❌ Erro no chunk: {str(e)}")
                 entregas_erro += chunk_size
         
-        # Salvar AWBs restantes
         if awbs_processadas:
             save_awbs_supabase_batch(awbs_processadas, empresa_id)
         
@@ -351,7 +374,7 @@ class ProcessadorAssincronoBeastMode:
                 if not data_entrega:
                     data_entrega = datetime.now().isoformat()
                 
-                # Calcular valor da entrega usando cache
+                # Calcular valor da entrega
                 tarifa_motorista = tarifas_cache.get(str(id_motorista), TARIFAS_PADRAO)
                 valor_entrega = float(tarifa_motorista.get(tipo_servico, TARIFAS_PADRAO.get(tipo_servico, 0)))
                 
@@ -386,12 +409,11 @@ class ProcessadorAssincronoBeastMode:
 # Instância global do processador
 processador_beast = ProcessadorAssincronoBeastMode()
 
-# ==================== FUNÇÕES DE DETECÇÃO OTIMIZADAS ====================
+# ==================== FUNÇÕES DE DETECÇÃO ====================
 
 def detectar_encoding(file_content_bytes):
-    """Detecta encoding do arquivo - VERSÃO OTIMIZADA"""
+    """Detecta encoding do arquivo"""
     try:
-        # Tentar encodings brasileiros primeiro (mais rápido)
         for encoding in ['iso-8859-1', 'windows-1252', 'latin-1', 'utf-8']:
             try:
                 content = file_content_bytes.decode(encoding)
@@ -399,7 +421,6 @@ def detectar_encoding(file_content_bytes):
             except UnicodeDecodeError:
                 continue
         
-        # Fallback
         content = file_content_bytes.decode('latin-1', errors='replace')
         return content, 'latin-1'
         
@@ -408,11 +429,10 @@ def detectar_encoding(file_content_bytes):
         return content, 'utf-8'
 
 def detectar_delimitador_csv(content):
-    """Detecta delimitador do CSV - VERSÃO OTIMIZADA"""
+    """Detecta delimitador do CSV"""
     try:
         primeira_linha = content.split('\n')[0]
         
-        # Contar delimitadores
         delimitadores = {
             ';': primeira_linha.count(';'),
             ',': primeira_linha.count(','),
@@ -442,11 +462,11 @@ def static_files(filename):
     """Servir arquivos estáticos"""
     return send_from_directory(app.static_folder, filename)
 
-# ==================== API DE MOTORISTAS OTIMIZADA ====================
+# ==================== API DE MOTORISTAS ====================
 
 @app.route('/api/motoristas', methods=['GET'])
 def get_motoristas_api():
-    """Lista todos os motoristas com cache agressivo"""
+    """Lista todos os motoristas"""
     try:
         empresa_id = 1
         motoristas = get_motoristas_supabase_cached(empresa_id)
@@ -461,13 +481,28 @@ def get_motoristas_api():
     except Exception as e:
         return jsonify({'error': f'Erro ao buscar motoristas: {str(e)}'}), 500
 
+@app.route('/api/motoristas/count', methods=['GET'])
+def get_motoristas_count():
+    """Conta total de motoristas"""
+    try:
+        empresa_id = 1
+        motoristas = get_motoristas_supabase_cached(empresa_id)
+        
+        return jsonify({
+            'success': True,
+            'count': len(motoristas)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao contar motoristas: {str(e)}'}), 500
+
 @app.route('/api/motoristas/upload', methods=['POST'])
 def upload_motoristas():
-    """Upload da planilha DE-PARA - VERSÃO BEAST MODE"""
+    """Upload da planilha DE-PARA de motoristas"""
     try:
         empresa_id = 1
         
-        print("=== INÍCIO UPLOAD MOTORISTAS v7.4 BEAST MODE ===")
+        print("=== INÍCIO UPLOAD MOTORISTAS v7.5 FINAL ===")
         
         if 'file' not in request.files:
             return jsonify({'error': 'Nenhum arquivo enviado'}), 400
@@ -476,29 +511,24 @@ def upload_motoristas():
         if file.filename == '':
             return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
         
-        # Ler conteúdo do arquivo
         file_content_bytes = file.read()
         print(f"Planilha DE-PARA recebida: {file.filename} ({len(file_content_bytes)} bytes)")
         
         motoristas_processados = 0
         motoristas_erro = 0
         
-        # Carregar motoristas existentes
         motoristas = get_motoristas_supabase_cached(empresa_id)
         
-        # Detectar encoding
         file_content, encoding_usado = detectar_encoding(file_content_bytes)
         print(f"Encoding detectado: {encoding_usado}")
         
         if file.filename.endswith(('.xlsx', '.xls')):
-            # Processar Excel
             try:
                 workbook = openpyxl.load_workbook(io.BytesIO(file_content_bytes))
                 sheet = workbook.active
                 
                 print(f"Excel carregado: {sheet.max_row} linhas x {sheet.max_column} colunas")
                 
-                # Encontrar cabeçalhos
                 headers = []
                 for col_num in range(1, sheet.max_column + 1):
                     cell = sheet.cell(row=1, column=col_num)
@@ -506,16 +536,13 @@ def upload_motoristas():
                 
                 print(f"Cabeçalhos encontrados: {headers}")
                 
-                # Processar dados
                 for row_num in range(2, sheet.max_row + 1):
                     try:
-                        # Criar dicionário da linha
                         linha_data = {}
                         for col_num in range(1, sheet.max_column + 1):
                             cell = sheet.cell(row=row_num, column=col_num)
                             linha_data[headers[col_num - 1]] = cell.value
                         
-                        # Procurar ID do motorista
                         id_motorista = None
                         for col_name in ['ID do motorista', 'ID', 'id', 'Id', 'ID_MOTORISTA', 'id_motorista']:
                             if col_name in linha_data and linha_data[col_name] is not None:
@@ -528,7 +555,6 @@ def upload_motoristas():
                                 except (ValueError, TypeError):
                                     continue
                         
-                        # Procurar nome do motorista
                         nome_motorista = None
                         for col_name in ['Nome do motorista', 'NOME', 'nome', 'Nome', 'NOME_MOTORISTA', 'nome_motorista']:
                             if col_name in linha_data and linha_data[col_name] is not None:
@@ -540,7 +566,6 @@ def upload_motoristas():
                             motoristas_erro += 1
                             continue
                         
-                        # Verificar se motorista já existe
                         motorista_existente = None
                         for m in motoristas:
                             if m['id_motorista'] == id_motorista:
@@ -548,11 +573,9 @@ def upload_motoristas():
                                 break
                         
                         if motorista_existente:
-                            # Atualizar dados existentes
                             motorista_existente['nome_motorista'] = nome_motorista
                             motorista_existente['updated_at'] = datetime.now().isoformat()
                         else:
-                            # Criar novo motorista
                             motorista = {
                                 'id_motorista': id_motorista,
                                 'nome_motorista': nome_motorista,
@@ -573,7 +596,6 @@ def upload_motoristas():
         else:
             return jsonify({'error': 'Formato de arquivo não suportado para motoristas'}), 400
         
-        # Salvar dados no Supabase usando batch
         success = save_motoristas_supabase_batch(motoristas, empresa_id)
         
         print(f"=== RESULTADO FINAL ===")
@@ -596,15 +618,129 @@ def upload_motoristas():
     except Exception as e:
         return jsonify({'error': f'Erro no upload: {str(e)}'}), 500
 
+# ==================== API DE PRESTADORES ====================
+
+@app.route('/api/prestadores', methods=['GET'])
+def get_prestadores_api():
+    """Lista todos os prestadores"""
+    try:
+        empresa_id = 1
+        prestadores = get_prestadores_supabase_cached(empresa_id)
+        
+        return jsonify({
+            'success': True,
+            'data': prestadores,
+            'total': len(prestadores)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar prestadores: {str(e)}'}), 500
+
+@app.route('/api/prestadores/estatisticas', methods=['GET'])
+def get_prestadores_estatisticas():
+    """Estatísticas dos prestadores"""
+    try:
+        empresa_id = 1
+        motoristas = get_motoristas_supabase_cached(empresa_id)
+        prestadores = get_prestadores_supabase_cached(empresa_id)
+        
+        # Calcular estatísticas
+        total_motoristas = len(motoristas)
+        total_prestadores = len(prestadores)
+        
+        # Motoristas em grupos
+        motoristas_em_grupos = 0
+        for prestador in prestadores:
+            motoristas_em_grupos += 1  # Principal
+            if prestador.get('motoristas_ajudantes'):
+                motoristas_em_grupos += len(prestador['motoristas_ajudantes'])
+        
+        motoristas_individuais = total_motoristas - motoristas_em_grupos
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_motoristas': total_motoristas,
+                'total_prestadores': total_prestadores,
+                'motoristas_em_grupos': motoristas_em_grupos,
+                'motoristas_individuais': motoristas_individuais
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao calcular estatísticas: {str(e)}'}), 500
+
+# ==================== API DE TARIFAS ====================
+
+@app.route('/api/tarifas', methods=['GET'])
+def get_tarifas_api():
+    """Lista todas as tarifas"""
+    try:
+        empresa_id = 1
+        motoristas = get_motoristas_supabase_cached(empresa_id)
+        tarifas = get_tarifas_supabase_cached(empresa_id)
+        
+        # Combinar motoristas com tarifas
+        resultado = []
+        for motorista in motoristas:
+            id_motorista = str(motorista['id_motorista'])
+            tarifas_motorista = tarifas.get(id_motorista, TARIFAS_PADRAO)
+            
+            motorista_com_tarifas = {
+                'id_motorista': motorista['id_motorista'],
+                'nome_motorista': motorista['nome_motorista'],
+                'tarifas': {
+                    '0': tarifas_motorista.get(0, TARIFAS_PADRAO[0]),
+                    '9': tarifas_motorista.get(9, TARIFAS_PADRAO[9]),
+                    '6': tarifas_motorista.get(6, TARIFAS_PADRAO[6]),
+                    '8': tarifas_motorista.get(8, TARIFAS_PADRAO[8])
+                }
+            }
+            resultado.append(motorista_com_tarifas)
+        
+        return jsonify({
+            'success': True,
+            'data': resultado
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar tarifas: {str(e)}'}), 500
+
+# ==================== API DE ESTATÍSTICAS GERAIS ====================
+
+@app.route('/api/estatisticas', methods=['GET'])
+def get_estatisticas_gerais():
+    """Estatísticas gerais do sistema"""
+    try:
+        empresa_id = 1
+        
+        # Contar dados
+        total_motoristas = len(get_motoristas_supabase_cached(empresa_id))
+        total_prestadores = len(get_prestadores_supabase_cached(empresa_id))
+        total_awbs = get_awbs_count_supabase(empresa_id)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_motoristas': total_motoristas,
+                'total_prestadores': total_prestadores,
+                'total_awbs': total_awbs,
+                'supabase_connected': SUPABASE_CONNECTED
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao buscar estatísticas: {str(e)}'}), 500
+
 # ==================== API DE UPLOAD BEAST MODE ====================
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
-    """Upload de arquivo CSV/Excel - VERSÃO v7.4 BEAST MODE PARA 300K LINHAS"""
+    """Upload de arquivo CSV/Excel - VERSÃO v7.5 FINAL COM TIMEOUT ESTENDIDO"""
     try:
         empresa_id = 1
         
-        print("=== INÍCIO UPLOAD ENTREGAS v7.4 BEAST MODE PARA 300K LINHAS ===")
+        print("=== INÍCIO UPLOAD ENTREGAS v7.5 FINAL - TIMEOUT ESTENDIDO ===")
         start_time = time.time()
         
         if 'file' not in request.files:
@@ -614,21 +750,17 @@ def upload_file():
         if file.filename == '':
             return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
         
-        # Carregar dados do Supabase UMA VEZ SÓ
         print("Carregando dados do Supabase...")
         motoristas = get_motoristas_supabase_cached(empresa_id)
         tarifas_cache = get_tarifas_supabase_cached(empresa_id)
         
-        # Criar dicionário de motoristas para busca O(1)
         motoristas_dict = {m['id_motorista']: m for m in motoristas}
         print(f"Sistema carregado: {len(motoristas)} motoristas")
         print(f"Fonte: {'Supabase' if SUPABASE_CONNECTED else 'Local'}")
         
-        # Ler conteúdo do arquivo
         file_content_bytes = file.read()
         print(f"Arquivo recebido: {file.filename} ({len(file_content_bytes)} bytes)")
         
-        # Detectar encoding e delimitador
         file_content, encoding_usado = detectar_encoding(file_content_bytes)
         print(f"Encoding detectado: {encoding_usado}")
         
@@ -636,14 +768,13 @@ def upload_file():
         print(f"Delimitador detectado: '{delimitador}'")
         
         try:
-            # Processar CSV
             csv_reader = csv.DictReader(io.StringIO(file_content), delimiter=delimitador)
             dados = list(csv_reader)
             total_linhas = len(dados)
             print(f"CSV carregado: {total_linhas} linhas")
             print(f"Colunas: {csv_reader.fieldnames}")
             
-            # PROCESSAMENTO BEAST MODE COM THREADS PARALELAS
+            # PROCESSAMENTO BEAST MODE
             resultado = processador_beast.processar_csv_beast_mode(
                 dados, motoristas_dict, tarifas_cache, empresa_id
             )
@@ -653,7 +784,7 @@ def upload_file():
         
         tempo_total = time.time() - start_time
         
-        print(f"=== RESULTADO FINAL BEAST MODE ===")
+        print(f"=== RESULTADO FINAL v7.5 ===")
         print(f"Tempo total: {tempo_total:.2f} segundos")
         print(f"Entregas processadas: {resultado['entregas_processadas']}")
         print(f"Entregas com erro: {resultado['entregas_erro']}")
@@ -663,7 +794,7 @@ def upload_file():
         
         return jsonify({
             'success': True,
-            'message': f'BEAST MODE: {resultado["entregas_processadas"]} entregas em {tempo_total:.1f}s',
+            'message': f'v7.5 FINAL: {resultado["entregas_processadas"]} entregas em {tempo_total:.1f}s',
             'data': {
                 'entregas_processadas': resultado['entregas_processadas'],
                 'entregas_erro': resultado['entregas_erro'],
@@ -671,7 +802,7 @@ def upload_file():
                 'tempo_processamento': tempo_total,
                 'performance_linhas_por_segundo': round(resultado['entregas_processadas']/tempo_total) if tempo_total > 0 else 0,
                 'supabase_connected': SUPABASE_CONNECTED,
-                'version': 'v7.4-BEAST-MODE'
+                'version': 'v7.5-FINAL'
             }
         })
         
@@ -682,28 +813,28 @@ def upload_file():
 
 @app.route('/api/status', methods=['GET'])
 def get_system_status():
-    """Status do sistema BEAST MODE"""
+    """Status do sistema v7.5 FINAL"""
     return jsonify({
         'success': True,
         'data': {
             'supabase_available': SUPABASE_AVAILABLE,
             'supabase_connected': SUPABASE_CONNECTED,
             'cache_timestamp': _cache_timestamp,
-            'version': 'v7.4-BEAST-MODE',
+            'version': 'v7.5-FINAL',
             'max_workers': MAX_WORKERS,
             'batch_size': BATCH_SIZE,
             'supabase_batch_size': SUPABASE_BATCH_SIZE
         }
     })
 
-# ==================== INICIALIZAÇÃO BEAST MODE ====================
+# ==================== INICIALIZAÇÃO v7.5 FINAL ====================
 
 if __name__ == '__main__':
-    print("🚀 MenezesLog SaaS v7.4 BEAST MODE iniciado!")
-    print("🏎️ Otimizado para processar 300K linhas sem timeout")
-    print("💾 Supabase com batch inserts massivos")
-    print("⚡ Processamento assíncrono com threads paralelas")
-    print("🎯 Cache agressivo para máxima performance")
+    print("🚀 MenezesLog SaaS v7.5 FINAL iniciado!")
+    print("⏱️ Timeout estendido para arquivos grandes")
+    print("💾 Supabase com todas as APIs funcionando")
+    print("⚡ Processamento assíncrono otimizado")
+    print("🎯 Sistema completo e funcional")
     print(f"📡 Supabase: {'✅ CONECTADO' if SUPABASE_CONNECTED else '❌ DESCONECTADO'}")
     print(f"🔧 Workers: {MAX_WORKERS} | Batch: {BATCH_SIZE} | Supabase Batch: {SUPABASE_BATCH_SIZE}")
     app.run(host='0.0.0.0', port=5000, debug=False)

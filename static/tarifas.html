@@ -3,704 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MenezesLog SaaS - Gestão de Tarifas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Tarifas - MenezesLog SaaS</title>
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Estilos específicos da página Tarifas */
-        .tarifa-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .tarifa-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .tarifa-card.premium {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border-left: 4px solid #ffc107;
-        }
-        
-        .tarifa-card.personalizado {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            border-left: 4px solid #17a2b8;
-        }
-        
-        .tarifa-card.padrao {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border-left: 4px solid #28a745;
-        }
-        
-        .tarifa-input {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 0.5rem;
-            text-align: center;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 80px;
-        }
-        
-        .tarifa-input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-        
-        .grupo-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-        
-        .grupo-premium {
-            background: linear-gradient(45deg, #ffc107, #ff8f00);
-            color: white;
-        }
-        
-        .grupo-personalizado {
-            background: linear-gradient(45deg, #17a2b8, #138496);
-            color: white;
-        }
-        
-        .grupo-padrao {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-        }
-        
-        .tipo-servico-badge {
-            background: #6c757d;
-            color: white;
-            padding: 0.2rem 0.4rem;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 600;
-        }
-        
-        .tipo-0 { background: linear-gradient(45deg, #007bff, #0056b3); }
-        .tipo-9 { background: linear-gradient(45deg, #28a745, #20c997); }
-        .tipo-6 { background: linear-gradient(45deg, #ffc107, #ff8f00); }
-        .tipo-8 { background: linear-gradient(45deg, #dc3545, #c82333); }
-        
-        .stats-card {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-        }
-        
-        .btn-reset {
-            background: linear-gradient(45deg, #dc3545, #c82333);
-            border: none;
-            border-radius: 6px;
-            padding: 0.25rem 0.5rem;
-            color: white;
-            font-size: 0.75rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-reset:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
-        }
-        
-        .nav-menu .nav-item .nav-link {
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            margin: 2px 8px;
-        }
-        
-        .nav-menu .nav-item .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-        
-        .nav-menu .nav-item .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid #fff;
-        }
-        
-        .nav-icon {
-            width: 20px;
-            text-align: center;
-        }
-        
-        .filtro-grupo {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .filtro-grupo:hover {
-            transform: scale(1.05);
-        }
-        
-        .filtro-grupo.active {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <header class="header">
-        <div class="container-fluid">
-            <div class="header-content">
-                <div class="d-flex align-items-center">
-                    <button id="sidebar-toggle" class="btn btn-light me-2">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="logo">
-                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
-                    </div>
-                    <span class="badge bg-primary ms-2">SaaS v6.2</span>
-                </div>
-                <div class="user-info">
-                    <div class="dropdown">
-                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <div class="avatar me-2">A</div>
-                            <div>
-                                <div class="user-name">Administrador</div>
-                                <div class="user-role text-muted small">Gestão de Tarifas</div>
-                            </div>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <!-- Menu Lateral -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-truck"></i> MenezesLog</h3>
         </div>
-    </header>
-
-    <!-- Navegação Lateral ATUALIZADA -->
-    <aside class="sidebar" id="sidebar">
-        <nav class="sidebar-nav">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="admin_dashboard.html" class="nav-link">
-                        <i class="fas fa-tachometer-alt nav-icon"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="prestadores.html" class="nav-link">
-                        <i class="fas fa-users-cog nav-icon"></i>
-                        <span>Prestadores</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="tarifas.html" class="nav-link active">
-                        <i class="fas fa-money-bill-wave nav-icon"></i>
-                        <span>Tarifas</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="ciclos.html" class="nav-link">
-                        <i class="fas fa-calendar-alt nav-icon"></i>
-                        <span>Ciclos</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="awbs.html" class="nav-link">
-                        <i class="fas fa-barcode nav-icon"></i>
-                        <span>AWBs</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="upload.html" class="nav-link">
-                        <i class="fas fa-upload nav-icon"></i>
-                        <span>Upload</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="relatorios.html" class="nav-link">
-                        <i class="fas fa-chart-bar nav-icon"></i>
-                        <span>Relatórios</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="configuracoes.html" class="nav-link">
-                        <i class="fas fa-cog nav-icon"></i>
-                        <span>Configurações</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+        <ul class="sidebar-menu">
+            <li><a href="admin_dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
+            <li><a href="upload.html"><i class="fas fa-upload"></i> Upload</a></li>
+            <li><a href="tarifas.html" class="active"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
+            <li><a href="ciclos.html"><i class="fas fa-calendar"></i> Ciclos</a></li>
+            <li><a href="awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
+        </ul>
+    </nav>
 
     <!-- Conteúdo Principal -->
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Cabeçalho da Página -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h1 class="h3 mb-0">
-                                <i class="fas fa-money-bill-wave me-2 text-primary"></i>
-                                Gestão de Tarifas
-                            </h1>
-                            <p class="text-muted mb-0">Configure tarifas personalizadas por motorista</p>
-                        </div>
-                        <div class="grupo-badge grupo-premium">
-                            <i class="fas fa-rocket me-1"></i>
-                            Sistema SaaS v6.2
-                        </div>
-                    </div>
-                </div>
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-dollar-sign"></i> Tarifas por Entregador</h1>
+                <p>Configure valores personalizados para cada tipo de serviço</p>
             </div>
 
             <!-- Tarifas Padrão -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-cog me-2"></i>
-                                Tarifas Padrão do Sistema
-                            </h5>
+            <div class="tarifas-padrao">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cog"></i> Tarifas Padrão do Sistema</h3>
+                        <p>Valores aplicados quando não há configuração específica</p>
+                    </div>
+                    <div class="tarifas-grid">
+                        <div class="tarifa-item">
+                            <div class="tarifa-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="tarifa-content">
+                                <h4>Encomendas (Tipo 0)</h4>
+                                <span class="tarifa-valor">R$ 3,50</span>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <span class="tipo-servico-badge tipo-0">Tipo 0</span>
-                                        <h4 class="mt-2 mb-0">R$ 3,50</h4>
-                                        <small class="text-muted">Encomendas</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <span class="tipo-servico-badge tipo-9">Tipo 9</span>
-                                        <h4 class="mt-2 mb-0">R$ 2,00</h4>
-                                        <small class="text-muted">Cards</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <span class="tipo-servico-badge tipo-6">Tipo 6</span>
-                                        <h4 class="mt-2 mb-0">R$ 0,50</h4>
-                                        <small class="text-muted">Revistas</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <span class="tipo-servico-badge tipo-8">Tipo 8</span>
-                                        <h4 class="mt-2 mb-0">R$ 0,50</h4>
-                                        <small class="text-muted">Revistas</small>
-                                    </div>
-                                </div>
+                        <div class="tarifa-item">
+                            <div class="tarifa-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="tarifa-content">
+                                <h4>Cards (Tipo 9)</h4>
+                                <span class="tarifa-valor">R$ 2,00</span>
+                            </div>
+                        </div>
+                        <div class="tarifa-item">
+                            <div class="tarifa-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="tarifa-content">
+                                <h4>Revistas (Tipos 6 e 8)</h4>
+                                <span class="tarifa-valor">R$ 0,50</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Filtros por Grupo -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-filter me-2"></i>
-                                Filtrar por Grupo
-                            </h5>
+            <!-- Filtros -->
+            <div class="filtros-section">
+                <div class="filtros-card">
+                    <div class="filtros-content">
+                        <div class="filtro-item">
+                            <label for="filtroNome">Buscar Entregador:</label>
+                            <input type="text" id="filtroNome" placeholder="Digite o nome do entregador...">
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="stats-card filtro-grupo" data-grupo="todos" onclick="filtrarPorGrupo('todos')">
-                                        <h6 class="mb-0">Todos</h6>
-                                        <h3 class="mb-0" id="total-todos">0</h3>
-                                        <small>Motoristas</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stats-card grupo-premium filtro-grupo" data-grupo="Premium" onclick="filtrarPorGrupo('Premium')">
-                                        <h6 class="mb-0">Premium</h6>
-                                        <h3 class="mb-0" id="total-premium">0</h3>
-                                        <small>Acima do padrão</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stats-card grupo-personalizado filtro-grupo" data-grupo="Personalizado" onclick="filtrarPorGrupo('Personalizado')">
-                                        <h6 class="mb-0">Personalizado</h6>
-                                        <h3 class="mb-0" id="total-personalizado">0</h3>
-                                        <small>Tarifas mistas</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stats-card grupo-padrao filtro-grupo" data-grupo="Padrão" onclick="filtrarPorGrupo('Padrão')">
-                                        <h6 class="mb-0">Padrão</h6>
-                                        <h3 class="mb-0" id="total-padrao">0</h3>
-                                        <small>Valores padrão</small>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="filtro-item">
+                            <label for="filtroTipo">Tipo de Serviço:</label>
+                            <select id="filtroTipo">
+                                <option value="">Todos os tipos</option>
+                                <option value="0">Encomendas (Tipo 0)</option>
+                                <option value="9">Cards (Tipo 9)</option>
+                                <option value="6">Revistas (Tipo 6)</option>
+                                <option value="8">Revistas (Tipo 8)</option>
+                            </select>
+                        </div>
+                        <div class="filtro-item">
+                            <button id="btnLimparFiltros" class="btn btn-secondary">
+                                <i class="fas fa-eraser"></i> Limpar Filtros
+                            </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loadingTarifas" class="loading-section">
+                <div class="loading-card">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando tarifas do Supabase...</p>
                 </div>
             </div>
 
             <!-- Lista de Tarifas -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-list me-2"></i>
-                                Tarifas por Motorista
-                            </h5>
-                            <div>
-                                <input type="text" class="form-control form-control-sm" id="busca-motorista" placeholder="Buscar motorista..." style="width: 200px;">
-                            </div>
+            <div id="tarifasSection" class="tarifas-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Tarifas por Entregador</h3>
+                        <div class="card-actions">
+                            <span id="totalTarifas" class="total-count">0 entregadores</span>
+                            <button id="btnAtualizarTarifas" class="btn btn-primary">
+                                <i class="fas fa-sync-alt"></i> Atualizar
+                            </button>
                         </div>
-                        <div class="card-body">
-                            <div id="lista-tarifas">
-                                <div class="text-center text-muted py-4">
-                                    <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
-                                    <p>Carregando tarifas...</p>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="tarifas-lista">
+                        <div id="listaTarifas" class="lista-container">
+                            <!-- Tarifas serão carregadas aqui -->
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Erro -->
+            <div id="erroSection" class="erro-section" style="display: none;">
+                <div class="erro-card">
+                    <div class="erro-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="erro-content">
+                        <h3>Erro ao Carregar Tarifas</h3>
+                        <p id="erroMessage">Não foi possível carregar as tarifas do sistema.</p>
+                        <button id="btnTentarNovamente" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Tentar Novamente
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        console.log('[Tarifas] Sistema de gestão de tarifas v6.2 carregado!');
-        
-        let tarifas = [];
-        let tarifasPadrao = {};
-        let filtroAtual = 'todos';
+        // Variáveis globais
+        let tarifasData = [];
+        let tarifasFiltradas = [];
 
-        // Inicialização
+        // Inicializar página
         document.addEventListener('DOMContentLoaded', function() {
+            configurarEventos();
             carregarTarifas();
-            configurarBusca();
-            configurarSidebar();
         });
 
-        // Configurar sidebar
-        function configurarSidebar() {
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const sidebar = document.getElementById('sidebar');
+        // Configurar eventos
+        function configurarEventos() {
+            // Filtros
+            document.getElementById('filtroNome').addEventListener('input', aplicarFiltros);
+            document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
+            document.getElementById('btnLimparFiltros').addEventListener('click', limparFiltros);
             
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('collapsed');
-                });
-            }
+            // Botões
+            document.getElementById('btnAtualizarTarifas').addEventListener('click', carregarTarifas);
+            document.getElementById('btnTentarNovamente').addEventListener('click', carregarTarifas);
         }
 
-        // Configurar busca
-        function configurarBusca() {
-            const buscaInput = document.getElementById('busca-motorista');
-            buscaInput.addEventListener('input', function() {
-                renderizarTarifas();
-            });
-        }
-
-        // Carregar tarifas
-        function carregarTarifas() {
-            fetch('/api/tarifas')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    tarifas = data.data;
-                    tarifasPadrao = data.tarifas_padrao;
-                    renderizarTarifas();
-                    atualizarContadores();
+        // Carregar tarifas do Supabase
+        async function carregarTarifas() {
+            mostrarLoading();
+            
+            try {
+                const response = await fetch('/api/tarifas');
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
-            })
-            .catch(error => {
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    tarifasData = result.data || [];
+                    tarifasFiltradas = [...tarifasData];
+                    mostrarTarifas();
+                } else {
+                    throw new Error(result.error || 'Erro desconhecido');
+                }
+                
+            } catch (error) {
                 console.error('Erro ao carregar tarifas:', error);
-                document.getElementById('lista-tarifas').innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Erro ao carregar tarifas: ${error.message}
-                    </div>
-                `;
-            });
+                mostrarErro(error.message);
+            }
         }
 
-        // Renderizar tarifas
-        function renderizarTarifas() {
-            const container = document.getElementById('lista-tarifas');
-            const busca = document.getElementById('busca-motorista').value.toLowerCase();
+        // Mostrar loading
+        function mostrarLoading() {
+            document.getElementById('loadingTarifas').style.display = 'block';
+            document.getElementById('tarifasSection').style.display = 'none';
+            document.getElementById('erroSection').style.display = 'none';
+        }
+
+        // Mostrar tarifas
+        function mostrarTarifas() {
+            document.getElementById('loadingTarifas').style.display = 'none';
+            document.getElementById('tarifasSection').style.display = 'block';
+            document.getElementById('erroSection').style.display = 'none';
             
-            if (tarifas.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
-                        <p>Nenhuma tarifa encontrada. Faça upload da planilha DE-PARA primeiro.</p>
-                    </div>
-                `;
-                return;
-            }
+            renderizarListaTarifas();
+            atualizarContador();
+        }
 
-            // Filtrar tarifas
-            let tarifasFiltradas = tarifas.filter(tarifa => {
-                const matchBusca = tarifa.nome_motorista.toLowerCase().includes(busca);
-                const matchGrupo = filtroAtual === 'todos' || tarifa.grupo === filtroAtual;
-                return matchBusca && matchGrupo;
-            });
+        // Mostrar erro
+        function mostrarErro(message) {
+            document.getElementById('loadingTarifas').style.display = 'none';
+            document.getElementById('tarifasSection').style.display = 'none';
+            document.getElementById('erroSection').style.display = 'block';
+            document.getElementById('erroMessage').textContent = message;
+        }
 
+        // Renderizar lista de tarifas
+        function renderizarListaTarifas() {
+            const container = document.getElementById('listaTarifas');
+            
             if (tarifasFiltradas.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-search fa-2x mb-2"></i>
-                        <p>Nenhuma tarifa encontrada com os filtros aplicados.</p>
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>Nenhuma tarifa encontrada</h3>
+                        <p>Não há entregadores cadastrados ou nenhum resultado para os filtros aplicados.</p>
                     </div>
                 `;
                 return;
             }
-
-            const html = tarifasFiltradas.map(tarifa => {
-                const grupoClass = tarifa.grupo.toLowerCase().replace('ã', 'a');
-                
-                return `
-                    <div class="tarifa-card ${grupoClass}" data-grupo="${tarifa.grupo}">
-                        <div class="row align-items-center">
-                            <div class="col-md-3">
-                                <h6 class="mb-1">${tarifa.nome_motorista}</h6>
-                                <small class="text-muted">ID: ${tarifa.id_motorista}</small>
-                                <div class="mt-1">
-                                    <span class="grupo-badge grupo-${grupoClass}">${tarifa.grupo}</span>
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <label class="form-label small">Tipo 0 (Encomendas)</label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text">R$</span>
-                                            <input type="number" class="form-control tarifa-input" 
-                                                   value="${tarifa.tarifas[0]}" 
-                                                   step="0.01" min="0"
-                                                   onchange="atualizarTarifa(${tarifa.id_motorista}, 0, this.value)">
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <label class="form-label small">Tipo 9 (Cards)</label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text">R$</span>
-                                            <input type="number" class="form-control tarifa-input" 
-                                                   value="${tarifa.tarifas[9]}" 
-                                                   step="0.01" min="0"
-                                                   onchange="atualizarTarifa(${tarifa.id_motorista}, 9, this.value)">
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <label class="form-label small">Tipo 6 (Revistas)</label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text">R$</span>
-                                            <input type="number" class="form-control tarifa-input" 
-                                                   value="${tarifa.tarifas[6]}" 
-                                                   step="0.01" min="0"
-                                                   onchange="atualizarTarifa(${tarifa.id_motorista}, 6, this.value)">
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <label class="form-label small">Tipo 8 (Revistas)</label>
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text">R$</span>
-                                            <input type="number" class="form-control tarifa-input" 
-                                                   value="${tarifa.tarifas[8]}" 
-                                                   step="0.01" min="0"
-                                                   onchange="atualizarTarifa(${tarifa.id_motorista}, 8, this.value)">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2 text-end">
-                                <button class="btn btn-reset btn-sm" onclick="resetarTarifas(${tarifa.id_motorista})" title="Resetar para padrão">
-                                    <i class="fas fa-undo me-1"></i>
-                                    Reset
-                                </button>
-                            </div>
+            
+            const html = tarifasFiltradas.map(motorista => `
+                <div class="tarifa-motorista">
+                    <div class="motorista-info">
+                        <div class="motorista-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="motorista-dados">
+                            <h4>${motorista.nome_motorista}</h4>
+                            <span class="motorista-id">ID: ${motorista.id_motorista}</span>
                         </div>
                     </div>
-                `;
-            }).join('');
-
+                    <div class="motorista-tarifas">
+                        <div class="tarifa-valor-item">
+                            <span class="tarifa-label">Encomendas (0):</span>
+                            <span class="tarifa-valor">R$ ${parseFloat(motorista.tarifas['0']).toFixed(2)}</span>
+                        </div>
+                        <div class="tarifa-valor-item">
+                            <span class="tarifa-label">Cards (9):</span>
+                            <span class="tarifa-valor">R$ ${parseFloat(motorista.tarifas['9']).toFixed(2)}</span>
+                        </div>
+                        <div class="tarifa-valor-item">
+                            <span class="tarifa-label">Revistas (6):</span>
+                            <span class="tarifa-valor">R$ ${parseFloat(motorista.tarifas['6']).toFixed(2)}</span>
+                        </div>
+                        <div class="tarifa-valor-item">
+                            <span class="tarifa-label">Revistas (8):</span>
+                            <span class="tarifa-valor">R$ ${parseFloat(motorista.tarifas['8']).toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="motorista-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="editarTarifa(${motorista.id_motorista})">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
             container.innerHTML = html;
         }
 
-        // Atualizar tarifa
-        function atualizarTarifa(idMotorista, tipoServico, valor) {
-            const valorFloat = parseFloat(valor);
+        // Aplicar filtros
+        function aplicarFiltros() {
+            const filtroNome = document.getElementById('filtroNome').value.toLowerCase();
+            const filtroTipo = document.getElementById('filtroTipo').value;
             
-            if (isNaN(valorFloat) || valorFloat < 0) {
-                alert('Valor inválido');
-                carregarTarifas(); // Recarregar para restaurar valor anterior
-                return;
-            }
-
-            fetch(`/api/tarifas/${idMotorista}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    tipo_servico: tipoServico,
-                    valor: valorFloat
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Atualizar dados locais
-                    const tarifa = tarifas.find(t => t.id_motorista === idMotorista);
-                    if (tarifa) {
-                        tarifa.tarifas[tipoServico] = valorFloat;
-                        
-                        // Recalcular grupo
-                        const temPersonalizacao = Object.keys(tarifa.tarifas).some(tipo => 
-                            tarifa.tarifas[tipo] !== tarifasPadrao[tipo]
-                        );
-                        
-                        if (!temPersonalizacao) {
-                            tarifa.grupo = 'Padrão';
-                        } else {
-                            const todasAcima = [0, 9, 6, 8].every(tipo => 
-                                tarifa.tarifas[tipo] >= tarifasPadrao[tipo]
-                            );
-                            tarifa.grupo = todasAcima ? 'Premium' : 'Personalizado';
-                        }
-                    }
-                    
-                    // Atualizar contadores e re-renderizar
-                    atualizarContadores();
-                    renderizarTarifas();
-                    
-                    // Mostrar feedback visual
-                    mostrarFeedback('success', data.message);
-                } else {
-                    alert('Erro: ' + data.error);
-                    carregarTarifas(); // Recarregar em caso de erro
+            tarifasFiltradas = tarifasData.filter(motorista => {
+                // Filtro por nome
+                const nomeMatch = motorista.nome_motorista.toLowerCase().includes(filtroNome);
+                
+                // Filtro por tipo (se especificado)
+                let tipoMatch = true;
+                if (filtroTipo) {
+                    // Verificar se o motorista tem tarifa diferente do padrão para este tipo
+                    const tarifaPadrao = getTarifaPadrao(parseInt(filtroTipo));
+                    const tarifaMotorista = parseFloat(motorista.tarifas[filtroTipo]);
+                    tipoMatch = tarifaMotorista !== tarifaPadrao;
                 }
-            })
-            .catch(error => {
-                console.error('Erro ao atualizar tarifa:', error);
-                alert('Erro ao atualizar tarifa');
-                carregarTarifas(); // Recarregar em caso de erro
+                
+                return nomeMatch && tipoMatch;
             });
-        }
-
-        // Resetar tarifas
-        function resetarTarifas(idMotorista) {
-            if (confirm('Tem certeza que deseja resetar as tarifas deste motorista para os valores padrão?')) {
-                fetch(`/api/tarifas/${idMotorista}/reset`, {
-                    method: 'POST'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        carregarTarifas(); // Recarregar tudo
-                        mostrarFeedback('success', data.message);
-                    } else {
-                        alert('Erro: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao resetar tarifas:', error);
-                    alert('Erro ao resetar tarifas');
-                });
-            }
-        }
-
-        // Filtrar por grupo
-        function filtrarPorGrupo(grupo) {
-            filtroAtual = grupo;
             
-            // Atualizar visual dos filtros
-            document.querySelectorAll('.filtro-grupo').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelector(`[data-grupo="${grupo}"]`).classList.add('active');
-            
-            // Re-renderizar
-            renderizarTarifas();
+            renderizarListaTarifas();
+            atualizarContador();
         }
 
-        // Atualizar contadores
-        function atualizarContadores() {
-            const contadores = {
-                todos: tarifas.length,
-                Premium: tarifas.filter(t => t.grupo === 'Premium').length,
-                Personalizado: tarifas.filter(t => t.grupo === 'Personalizado').length,
-                Padrão: tarifas.filter(t => t.grupo === 'Padrão').length
+        // Limpar filtros
+        function limparFiltros() {
+            document.getElementById('filtroNome').value = '';
+            document.getElementById('filtroTipo').value = '';
+            tarifasFiltradas = [...tarifasData];
+            renderizarListaTarifas();
+            atualizarContador();
+        }
+
+        // Atualizar contador
+        function atualizarContador() {
+            const total = tarifasFiltradas.length;
+            const texto = total === 1 ? '1 entregador' : `${total} entregadores`;
+            document.getElementById('totalTarifas').textContent = texto;
+        }
+
+        // Obter tarifa padrão
+        function getTarifaPadrao(tipo) {
+            const tarifasPadrao = {
+                0: 3.50,
+                9: 2.00,
+                6: 0.50,
+                8: 0.50
             };
-
-            document.getElementById('total-todos').textContent = contadores.todos;
-            document.getElementById('total-premium').textContent = contadores.Premium;
-            document.getElementById('total-personalizado').textContent = contadores.Personalizado;
-            document.getElementById('total-padrao').textContent = contadores.Padrão;
+            return tarifasPadrao[tipo] || 0;
         }
 
-        // Mostrar feedback
-        function mostrarFeedback(tipo, mensagem) {
-            const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
-            const icon = tipo === 'success' ? 'check-circle' : 'exclamation-triangle';
-            
-            const feedback = document.createElement('div');
-            feedback.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
-            feedback.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            feedback.innerHTML = `
-                <i class="fas fa-${icon} me-2"></i>
-                ${mensagem}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(feedback);
-            
-            // Remover após 3 segundos
-            setTimeout(() => {
-                if (feedback.parentNode) {
-                    feedback.parentNode.removeChild(feedback);
-                }
-            }, 3000);
+        // Editar tarifa (placeholder)
+        function editarTarifa(idMotorista) {
+            alert(`Funcionalidade de edição de tarifa para o motorista ${idMotorista} será implementada em breve.`);
         }
-
-        // Logout
-        function logout() {
-            if (confirm('Tem certeza que deseja sair?')) {
-                localStorage.removeItem('menezeslog_logged_in');
-                localStorage.removeItem('menezeslog_user');
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Verificar autenticação
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('menezeslog_logged_in');
-            if (isLoggedIn !== 'true') {
-                window.location.href = 'index.html';
-                return false;
-            }
-            return true;
-        }
-
-        // Verificar auth na inicialização
-        checkAuth();
     </script>
 </body>
 </html>
