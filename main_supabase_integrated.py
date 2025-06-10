@@ -1,5 +1,5 @@
-# MenezesLog SaaS v7.2 ULTRA-OTIMIZADO - PROCESSA 300K LINHAS
-# OTIMIZADO PARA ARQUIVOS GRANDES SEM TIMEOUT
+# IMPLEMENTAÇÃO SUPABASE v7.3 - PRIMEIRA VEZ COM BANCO REAL
+# COMBINA OTIMIZAÇÕES v7.2 + PERSISTÊNCIA PERMANENTE SUPABASE
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -25,13 +25,11 @@ app.logger.setLevel(logging.WARNING)
 
 # Configurações
 UPLOAD_FOLDER = 'uploads'
-DATA_FOLDER = 'data'
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 BATCH_SIZE = 1000  # Processar em lotes de 1000 linhas
 
 # Criar pastas se não existirem
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(DATA_FOLDER, exist_ok=True)
 
 # Tarifas padrão
 TARIFAS_PADRAO = {
@@ -40,6 +38,53 @@ TARIFAS_PADRAO = {
     6: 0.50,  # Revistas
     8: 0.50   # Revistas
 }
+
+# ==================== CONFIGURAÇÃO SUPABASE ====================
+
+try:
+    from supabase import create_client, Client
+    SUPABASE_AVAILABLE = True
+    print("✅ Biblioteca supabase-py disponível")
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    print("❌ Biblioteca supabase-py não encontrada")
+    print("💡 Execute: pip install supabase")
+
+# Configuração do cliente Supabase
+supabase_client = None
+
+def init_supabase():
+    """Inicializa conexão com Supabase"""
+    global supabase_client
+    
+    if not SUPABASE_AVAILABLE:
+        print("❌ Supabase não disponível - usando fallback local")
+        return False
+    
+    try:
+        # Obter credenciais das variáveis de ambiente
+        supabase_url = os.environ.get('SUPABASE_URL')
+        supabase_key = os.environ.get('SUPABASE_ANON_KEY')
+        
+        if not supabase_url or not supabase_key:
+            print("❌ Credenciais do Supabase não configuradas")
+            print("💡 Configure SUPABASE_URL e SUPABASE_ANON_KEY")
+            return False
+        
+        # Criar cliente
+        supabase_client = create_client(supabase_url, supabase_key)
+        
+        # Testar conexão
+        result = supabase_client.table('motoristas').select('count').execute()
+        print(f"✅ Conexão com Supabase estabelecida")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Erro ao conectar com Supabase: {str(e)}")
+        return False
+
+# Inicializar Supabase na inicialização
+SUPABASE_CONNECTED = init_supabase()
 
 # ==================== CACHE GLOBAL PARA PERFORMANCE ====================
 _cache_tarifas = {}
@@ -51,21 +96,125 @@ def invalidate_cache():
     global _cache_timestamp
     _cache_timestamp = time.time()
 
-def get_cached_tarifas(empresa_id=1):
-    """Cache de tarifas para evitar carregamento repetitivo"""
-    global _cache_tarifas, _cache_timestamp
-    
-    cache_key = f"tarifas_{empresa_id}"
-    current_time = time.time()
-    
-    # Cache válido por 5 minutos
-    if cache_key in _cache_tarifas and (current_time - _cache_timestamp) < 300:
-        return _cache_tarifas[cache_key]
-    
-    # Carregar do disco
-    tarifas = load_data('tarifas', empresa_id, default={})
-    _cache_tarifas[cache_key] = tarifas
-    return tarifas
+# ==================== FUNÇÕES DE PERSISTÊNCIA HÍBRIDA ====================
+
+def get_motoristas_supabase(empresa_id=1):
+    """Carrega motoristas do Supabase"""
+    try:
+        if not SUPABASE_CONNECTED:
+            return []
+        
+        result = supabase_client.table('motoristas').select('*').eq('empresa_id', empresa_id).execute()
+        return result.data if result.data else []
+        
+    except Exception as e:
+        print(f"❌ Erro ao carregar motoristas do Supabase: {str(e)}")
+        return []
+
+def save_motoristas_supabase(motoristas, empresa_id=1):
+    """Salva motoristas no Supabase"""
+    try:
+        if not SUPABASE_CONNECTED:
+            return False
+        
+        # Limpar dados existentes da empresa
+        supabase_client.table('motoristas').delete().eq('empresa_id', empresa_id).execute()
+        
+        # Inserir novos dados
+        for motorista in motoristas:
+            motorista_data = {
+                'empresa_id': empresa_id,
+                'id_motorista': motorista['id_motorista'],
+                'nome_motorista': motorista['nome_motorista'],
+                'created_at': motorista.get('created_at', datetime.now().isoformat()),
+                'updated_at': motorista.get('updated_at', datetime.now().isoformat())
+            }
+            supabase_client.table('motoristas').insert(motorista_data).execute()
+        
+        invalidate_cache()
+        return True
+        
+    except Exception as e:
+        print(f"❌ Erro ao salvar motoristas no Supabase: {str(e)}")
+        return False
+
+def get_awbs_supabase(empresa_id=1):
+    """Carrega AWBs do Supabase"""
+    try:
+        if not SUPABASE_CONNECTED:
+            return {}
+        
+        result = supabase_client.table('awbs').select('*').eq('empresa_id', empresa_id).execute()
+        
+        # Converter lista para dicionário
+        awbs_dict = {}
+        if result.data:
+            for awb in result.data:
+                awbs_dict[awb['awb']] = awb
+        
+        return awbs_dict
+        
+    except Exception as e:
+        print(f"❌ Erro ao carregar AWBs do Supabase: {str(e)}")
+        return {}
+
+def save_awbs_supabase(awbs_dict, empresa_id=1):
+    """Salva AWBs no Supabase"""
+    try:
+        if not SUPABASE_CONNECTED:
+            return False
+        
+        # Converter dicionário para lista e inserir/atualizar
+        for awb_code, awb_data in awbs_dict.items():
+            awb_record = {
+                'empresa_id': empresa_id,
+                'awb': awb_code,
+                'id_motorista': awb_data['id_motorista'],
+                'nome_motorista': awb_data['nome_motorista'],
+                'tipo_servico': awb_data['tipo_servico'],
+                'data_entrega': awb_data['data_entrega'],
+                'valor_entrega': awb_data['valor_entrega'],
+                'status': awb_data['status'],
+                'created_at': awb_data.get('created_at', datetime.now().isoformat()),
+                'updated_at': awb_data.get('updated_at', datetime.now().isoformat())
+            }
+            
+            # Tentar inserir, se falhar (já existe), atualizar
+            try:
+                supabase_client.table('awbs').insert(awb_record).execute()
+            except:
+                supabase_client.table('awbs').update(awb_record).eq('awb', awb_code).eq('empresa_id', empresa_id).execute()
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Erro ao salvar AWBs no Supabase: {str(e)}")
+        return False
+
+def get_tarifas_supabase(empresa_id=1):
+    """Carrega tarifas do Supabase"""
+    try:
+        if not SUPABASE_CONNECTED:
+            return {}
+        
+        result = supabase_client.table('tarifas').select('*').eq('empresa_id', empresa_id).execute()
+        
+        # Converter para formato esperado
+        tarifas_dict = {}
+        if result.data:
+            for tarifa in result.data:
+                motorista_id = str(tarifa['id_motorista'])
+                if motorista_id not in tarifas_dict:
+                    tarifas_dict[motorista_id] = {}
+                tarifas_dict[motorista_id][tarifa['tipo_servico']] = tarifa['valor']
+        
+        return tarifas_dict
+        
+    except Exception as e:
+        print(f"❌ Erro ao carregar tarifas do Supabase: {str(e)}")
+        return {}
+
+# ==================== FUNÇÕES PRINCIPAIS COM CACHE ====================
 
 def get_cached_motoristas(empresa_id=1):
     """Cache de motoristas para evitar carregamento repetitivo"""
@@ -78,74 +227,26 @@ def get_cached_motoristas(empresa_id=1):
     if cache_key in _cache_motoristas and (current_time - _cache_timestamp) < 300:
         return _cache_motoristas[cache_key]
     
-    # Carregar do disco
-    motoristas = load_data('motoristas', empresa_id, default=[])
+    # Carregar do Supabase
+    motoristas = get_motoristas_supabase(empresa_id)
     _cache_motoristas[cache_key] = motoristas
     return motoristas
 
-# ==================== PERSISTÊNCIA EM ARQUIVOS JSON ====================
-
-def get_data_file_path(data_type, empresa_id=1):
-    """Retorna caminho do arquivo de dados"""
-    return os.path.join(DATA_FOLDER, f'{data_type}_{empresa_id}.json')
-
-def load_data(data_type, empresa_id=1, default=None):
-    """Carrega dados do arquivo JSON"""
-    if default is None:
-        default = []
+def get_cached_tarifas(empresa_id=1):
+    """Cache de tarifas para evitar carregamento repetitivo"""
+    global _cache_tarifas, _cache_timestamp
     
-    file_path = get_data_file_path(data_type, empresa_id)
-    try:
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return default
-    except Exception as e:
-        app.logger.error(f"Erro ao carregar {data_type}: {str(e)}")
-        return default
-
-def save_data(data_type, data, empresa_id=1):
-    """Salva dados no arquivo JSON"""
-    file_path = get_data_file_path(data_type, empresa_id)
-    try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        invalidate_cache()  # Invalidar cache após salvar
-        return True
-    except Exception as e:
-        app.logger.error(f"Erro ao salvar {data_type}: {str(e)}")
-        return False
-
-# Funções específicas para cada tipo de dados
-def get_motoristas(empresa_id=1):
-    return get_cached_motoristas(empresa_id)
-
-def save_motoristas(motoristas, empresa_id=1):
-    return save_data('motoristas', motoristas, empresa_id)
-
-def get_prestadores(empresa_id=1):
-    return load_data('prestadores', empresa_id, default=[])
-
-def save_prestadores(prestadores, empresa_id=1):
-    return save_data('prestadores', prestadores, empresa_id)
-
-def get_tarifas(empresa_id=1):
-    return get_cached_tarifas(empresa_id)
-
-def save_tarifas(tarifas, empresa_id=1):
-    return save_data('tarifas', tarifas, empresa_id)
-
-def get_awbs(empresa_id=1):
-    return load_data('awbs', empresa_id, default={})
-
-def save_awbs(awbs, empresa_id=1):
-    return save_data('awbs', awbs, empresa_id)
-
-def get_entregas(empresa_id=1):
-    return load_data('entregas', empresa_id, default=[])
-
-def save_entregas(entregas, empresa_id=1):
-    return save_data('entregas', entregas, empresa_id)
+    cache_key = f"tarifas_{empresa_id}"
+    current_time = time.time()
+    
+    # Cache válido por 5 minutos
+    if cache_key in _cache_tarifas and (current_time - _cache_timestamp) < 300:
+        return _cache_tarifas[cache_key]
+    
+    # Carregar do Supabase
+    tarifas = get_tarifas_supabase(empresa_id)
+    _cache_tarifas[cache_key] = tarifas
+    return tarifas
 
 # ==================== FUNÇÕES DE PROCESSAMENTO OTIMIZADAS ====================
 
@@ -214,7 +315,7 @@ def allowed_file(filename):
 
 def calcular_valor_entrega_otimizado(tipo_servico, id_motorista, tarifas_cache):
     """Calcula valor da entrega usando cache - ULTRA OTIMIZADO"""
-    # Usar cache em vez de carregar do disco
+    # Usar cache em vez de carregar do banco
     tarifa_motorista = tarifas_cache.get(str(id_motorista), TARIFAS_PADRAO)
     valor = tarifa_motorista.get(tipo_servico, TARIFAS_PADRAO.get(tipo_servico, 0))
     return float(valor)
@@ -238,12 +339,13 @@ def get_motoristas_api():
     """Lista todos os motoristas"""
     try:
         empresa_id = 1
-        motoristas = get_motoristas(empresa_id)
+        motoristas = get_cached_motoristas(empresa_id)
         
         return jsonify({
             'success': True,
             'data': motoristas,
-            'total': len(motoristas)
+            'total': len(motoristas),
+            'source': 'supabase' if SUPABASE_CONNECTED else 'local'
         })
         
     except Exception as e:
@@ -252,11 +354,11 @@ def get_motoristas_api():
 
 @app.route('/api/motoristas/upload', methods=['POST'])
 def upload_motoristas():
-    """Upload da planilha DE-PARA de motoristas - VERSÃO ULTRA OTIMIZADA"""
+    """Upload da planilha DE-PARA de motoristas - VERSÃO SUPABASE v7.3"""
     try:
         empresa_id = 1
         
-        print("=== INÍCIO UPLOAD MOTORISTAS v7.2 ULTRA OTIMIZADO ===")
+        print("=== INÍCIO UPLOAD MOTORISTAS v7.3 SUPABASE ===")
         
         if 'file' not in request.files:
             return jsonify({'error': 'Nenhum arquivo enviado'}), 400
@@ -273,7 +375,7 @@ def upload_motoristas():
         motoristas_erro = 0
         
         # Carregar motoristas existentes
-        motoristas = get_motoristas(empresa_id)
+        motoristas = get_cached_motoristas(empresa_id)
         
         # Detectar encoding e processar
         file_content, encoding_usado = detectar_encoding(file_content_bytes)
@@ -295,7 +397,7 @@ def upload_motoristas():
                 
                 print(f"Cabeçalhos encontrados: {headers}")
                 
-                # Processar dados em lotes
+                # Processar dados
                 for row_num in range(2, sheet.max_row + 1):
                     try:
                         # Criar dicionário da linha
@@ -349,19 +451,8 @@ def upload_motoristas():
                                 'updated_at': datetime.now().isoformat()
                             }
                             motoristas.append(motorista)
-                            
-                            # Inicializar tarifas padrão
-                            tarifas = get_tarifas(empresa_id)
-                            if str(id_motorista) not in tarifas:
-                                tarifas[str(id_motorista)] = TARIFAS_PADRAO.copy()
-                                save_tarifas(tarifas, empresa_id)
                         
                         motoristas_processados += 1
-                        
-                        # Salvar em lotes para evitar perda de dados
-                        if motoristas_processados % BATCH_SIZE == 0:
-                            save_motoristas(motoristas, empresa_id)
-                            print(f"Lote salvo: {motoristas_processados} motoristas processados")
                         
                     except Exception as e:
                         motoristas_erro += 1
@@ -373,13 +464,14 @@ def upload_motoristas():
         else:
             return jsonify({'error': 'Formato de arquivo não suportado para motoristas'}), 400
         
-        # Salvar dados finais
-        save_motoristas(motoristas, empresa_id)
+        # Salvar dados no Supabase
+        success = save_motoristas_supabase(motoristas, empresa_id)
         
         print(f"=== RESULTADO FINAL ===")
         print(f"Motoristas processados: {motoristas_processados}")
         print(f"Motoristas com erro: {motoristas_erro}")
         print(f"Total de motoristas no sistema: {len(motoristas)}")
+        print(f"Salvos no Supabase: {'✅' if success else '❌'}")
         
         return jsonify({
             'success': True,
@@ -387,7 +479,8 @@ def upload_motoristas():
             'data': {
                 'motoristas_processados': motoristas_processados,
                 'motoristas_erro': motoristas_erro,
-                'total_motoristas': len(motoristas)
+                'total_motoristas': len(motoristas),
+                'saved_to_supabase': success
             }
         })
         
@@ -395,15 +488,15 @@ def upload_motoristas():
         app.logger.error(f"Erro no upload de motoristas: {str(e)}")
         return jsonify({'error': f'Erro no upload: {str(e)}'}), 500
 
-# ==================== API DE UPLOAD DE ENTREGAS ULTRA OTIMIZADA ====================
+# ==================== API DE UPLOAD DE ENTREGAS SUPABASE v7.3 ====================
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
-    """Upload de arquivo CSV/Excel de entregas - VERSÃO v7.2 ULTRA OTIMIZADA PARA 300K LINHAS"""
+    """Upload de arquivo CSV/Excel de entregas - VERSÃO v7.3 SUPABASE + OTIMIZAÇÕES"""
     try:
         empresa_id = 1
         
-        print("=== INÍCIO UPLOAD ENTREGAS v7.2 ULTRA OTIMIZADO PARA 300K LINHAS ===")
+        print("=== INÍCIO UPLOAD ENTREGAS v7.3 SUPABASE + OTIMIZAÇÕES ===")
         start_time = time.time()
         
         if 'file' not in request.files:
@@ -414,15 +507,15 @@ def upload_file():
             return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
         
         # Carregar dados existentes UMA VEZ SÓ
-        print("Carregando dados do sistema...")
-        entregas = get_entregas(empresa_id)
-        awbs = get_awbs(empresa_id)
-        motoristas = get_motoristas(empresa_id)
-        tarifas_cache = get_tarifas(empresa_id)  # CACHE GLOBAL
+        print("Carregando dados do Supabase...")
+        awbs = get_awbs_supabase(empresa_id)
+        motoristas = get_cached_motoristas(empresa_id)
+        tarifas_cache = get_cached_tarifas(empresa_id)  # CACHE GLOBAL
         
         # Criar dicionário de motoristas para busca rápida
         motoristas_dict = {m['id_motorista']: m for m in motoristas}
         print(f"Sistema carregado: {len(motoristas)} motoristas, {len(awbs)} AWBs existentes")
+        print(f"Fonte: {'Supabase' if SUPABASE_CONNECTED else 'Local'}")
         
         # Ler conteúdo do arquivo
         file_content_bytes = file.read()
@@ -525,27 +618,14 @@ def upload_file():
                             awbs[awb] = awb_data
                             awbs_novas += 1
                         
-                        # Adicionar à lista de entregas
-                        entrega = {
-                            'awb': awb,
-                            'id_motorista': id_motorista,
-                            'nome_motorista': motoristas_dict[id_motorista]['nome_motorista'],
-                            'tipo_servico': tipo_servico,
-                            'data_entrega': data_entrega,
-                            'valor_entrega': valor_entrega,
-                            'status': 'NAO_PAGA',
-                            'created_at': datetime.now().isoformat()
-                        }
-                        entregas.append(entrega)
                         entregas_processadas += 1
                         
                     except Exception as e:
                         entregas_erro += 1
                         continue
                 
-                # SALVAR LOTE PARA EVITAR PERDA DE DADOS
-                save_awbs(awbs, empresa_id)
-                save_entregas(entregas, empresa_id)
+                # SALVAR LOTE NO SUPABASE PARA EVITAR PERDA DE DADOS
+                save_awbs_supabase(awbs, empresa_id)
                 
                 lote_tempo = time.time() - lote_inicio
                 progresso = ((i + len(lote)) / total_linhas) * 100
@@ -554,9 +634,8 @@ def upload_file():
         except Exception as e:
             return jsonify({'error': f'Erro ao processar CSV: {str(e)}'}), 500
         
-        # Salvar dados finais
-        save_awbs(awbs, empresa_id)
-        save_entregas(entregas, empresa_id)
+        # Salvar dados finais no Supabase
+        final_save = save_awbs_supabase(awbs, empresa_id)
         
         tempo_total = time.time() - start_time
         
@@ -567,6 +646,7 @@ def upload_file():
         print(f"AWBs novas: {awbs_novas}")
         print(f"Total de AWBs no sistema: {len(awbs)}")
         print(f"Performance: {entregas_processadas/tempo_total:.0f} linhas/segundo")
+        print(f"Salvos no Supabase: {'✅' if final_save else '❌'}")
         
         return jsonify({
             'success': True,
@@ -577,7 +657,9 @@ def upload_file():
                 'awbs_novas': awbs_novas,
                 'total_awbs': len(awbs),
                 'tempo_processamento': tempo_total,
-                'performance_linhas_por_segundo': round(entregas_processadas/tempo_total) if tempo_total > 0 else 0
+                'performance_linhas_por_segundo': round(entregas_processadas/tempo_total) if tempo_total > 0 else 0,
+                'saved_to_supabase': final_save,
+                'supabase_connected': SUPABASE_CONNECTED
             }
         })
         
@@ -585,155 +667,29 @@ def upload_file():
         app.logger.error(f"Erro no upload: {str(e)}")
         return jsonify({'error': f'Erro no upload: {str(e)}'}), 500
 
-# ==================== DEMAIS APIs MANTIDAS ====================
+# ==================== STATUS DO SISTEMA ====================
 
-@app.route('/api/prestadores', methods=['GET'])
-def get_prestadores_api():
-    """Lista todos os prestadores"""
-    try:
-        empresa_id = 1
-        prestadores = get_prestadores(empresa_id)
-        
-        return jsonify({
-            'success': True,
-            'data': prestadores,
-            'total': len(prestadores)
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao buscar prestadores: {str(e)}")
-        return jsonify({'error': f'Erro ao buscar prestadores: {str(e)}'}), 500
-
-@app.route('/api/prestadores', methods=['POST'])
-def create_prestador():
-    """Criar novo prestador/grupo"""
-    try:
-        empresa_id = 1
-        data = request.get_json()
-        
-        if not data or not data.get('nome_prestador') or not data.get('motorista_principal'):
-            return jsonify({'error': 'Dados obrigatórios não fornecidos'}), 400
-        
-        # Carregar dados
-        prestadores = get_prestadores(empresa_id)
-        motoristas = get_motoristas(empresa_id)
-        
-        # Verificar se motorista principal existe
-        motorista_principal = None
-        for m in motoristas:
-            if m['id_motorista'] == data['motorista_principal']:
-                motorista_principal = m
-                break
-        
-        if not motorista_principal:
-            return jsonify({'error': 'Motorista principal não encontrado'}), 400
-        
-        # Verificar se já existe prestador com este motorista principal
-        for p in prestadores:
-            if p['motorista_principal'] == data['motorista_principal']:
-                return jsonify({'error': 'Já existe um prestador com este motorista principal'}), 400
-        
-        # Criar prestador
-        prestador_id = len(prestadores) + 1
-        prestador = {
-            'id': prestador_id,
-            'motorista_principal': data['motorista_principal'],
-            'nome_prestador': data['nome_prestador'],
-            'motoristas_ajudantes': data.get('motoristas_ajudantes', []),
-            'observacoes': data.get('observacoes', ''),
-            'created_at': datetime.now().isoformat(),
-            'updated_at': datetime.now().isoformat()
+@app.route('/api/status', methods=['GET'])
+def get_system_status():
+    """Status do sistema e conexões"""
+    return jsonify({
+        'success': True,
+        'data': {
+            'supabase_available': SUPABASE_AVAILABLE,
+            'supabase_connected': SUPABASE_CONNECTED,
+            'cache_timestamp': _cache_timestamp,
+            'version': '7.3-SUPABASE'
         }
-        
-        prestadores.append(prestador)
-        
-        # SALVAR PERMANENTEMENTE
-        save_prestadores(prestadores, empresa_id)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Prestador criado e salvo permanentemente',
-            'data': prestador
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao criar prestador: {str(e)}")
-        return jsonify({'error': f'Erro ao criar prestador: {str(e)}'}), 500
-
-@app.route('/api/prestadores/<int:prestador_id>', methods=['DELETE'])
-def delete_prestador(prestador_id):
-    """Excluir prestador"""
-    try:
-        empresa_id = 1
-        prestadores = get_prestadores(empresa_id)
-        
-        # Encontrar e remover prestador
-        prestador_removido = None
-        for i, p in enumerate(prestadores):
-            if p['id'] == prestador_id:
-                prestador_removido = prestadores.pop(i)
-                break
-        
-        if not prestador_removido:
-            return jsonify({'error': 'Prestador não encontrado'}), 404
-        
-        # Salvar dados atualizados
-        save_prestadores(prestadores, empresa_id)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Prestador excluído com sucesso'
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao excluir prestador: {str(e)}")
-        return jsonify({'error': f'Erro ao excluir prestador: {str(e)}'}), 500
-
-@app.route('/api/prestadores/estatisticas', methods=['GET'])
-def get_prestadores_estatisticas():
-    """Estatísticas dos prestadores"""
-    try:
-        empresa_id = 1
-        
-        # Carregar dados
-        prestadores = get_prestadores(empresa_id)
-        motoristas = get_motoristas(empresa_id)
-        
-        # Calcular estatísticas
-        total_motoristas = len(motoristas)
-        total_prestadores = len(prestadores)
-        
-        # Contar motoristas em grupos
-        motoristas_em_grupos = set()
-        for prestador in prestadores:
-            motoristas_em_grupos.add(prestador['motorista_principal'])
-            for ajudante in prestador.get('motoristas_ajudantes', []):
-                motoristas_em_grupos.add(ajudante)
-        
-        motoristas_em_grupos_count = len(motoristas_em_grupos)
-        motoristas_individuais = total_motoristas - motoristas_em_grupos_count
-        
-        return jsonify({
-            'success': True,
-            'data': {
-                'total_motoristas': total_motoristas,
-                'total_prestadores': total_prestadores,
-                'motoristas_em_grupos': motoristas_em_grupos_count,
-                'motoristas_individuais': motoristas_individuais
-            }
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Erro ao buscar estatísticas: {str(e)}")
-        return jsonify({'error': f'Erro ao buscar estatísticas: {str(e)}'}), 500
+    })
 
 # ==================== INICIALIZAÇÃO ====================
 
 if __name__ == '__main__':
-    print("🚀 MenezesLog SaaS v7.2 ULTRA OTIMIZADO iniciado!")
+    print("🚀 MenezesLog SaaS v7.3 SUPABASE + OTIMIZAÇÕES iniciado!")
     print("🇧🇷 Suporte completo a encoding brasileiro")
     print("⚡ Otimizado para processar 300K linhas sem timeout")
-    print("💾 Sistema de persistência em arquivos JSON")
+    print("💾 Sistema de persistência permanente no Supabase")
     print("🎯 Cache inteligente para máxima performance")
+    print(f"📡 Supabase: {'✅ CONECTADO' if SUPABASE_CONNECTED else '❌ DESCONECTADO'}")
     app.run(host='0.0.0.0', port=5000, debug=False)
 
