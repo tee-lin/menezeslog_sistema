@@ -3,36 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - MenezesLog SaaS</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Dashboard - MenezesLog</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Menu Lateral -->
+    <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
             <h3><i class="fas fa-truck"></i> MenezesLog</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="admin_dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
-            <li><a href="upload.html"><i class="fas fa-upload"></i> Upload</a></li>
-            <li><a href="tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
-            <li><a href="ciclos.html"><i class="fas fa-calendar"></i> Ciclos</a></li>
-            <li><a href="awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
+            <li><a href="/admin_dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
+            <li><a href="/upload.html"><i class="fas fa-upload"></i> Upload</a></li>
+            <li><a href="/tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
+            <li><a href="/ciclos.html"><i class="fas fa-calendar-alt"></i> Ciclos</a></li>
+            <li><a href="/awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
         </ul>
     </nav>
 
-    <!-- Conteúdo Principal -->
+    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
+            <!-- Page Header -->
             <div class="page-header">
-                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
                 <p>Visão geral do sistema MenezesLog</p>
             </div>
 
-            <!-- Cards de Estatísticas -->
+            <!-- System Status -->
+            <div class="system-status">
+                <div class="status-card">
+                    <div class="status-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="status-content">
+                        <h4>Status do Supabase</h4>
+                        <div class="status-badge success" id="supabase-status">Conectado</div>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <div class="status-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="status-content">
+                        <h4>Versão do Sistema</h4>
+                        <div class="status-number">v7.6 DEFINITIVO</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -43,17 +65,15 @@
                         <p>Total de Prestadores</p>
                     </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-user-tie"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="total-motoristas">0</h3>
+                        <h3 id="total-entregadores">0</h3>
                         <p>Total de Entregadores</p>
                     </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-barcode"></i>
@@ -63,175 +83,157 @@
                         <p>Total de AWBs</p>
                     </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="supabase-status">❌</h3>
+                        <h3 id="status-supabase">✓</h3>
                         <p>Status Supabase</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Gráficos e Informações -->
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-pie"></i> Distribuição de Prestadores</h3>
-                    </div>
-                    <div class="card-content">
-                        <canvas id="prestadoresChart"></canvas>
+            <!-- Distribution Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-pie"></i> Distribuição de Prestadores</h3>
+                    <p>Visualização da distribuição entre grupos e individuais</p>
+                </div>
+                <div class="card-content">
+                    <div id="chart-container" style="height: 300px; display: flex; align-items: center; justify-content: center;">
+                        <div style="text-align: center; color: #64748b;">
+                            <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+                            <p>Carregando dados do gráfico...</p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-line"></i> Estatísticas do Sistema</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="stats-list">
-                            <div class="stats-item">
-                                <span class="stats-label">Entregadores em Grupos:</span>
-                                <span class="stats-value" id="motoristas-grupos">0</span>
+            <!-- System Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-info-circle"></i> Estatísticas do Sistema</h3>
+                    <p>Informações detalhadas sobre o sistema</p>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="result-item">
+                            <div class="result-icon info">
+                                <i class="fas fa-layer-group"></i>
                             </div>
-                            <div class="stats-item">
-                                <span class="stats-label">Entregadores Individuais:</span>
-                                <span class="stats-value" id="motoristas-individuais">0</span>
+                            <div class="result-content">
+                                <h4 id="entregadores-grupos">0</h4>
+                                <p>Entregadores em Grupos</p>
                             </div>
-                            <div class="stats-item">
-                                <span class="stats-label">Última Atualização:</span>
-                                <span class="stats-value" id="ultima-atualizacao">-</span>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon success">
+                                <i class="fas fa-user"></i>
                             </div>
-                            <div class="stats-item">
-                                <span class="stats-label">Versão do Sistema:</span>
-                                <span class="stats-value">v7.5 FINAL</span>
+                            <div class="result-content">
+                                <h4 id="entregadores-individuais">0</h4>
+                                <p>Entregadores Individuais</p>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon info">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="result-content">
+                                <h4 id="ultima-atualizacao">-</h4>
+                                <p>Última Atualização</p>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-icon success">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="result-content">
+                                <h4>v7.6 DEFINITIVO</h4>
+                                <p>Versão do Sistema</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Ações Rápidas -->
-            <div class="quick-actions">
-                <h3><i class="fas fa-bolt"></i> Ações Rápidas</h3>
-                <div class="actions-grid">
-                    <a href="prestadores.html" class="action-btn">
-                        <i class="fas fa-users"></i>
-                        <span>Gerenciar Prestadores</span>
-                    </a>
-                    <a href="upload.html" class="action-btn">
-                        <i class="fas fa-upload"></i>
-                        <span>Upload de Arquivos</span>
-                    </a>
-                    <a href="tarifas.html" class="action-btn">
-                        <i class="fas fa-dollar-sign"></i>
-                        <span>Configurar Tarifas</span>
-                    </a>
-                    <a href="ciclos.html" class="action-btn">
-                        <i class="fas fa-calendar"></i>
-                        <span>Ciclos de Pagamento</span>
-                    </a>
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bolt"></i> Ações Rápidas</h3>
+                    <p>Acesso rápido às principais funcionalidades</p>
+                </div>
+                <div class="card-content">
+                    <div class="card-actions">
+                        <a href="/prestadores.html" class="btn btn-primary">
+                            <i class="fas fa-users"></i> Gerenciar Prestadores
+                        </a>
+                        <a href="/upload.html" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload de Arquivos
+                        </a>
+                        <a href="/tarifas.html" class="btn btn-secondary">
+                            <i class="fas fa-dollar-sign"></i> Configurar Tarifas
+                        </a>
+                        <a href="/ciclos.html" class="btn btn-secondary">
+                            <i class="fas fa-calendar-alt"></i> Ciclos de Pagamento
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // Variáveis globais
-        let prestadoresChart = null;
-
         // Carregar dados do dashboard
         async function carregarDashboard() {
             try {
-                // Carregar estatísticas gerais
+                // Carregar estatísticas
                 const response = await fetch('/api/estatisticas');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        atualizarEstatisticas(data.data);
-                    }
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('total-prestadores').textContent = data.data.total_prestadores || 0;
+                    document.getElementById('total-entregadores').textContent = data.data.total_motoristas || 0;
+                    document.getElementById('total-awbs').textContent = data.data.total_awbs || 0;
+                    
+                    // Status do Supabase
+                    const supabaseStatus = data.data.supabase_connected ? 'Conectado' : 'Desconectado';
+                    const statusClass = data.data.supabase_connected ? 'success' : 'error';
+                    document.getElementById('supabase-status').textContent = supabaseStatus;
+                    document.getElementById('supabase-status').className = `status-badge ${statusClass}`;
+                    document.getElementById('status-supabase').textContent = data.data.supabase_connected ? '✓' : '✗';
                 }
-
+                
                 // Carregar estatísticas de prestadores
                 const prestadoresResponse = await fetch('/api/prestadores/estatisticas');
-                if (prestadoresResponse.ok) {
-                    const prestadoresData = await prestadoresResponse.json();
-                    if (prestadoresData.success) {
-                        atualizarEstatisticasPrestadores(prestadoresData.data);
-                        criarGraficoPrestadores(prestadoresData.data);
-                    }
+                const prestadoresData = await prestadoresResponse.json();
+                
+                if (prestadoresData.success) {
+                    document.getElementById('entregadores-grupos').textContent = prestadoresData.data.motoristas_em_grupos || 0;
+                    document.getElementById('entregadores-individuais').textContent = prestadoresData.data.motoristas_individuais || 0;
                 }
-
+                
                 // Atualizar timestamp
-                document.getElementById('ultima-atualizacao').textContent = 
-                    new Date().toLocaleString('pt-BR');
-
+                const agora = new Date();
+                const timestamp = agora.toLocaleString('pt-BR');
+                document.getElementById('ultima-atualizacao').textContent = timestamp;
+                
             } catch (error) {
                 console.error('Erro ao carregar dashboard:', error);
+                
+                // Mostrar valores padrão em caso de erro
+                document.getElementById('supabase-status').textContent = 'Erro';
+                document.getElementById('supabase-status').className = 'status-badge error';
+                document.getElementById('status-supabase').textContent = '✗';
             }
         }
-
-        // Atualizar estatísticas gerais
-        function atualizarEstatisticas(data) {
-            document.getElementById('total-prestadores').textContent = data.total_prestadores || 0;
-            document.getElementById('total-motoristas').textContent = data.total_motoristas || 0;
-            document.getElementById('total-awbs').textContent = data.total_awbs || 0;
-            document.getElementById('supabase-status').textContent = data.supabase_connected ? '✅' : '❌';
-        }
-
-        // Atualizar estatísticas de prestadores
-        function atualizarEstatisticasPrestadores(data) {
-            document.getElementById('motoristas-grupos').textContent = data.motoristas_em_grupos || 0;
-            document.getElementById('motoristas-individuais').textContent = data.motoristas_individuais || 0;
-        }
-
-        // Criar gráfico de prestadores
-        function criarGraficoPrestadores(data) {
-            const ctx = document.getElementById('prestadoresChart').getContext('2d');
-            
-            // Destruir gráfico anterior se existir
-            if (prestadoresChart) {
-                prestadoresChart.destroy();
-            }
-
-            prestadoresChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Em Grupos', 'Individuais'],
-                    datasets: [{
-                        data: [data.motoristas_em_grupos || 0, data.motoristas_individuais || 0],
-                        backgroundColor: [
-                            '#4CAF50',
-                            '#2196F3'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
+        
+        // Carregar dados ao inicializar
+        document.addEventListener('DOMContentLoaded', carregarDashboard);
+        
         // Atualizar dados a cada 30 segundos
-        function iniciarAtualizacaoAutomatica() {
-            setInterval(carregarDashboard, 30000);
-        }
-
-        // Inicializar dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            carregarDashboard();
-            iniciarAtualizacaoAutomatica();
-        });
+        setInterval(carregarDashboard, 30000);
     </script>
 </body>
 </html>

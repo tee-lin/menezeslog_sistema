@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload - MenezesLog SaaS</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Upload de Arquivos - MenezesLog</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Menu Lateral -->
+    <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
             <h3><i class="fas fa-truck"></i> MenezesLog</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="admin_dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
-            <li><a href="upload.html" class="active"><i class="fas fa-upload"></i> Upload</a></li>
-            <li><a href="tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
-            <li><a href="ciclos.html"><i class="fas fa-calendar"></i> Ciclos</a></li>
-            <li><a href="awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
+            <li><a href="/admin_dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
+            <li><a href="/upload.html" class="active"><i class="fas fa-upload"></i> Upload</a></li>
+            <li><a href="/tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
+            <li><a href="/ciclos.html"><i class="fas fa-calendar-alt"></i> Ciclos</a></li>
+            <li><a href="/awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
         </ul>
     </nav>
 
-    <!-- Conteúdo Principal -->
+    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
+            <!-- Page Header -->
             <div class="page-header">
                 <h1><i class="fas fa-upload"></i> Upload de Arquivos</h1>
                 <p>Faça upload de arquivos CSV de entregas para processamento</p>
             </div>
 
-            <!-- Status do Sistema -->
+            <!-- System Status -->
             <div class="system-status">
                 <div class="status-card">
                     <div class="status-icon">
@@ -39,7 +40,7 @@
                     </div>
                     <div class="status-content">
                         <h4>Status do Supabase</h4>
-                        <span id="supabase-status" class="status-badge">Verificando...</span>
+                        <div class="status-badge success" id="supabase-status">Conectado</div>
                     </div>
                 </div>
                 <div class="status-card">
@@ -48,135 +49,141 @@
                     </div>
                     <div class="status-content">
                         <h4>Entregadores Cadastrados</h4>
-                        <span id="motoristas-count" class="status-number">0</span>
+                        <div class="status-number" id="total-motoristas">0</div>
                     </div>
                 </div>
                 <div class="status-card">
                     <div class="status-icon">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-code-branch"></i>
                     </div>
                     <div class="status-content">
                         <h4>Versão do Sistema</h4>
-                        <span class="status-badge">v7.5 FINAL</span>
+                        <div class="status-number">v7.6 DEFINITIVO</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Área de Upload -->
-            <div class="upload-section">
-                <div class="upload-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-file-csv"></i> Upload de CSV de Entregas</h3>
-                        <p>Arraste e solte seu arquivo CSV ou clique para selecionar</p>
-                    </div>
-                    
-                    <div class="upload-area" id="uploadArea">
+            <!-- Upload Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-file-csv"></i> Upload de CSV de Entregas</h3>
+                    <p>Arraste e solte seu arquivo CSV ou clique para selecionar</p>
+                </div>
+                <div class="card-content">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
                         <div class="upload-content">
-                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
                             <h4>Arraste seu arquivo CSV aqui</h4>
-                            <p>ou <span class="upload-link">clique para selecionar</span></p>
+                            <p>ou <span class="upload-link" onclick="document.getElementById('file-input').click()">clique para selecionar</span></p>
                             <small>Formatos suportados: CSV, Excel (.xlsx, .xls)</small>
                         </div>
-                        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display: none;">
                     </div>
-
-                    <!-- Informações do Arquivo -->
-                    <div id="fileInfo" class="file-info" style="display: none;">
+                    
+                    <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+                    
+                    <!-- File Info -->
+                    <div id="file-info" class="file-info" style="display: none;">
                         <div class="file-details">
-                            <i class="fas fa-file"></i>
+                            <i class="fas fa-file-csv"></i>
                             <div class="file-text">
-                                <strong id="fileName"></strong>
-                                <span id="fileSize"></span>
+                                <strong id="file-name">arquivo.csv</strong>
+                                <span id="file-size">0 MB</span>
                             </div>
-                            <button id="removeFile" class="btn-remove">
+                            <button class="btn-remove" onclick="removerArquivo()">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
-
-                    <!-- Botão de Upload -->
-                    <div class="upload-actions">
-                        <button id="uploadBtn" class="btn btn-primary" disabled>
-                            <i class="fas fa-upload"></i> Processar Arquivo
+                    
+                    <div class="card-actions">
+                        <button id="btn-processar" class="btn btn-primary" onclick="processarArquivo()" disabled>
+                            <i class="fas fa-play"></i> Processar Arquivo
+                        </button>
+                        <button id="btn-status" class="btn btn-secondary" onclick="verificarStatus()" style="display: none;">
+                            <i class="fas fa-sync"></i> Verificar Status
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div id="progressSection" class="progress-section" style="display: none;">
+            <!-- Progress Section -->
+            <div id="progress-section" class="progress-section" style="display: none;">
                 <div class="progress-card">
-                    <h4><i class="fas fa-cog fa-spin"></i> Processando Arquivo...</h4>
+                    <h4><i class="fas fa-cog fa-spin"></i> Processando arquivo...</h4>
                     <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill"></div>
+                        <div class="progress-fill" id="progress-fill"></div>
                     </div>
                     <div class="progress-info">
-                        <span id="progressText">Iniciando processamento...</span>
-                        <span id="progressPercent">0%</span>
+                        <span id="progress-text">Iniciando processamento...</span>
+                        <span id="progress-percent">0%</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Resultados -->
-            <div id="resultsSection" class="results-section" style="display: none;">
-                <div class="results-card">
+            <!-- Results Section -->
+            <div id="results-section" class="results-section" style="display: none;">
+                <div class="card">
                     <div class="card-header">
                         <h3><i class="fas fa-chart-bar"></i> Resultados do Processamento</h3>
                     </div>
-                    <div class="results-grid">
-                        <div class="result-item">
-                            <div class="result-icon success">
-                                <i class="fas fa-check"></i>
+                    <div class="card-content">
+                        <div class="results-grid">
+                            <div class="result-item">
+                                <div class="result-icon success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4 id="entregas-processadas">0</h4>
+                                    <p>Entregas Processadas</p>
+                                </div>
                             </div>
-                            <div class="result-content">
-                                <h4 id="processedCount">0</h4>
-                                <p>Entregas Processadas</p>
+                            <div class="result-item">
+                                <div class="result-icon error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4 id="erros-encontrados">-</h4>
+                                    <p>Erros Encontrados</p>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-icon info">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4 id="tempo-processamento">-</h4>
+                                    <p>Tempo de Processamento</p>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-icon info">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4 id="linhas-segundo">-</h4>
+                                    <p>Linhas/Segundo</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="result-item">
-                            <div class="result-icon error">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="errorCount">0</h4>
-                                <p>Erros Encontrados</p>
-                            </div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-icon info">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="processingTime">0s</h4>
-                                <p>Tempo de Processamento</p>
-                            </div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-icon info">
-                                <i class="fas fa-tachometer-alt"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="performance">0</h4>
-                                <p>Linhas/Segundo</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="results-message">
-                        <p id="resultMessage"></p>
+                        
+                        <div id="results-message" class="results-message" style="display: none;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Histórico de Uploads -->
-            <div class="history-section">
-                <div class="history-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-history"></i> Histórico de Uploads</h3>
-                    </div>
-                    <div class="history-content">
-                        <div id="historyList" class="history-list">
-                            <p class="no-history">Nenhum upload realizado ainda</p>
-                        </div>
+            <!-- History Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Histórico de Uploads</h3>
+                    <p>Últimos uploads realizados</p>
+                </div>
+                <div class="card-content">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>Nenhum upload realizado ainda</h3>
+                        <p>Faça seu primeiro upload de arquivo CSV para começar</p>
                     </div>
                 </div>
             </div>
@@ -184,217 +191,187 @@
     </main>
 
     <script>
-        // Variáveis globais
-        let selectedFile = null;
+        let arquivoSelecionado = null;
+        let processamentoAtivo = false;
+        let intervalStatus = null;
 
-        // Elementos DOM
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const progressSection = document.getElementById('progressSection');
-        const resultsSection = document.getElementById('resultsSection');
-
-        // Inicializar página
-        document.addEventListener('DOMContentLoaded', function() {
-            verificarStatusSistema();
-            configurarUpload();
-        });
-
-        // Verificar status do sistema
-        async function verificarStatusSistema() {
+        // Carregar status inicial
+        async function carregarStatus() {
             try {
-                // Status do Supabase
-                const statusResponse = await fetch('/api/status');
-                if (statusResponse.ok) {
-                    const statusData = await statusResponse.json();
-                    const supabaseStatus = document.getElementById('supabase-status');
-                    supabaseStatus.textContent = statusData.data.supabase_connected ? 'Conectado' : 'Desconectado';
-                    supabaseStatus.className = statusData.data.supabase_connected ? 'status-badge success' : 'status-badge error';
+                const response = await fetch('/api/motoristas/count');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('total-motoristas').textContent = data.count || 0;
                 }
-
-                // Contagem de motoristas
-                const motoristasResponse = await fetch('/api/motoristas/count');
-                if (motoristasResponse.ok) {
-                    const motoristasData = await motoristasResponse.json();
-                    document.getElementById('motoristas-count').textContent = motoristasData.count || 0;
-                }
-
             } catch (error) {
-                console.error('Erro ao verificar status:', error);
-                document.getElementById('supabase-status').textContent = 'Erro';
-                document.getElementById('supabase-status').className = 'status-badge error';
+                console.error('Erro ao carregar status:', error);
             }
         }
 
-        // Configurar funcionalidade de upload
-        function configurarUpload() {
-            // Drag and drop
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('drag-over');
-            });
+        // Setup drag and drop
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
 
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('drag-over');
-            });
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
 
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('drag-over');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    selecionarArquivo(files[0]);
-                }
-            });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
 
-            // Click para selecionar
-            uploadArea.addEventListener('click', () => {
-                fileInput.click();
-            });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selecionarArquivo(files[0]);
+            }
+        });
 
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    selecionarArquivo(e.target.files[0]);
-                }
-            });
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
 
-            // Remover arquivo
-            document.getElementById('removeFile').addEventListener('click', () => {
-                removerArquivo();
-            });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                selecionarArquivo(e.target.files[0]);
+            }
+        });
 
-            // Upload
-            uploadBtn.addEventListener('click', () => {
-                if (selectedFile) {
-                    processarArquivo();
-                }
-            });
-        }
-
-        // Selecionar arquivo
         function selecionarArquivo(file) {
-            selectedFile = file;
+            arquivoSelecionado = file;
             
-            // Mostrar informações do arquivo
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileSize').textContent = formatarTamanho(file.size);
-            
-            fileInfo.style.display = 'block';
-            uploadBtn.disabled = false;
-            
-            // Esconder resultados anteriores
-            resultsSection.style.display = 'none';
+            // Mostrar info do arquivo
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = formatarTamanho(file.size);
+            document.getElementById('file-info').style.display = 'block';
+            document.getElementById('btn-processar').disabled = false;
         }
 
-        // Remover arquivo
         function removerArquivo() {
-            selectedFile = null;
+            arquivoSelecionado = null;
+            document.getElementById('file-info').style.display = 'none';
+            document.getElementById('btn-processar').disabled = true;
             fileInput.value = '';
-            fileInfo.style.display = 'none';
-            uploadBtn.disabled = true;
-            progressSection.style.display = 'none';
-            resultsSection.style.display = 'none';
         }
 
-        // Processar arquivo
+        function formatarTamanho(bytes) {
+            const mb = bytes / (1024 * 1024);
+            return mb.toFixed(2) + ' MB';
+        }
+
         async function processarArquivo() {
-            if (!selectedFile) return;
+            if (!arquivoSelecionado || processamentoAtivo) return;
 
-            // Mostrar progress
-            progressSection.style.display = 'block';
-            resultsSection.style.display = 'none';
-            uploadBtn.disabled = true;
-
-            // Simular progresso
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 10;
-                if (progress > 90) progress = 90;
-                atualizarProgresso(progress, 'Processando dados...');
-            }, 500);
+            const formData = new FormData();
+            formData.append('file', arquivoSelecionado);
 
             try {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
+                processamentoAtivo = true;
+                document.getElementById('btn-processar').disabled = true;
+                document.getElementById('progress-section').style.display = 'block';
+                document.getElementById('results-section').style.display = 'none';
 
-                const startTime = Date.now();
                 const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData
                 });
 
-                clearInterval(progressInterval);
-                atualizarProgresso(100, 'Processamento concluído!');
+                const data = await response.json();
 
-                const result = await response.json();
-                const endTime = Date.now();
-                const totalTime = (endTime - startTime) / 1000;
-
-                setTimeout(() => {
-                    progressSection.style.display = 'none';
-                    mostrarResultados(result, totalTime);
-                }, 1000);
+                if (data.success) {
+                    // Processamento iniciado em background
+                    document.getElementById('btn-status').style.display = 'inline-flex';
+                    iniciarMonitoramento();
+                } else {
+                    throw new Error(data.error || 'Erro no upload');
+                }
 
             } catch (error) {
-                clearInterval(progressInterval);
                 console.error('Erro no upload:', error);
-                
-                setTimeout(() => {
-                    progressSection.style.display = 'none';
-                    mostrarErro('Erro ao processar arquivo: ' + error.message);
-                }, 1000);
+                mostrarErro('Erro ao processar arquivo: ' + error.message);
+                processamentoAtivo = false;
+                document.getElementById('btn-processar').disabled = false;
+                document.getElementById('progress-section').style.display = 'none';
+            }
+        }
+
+        function iniciarMonitoramento() {
+            intervalStatus = setInterval(verificarStatus, 2000); // Verificar a cada 2 segundos
+        }
+
+        async function verificarStatus() {
+            try {
+                const response = await fetch('/api/upload/status');
+                const data = await response.json();
+
+                if (data.success) {
+                    const status = data.data;
+                    
+                    // Atualizar progress bar
+                    const progress = status.progress || 0;
+                    document.getElementById('progress-fill').style.width = progress + '%';
+                    document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
+                    document.getElementById('progress-text').textContent = status.message || 'Processando...';
+
+                    // Se processamento terminou
+                    if (!status.active) {
+                        clearInterval(intervalStatus);
+                        processamentoAtivo = false;
+                        document.getElementById('btn-processar').disabled = false;
+                        document.getElementById('btn-status').style.display = 'none';
+                        document.getElementById('progress-section').style.display = 'none';
+                        
+                        // Mostrar resultados
+                        mostrarResultados(status);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+            }
+        }
+
+        function mostrarResultados(status) {
+            document.getElementById('results-section').style.display = 'block';
+            
+            document.getElementById('entregas-processadas').textContent = status.processed_lines || 0;
+            document.getElementById('erros-encontrados').textContent = status.errors || 0;
+            
+            if (status.performance_linhas_por_segundo) {
+                document.getElementById('tempo-processamento').textContent = 
+                    Math.round((status.processed_lines || 0) / status.performance_linhas_por_segundo) + 's';
+                document.getElementById('linhas-segundo').textContent = 
+                    Math.round(status.performance_linhas_por_segundo);
             }
 
-            uploadBtn.disabled = false;
-        }
-
-        // Atualizar progresso
-        function atualizarProgresso(percent, text) {
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
-            document.getElementById('progressText').textContent = text;
-        }
-
-        // Mostrar resultados
-        function mostrarResultados(result, totalTime) {
-            if (result.success) {
-                document.getElementById('processedCount').textContent = result.data.entregas_processadas || 0;
-                document.getElementById('errorCount').textContent = result.data.entregas_erro || 0;
-                document.getElementById('processingTime').textContent = totalTime.toFixed(1) + 's';
-                document.getElementById('performance').textContent = result.data.performance_linhas_por_segundo || 0;
-                document.getElementById('resultMessage').textContent = result.message || 'Processamento concluído com sucesso!';
-                document.getElementById('resultMessage').className = 'success-message';
+            // Mostrar mensagem
+            const messageDiv = document.getElementById('results-message');
+            messageDiv.style.display = 'block';
+            
+            if (status.errors > 0) {
+                messageDiv.className = 'results-message error-message';
+                messageDiv.textContent = `Processamento concluído com ${status.errors} erros. Verifique os dados.`;
             } else {
-                mostrarErro(result.error || 'Erro desconhecido');
+                messageDiv.className = 'results-message success-message';
+                messageDiv.textContent = 'Processamento concluído com sucesso! Todos os dados foram salvos no Supabase.';
             }
-            
-            resultsSection.style.display = 'block';
-            
-            // Atualizar status do sistema
-            setTimeout(verificarStatusSistema, 2000);
         }
 
-        // Mostrar erro
-        function mostrarErro(message) {
-            document.getElementById('processedCount').textContent = '0';
-            document.getElementById('errorCount').textContent = '-';
-            document.getElementById('processingTime').textContent = '-';
-            document.getElementById('performance').textContent = '-';
-            document.getElementById('resultMessage').textContent = message;
-            document.getElementById('resultMessage').className = 'error-message';
+        function mostrarErro(mensagem) {
+            document.getElementById('results-section').style.display = 'block';
             
-            resultsSection.style.display = 'block';
+            const messageDiv = document.getElementById('results-message');
+            messageDiv.style.display = 'block';
+            messageDiv.className = 'results-message error-message';
+            messageDiv.textContent = mensagem;
         }
 
-        // Formatar tamanho do arquivo
-        function formatarTamanho(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
+        // Carregar dados ao inicializar
+        document.addEventListener('DOMContentLoaded', carregarStatus);
     </script>
 </body>
 </html>

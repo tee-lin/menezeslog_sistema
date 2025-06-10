@@ -3,227 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prestadores - MenezesLog SaaS</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Gestão de Prestadores - MenezesLog</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Menu Lateral -->
+    <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
             <h3><i class="fas fa-truck"></i> MenezesLog</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="admin_dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="prestadores.html" class="active"><i class="fas fa-users"></i> Prestadores</a></li>
-            <li><a href="upload.html"><i class="fas fa-upload"></i> Upload</a></li>
-            <li><a href="tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
-            <li><a href="ciclos.html"><i class="fas fa-calendar"></i> Ciclos</a></li>
-            <li><a href="awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
+            <li><a href="/admin_dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/prestadores.html" class="active"><i class="fas fa-users"></i> Prestadores</a></li>
+            <li><a href="/upload.html"><i class="fas fa-upload"></i> Upload</a></li>
+            <li><a href="/tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
+            <li><a href="/ciclos.html"><i class="fas fa-calendar-alt"></i> Ciclos</a></li>
+            <li><a href="/awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
         </ul>
     </nav>
 
-    <!-- Conteúdo Principal -->
+    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
+            <!-- Page Header -->
             <div class="page-header">
                 <h1><i class="fas fa-users"></i> Gestão de Prestadores</h1>
                 <p>Gerencie entregadores e grupos de prestadores de serviços</p>
             </div>
 
-            <!-- Estatísticas -->
+            <!-- Statistics -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 id="totalMotoristas">0</h3>
-                        <p>Total de Entregadores</p>
-                    </div>
-                </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="totalPrestadores">0</h3>
+                        <h3 id="total-motoristas">0</h3>
+                        <p>Total de Entregadores</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-grupos">0</h3>
                         <p>Grupos de Prestadores</p>
                     </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-user-friends"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="motoristasGrupos">0</h3>
+                        <h3 id="em-grupos">0</h3>
                         <p>Em Grupos</p>
                     </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="stat-content">
-                        <h3 id="motoristasIndividuais">0</h3>
+                        <h3 id="individuais">0</h3>
                         <p>Individuais</p>
                     </div>
                 </div>
             </div>
 
             <!-- Upload DE-PARA -->
-            <div class="upload-depara-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-file-excel"></i> Upload Planilha DE-PARA</h3>
-                        <p>Faça upload da planilha Excel com ID e Nome dos entregadores</p>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-file-excel"></i> Upload Planilha DE-PARA</h3>
+                    <p>Faça upload da planilha Excel com ID e Nome dos entregadores</p>
+                </div>
+                <div class="card-content">
+                    <div class="upload-area" id="upload-area-depara">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                        <div class="upload-content">
+                            <h4>Arraste a planilha DE-PARA aqui</h4>
+                            <p>ou <span class="upload-link" onclick="document.getElementById('file-input-depara').click()">clique para selecionar</span></p>
+                            <small>Formato Excel (.xlsx, .xls) com colunas "ID do motorista" e "Nome do motorista"</small>
+                        </div>
                     </div>
-                    <div class="upload-depara-content">
-                        <div class="upload-area" id="uploadAreaDepara">
-                            <div class="upload-content">
-                                <i class="fas fa-file-excel upload-icon"></i>
-                                <h4>Arraste a planilha DE-PARA aqui</h4>
-                                <p>ou <span class="upload-link">clique para selecionar</span></p>
-                                <small>Formato: Excel (.xlsx, .xls) com colunas "ID do motorista" e "Nome do motorista"</small>
+                    
+                    <input type="file" id="file-input-depara" accept=".xlsx,.xls" style="display: none;">
+                    
+                    <div id="file-info-depara" class="file-info" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file-excel"></i>
+                            <div class="file-text">
+                                <strong id="file-name-depara">planilha.xlsx</strong>
+                                <span id="file-size-depara">0 KB</span>
                             </div>
-                            <input type="file" id="fileInputDepara" accept=".xlsx,.xls" style="display: none;">
-                        </div>
-                        
-                        <div id="fileInfoDepara" class="file-info" style="display: none;">
-                            <div class="file-details">
-                                <i class="fas fa-file-excel"></i>
-                                <div class="file-text">
-                                    <strong id="fileNameDepara"></strong>
-                                    <span id="fileSizeDepara"></span>
-                                </div>
-                                <button id="removeFileDepara" class="btn-remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="upload-actions">
-                            <button id="uploadBtnDepara" class="btn btn-primary" disabled>
-                                <i class="fas fa-upload"></i> Processar Planilha DE-PARA
+                            <button class="btn-remove" onclick="removerArquivoDepara()">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Progress Upload -->
-            <div id="progressSectionDepara" class="progress-section" style="display: none;">
-                <div class="progress-card">
-                    <h4><i class="fas fa-cog fa-spin"></i> Processando Planilha DE-PARA...</h4>
-                    <div class="progress-bar">
-                        <div id="progressFillDepara" class="progress-fill"></div>
-                    </div>
-                    <div class="progress-info">
-                        <span id="progressTextDepara">Iniciando processamento...</span>
-                        <span id="progressPercentDepara">0%</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Resultados Upload -->
-            <div id="resultsSectionDepara" class="results-section" style="display: none;">
-                <div class="results-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-bar"></i> Resultado do Upload DE-PARA</h3>
-                    </div>
-                    <div class="results-grid">
-                        <div class="result-item">
-                            <div class="result-icon success">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="processedCountDepara">0</h4>
-                                <p>Entregadores Processados</p>
-                            </div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-icon error">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="errorCountDepara">0</h4>
-                                <p>Erros Encontrados</p>
-                            </div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-icon info">
-                                <i class="fas fa-database"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="totalCountDepara">0</h4>
-                                <p>Total no Sistema</p>
-                            </div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-icon info">
-                                <i class="fas fa-cloud"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4 id="supabaseStatusDepara">❌</h4>
-                                <p>Salvo no Supabase</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="results-message">
-                        <p id="resultMessageDepara"></p>
+                    
+                    <div class="card-actions">
+                        <button id="btn-processar-depara" class="btn btn-primary" onclick="processarPlanilhaDepara()" disabled>
+                            <i class="fas fa-play"></i> Processar Planilha DE-PARA
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Lista de Entregadores -->
-            <div class="motoristas-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-list"></i> Lista de Entregadores</h3>
-                        <div class="card-actions">
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="searchMotoristas" placeholder="Buscar entregador...">
-                            </div>
-                            <button id="btnAtualizarMotoristas" class="btn btn-secondary">
-                                <i class="fas fa-sync-alt"></i> Atualizar
-                            </button>
-                            <button id="btnCriarGrupo" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Criar Grupo
-                            </button>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Lista de Entregadores</h3>
+                    <div class="card-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-motoristas" placeholder="Buscar entregador...">
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="atualizarLista()">
+                            <i class="fas fa-sync"></i> Atualizar
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="criarGrupo()">
+                            <i class="fas fa-plus"></i> Criar Grupo
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="loading-motoristas" class="loading-section">
+                        <div class="loading-card">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Carregando entregadores...</p>
                         </div>
                     </div>
                     
-                    <!-- Loading -->
-                    <div id="loadingMotoristas" class="loading-section">
-                        <div class="loading-card">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Carregando entregadores do Supabase...</p>
-                        </div>
+                    <div id="lista-motoristas" style="display: none;">
+                        <!-- Lista será preenchida via JavaScript -->
                     </div>
-
-                    <!-- Lista -->
-                    <div id="listaMotoristas" class="motoristas-lista" style="display: none;">
-                        <!-- Entregadores serão carregados aqui -->
-                    </div>
-
-                    <!-- Erro -->
-                    <div id="erroMotoristas" class="erro-section" style="display: none;">
-                        <div class="erro-card">
-                            <div class="erro-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="erro-content">
-                                <h3>Erro ao Carregar Entregadores</h3>
-                                <p id="erroMessageMotoristas">Não foi possível carregar os dados do Supabase.</p>
-                                <button id="btnTentarNovamente" class="btn btn-primary">
-                                    <i class="fas fa-redo"></i> Tentar Novamente
-                                </button>
-                            </div>
-                        </div>
+                    
+                    <div id="empty-motoristas" class="empty-state" style="display: none;">
+                        <i class="fas fa-users"></i>
+                        <h3>Nenhum entregador cadastrado</h3>
+                        <p>Faça upload da planilha DE-PARA para cadastrar entregadores</p>
                     </div>
                 </div>
             </div>
@@ -231,343 +153,206 @@
     </main>
 
     <script>
-        // Variáveis globais
-        let selectedFileDepara = null;
-        let motoristasData = [];
-        let motoristasFiltered = [];
+        let arquivoDepara = null;
+        let motoristas = [];
 
-        // Inicializar página
-        document.addEventListener('DOMContentLoaded', function() {
-            configurarUploadDepara();
-            configurarEventos();
-            carregarDados();
+        // Carregar dados iniciais
+        async function carregarDados() {
+            try {
+                // Carregar estatísticas
+                const statsResponse = await fetch('/api/prestadores/estatisticas');
+                const statsData = await statsResponse.json();
+                
+                if (statsData.success) {
+                    document.getElementById('total-motoristas').textContent = statsData.data.total_motoristas || 0;
+                    document.getElementById('total-grupos').textContent = statsData.data.total_prestadores || 0;
+                    document.getElementById('em-grupos').textContent = statsData.data.motoristas_em_grupos || 0;
+                    document.getElementById('individuais').textContent = statsData.data.motoristas_individuais || 0;
+                }
+                
+                // Carregar lista de motoristas
+                await carregarMotoristas();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        async function carregarMotoristas() {
+            try {
+                document.getElementById('loading-motoristas').style.display = 'block';
+                document.getElementById('lista-motoristas').style.display = 'none';
+                document.getElementById('empty-motoristas').style.display = 'none';
+                
+                const response = await fetch('/api/motoristas');
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    motoristas = data.data;
+                    renderizarListaMotoristas(motoristas);
+                    document.getElementById('loading-motoristas').style.display = 'none';
+                    document.getElementById('lista-motoristas').style.display = 'block';
+                } else {
+                    document.getElementById('loading-motoristas').style.display = 'none';
+                    document.getElementById('empty-motoristas').style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar motoristas:', error);
+                document.getElementById('loading-motoristas').style.display = 'none';
+                document.getElementById('empty-motoristas').style.display = 'block';
+            }
+        }
+
+        function renderizarListaMotoristas(lista) {
+            const container = document.getElementById('lista-motoristas');
+            
+            if (lista.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>Nenhum resultado encontrado</h3></div>';
+                return;
+            }
+            
+            let html = '';
+            lista.forEach(motorista => {
+                html += `
+                    <div class="result-item">
+                        <div class="result-icon success">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="result-content">
+                            <h4>${motorista.nome_motorista}</h4>
+                            <p>ID: ${motorista.id_motorista} • Cadastrado: ${new Date(motorista.created_at).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editarMotorista(${motorista.id_motorista})">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="adicionarAoGrupo(${motorista.id_motorista})">
+                                <i class="fas fa-users"></i> Grupo
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Setup upload DE-PARA
+        const uploadAreaDepara = document.getElementById('upload-area-depara');
+        const fileInputDepara = document.getElementById('file-input-depara');
+
+        uploadAreaDepara.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadAreaDepara.classList.add('drag-over');
         });
 
-        // Configurar eventos
-        function configurarEventos() {
-            // Busca
-            document.getElementById('searchMotoristas').addEventListener('input', filtrarMotoristas);
+        uploadAreaDepara.addEventListener('dragleave', () => {
+            uploadAreaDepara.classList.remove('drag-over');
+        });
+
+        uploadAreaDepara.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadAreaDepara.classList.remove('drag-over');
             
-            // Botões
-            document.getElementById('btnAtualizarMotoristas').addEventListener('click', carregarDados);
-            document.getElementById('btnTentarNovamente').addEventListener('click', carregarDados);
-            document.getElementById('btnCriarGrupo').addEventListener('click', criarGrupo);
-        }
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selecionarArquivoDepara(files[0]);
+            }
+        });
 
-        // Configurar upload DE-PARA
-        function configurarUploadDepara() {
-            const uploadArea = document.getElementById('uploadAreaDepara');
-            const fileInput = document.getElementById('fileInputDepara');
-            const fileInfo = document.getElementById('fileInfoDepara');
-            const uploadBtn = document.getElementById('uploadBtnDepara');
+        fileInputDepara.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                selecionarArquivoDepara(e.target.files[0]);
+            }
+        });
 
-            // Drag and drop
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('drag-over');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('drag-over');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('drag-over');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    selecionarArquivoDepara(files[0]);
-                }
-            });
-
-            // Click para selecionar
-            uploadArea.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    selecionarArquivoDepara(e.target.files[0]);
-                }
-            });
-
-            // Remover arquivo
-            document.getElementById('removeFileDepara').addEventListener('click', () => {
-                removerArquivoDepara();
-            });
-
-            // Upload
-            uploadBtn.addEventListener('click', () => {
-                if (selectedFileDepara) {
-                    processarArquivoDepara();
-                }
-            });
-        }
-
-        // Selecionar arquivo DE-PARA
         function selecionarArquivoDepara(file) {
-            selectedFileDepara = file;
+            arquivoDepara = file;
             
-            document.getElementById('fileNameDepara').textContent = file.name;
-            document.getElementById('fileSizeDepara').textContent = formatarTamanho(file.size);
-            
-            document.getElementById('fileInfoDepara').style.display = 'block';
-            document.getElementById('uploadBtnDepara').disabled = false;
-            
-            document.getElementById('resultsSectionDepara').style.display = 'none';
+            document.getElementById('file-name-depara').textContent = file.name;
+            document.getElementById('file-size-depara').textContent = formatarTamanho(file.size);
+            document.getElementById('file-info-depara').style.display = 'block';
+            document.getElementById('btn-processar-depara').disabled = false;
         }
 
-        // Remover arquivo DE-PARA
         function removerArquivoDepara() {
-            selectedFileDepara = null;
-            document.getElementById('fileInputDepara').value = '';
-            document.getElementById('fileInfoDepara').style.display = 'none';
-            document.getElementById('uploadBtnDepara').disabled = true;
-            document.getElementById('progressSectionDepara').style.display = 'none';
-            document.getElementById('resultsSectionDepara').style.display = 'none';
+            arquivoDepara = null;
+            document.getElementById('file-info-depara').style.display = 'none';
+            document.getElementById('btn-processar-depara').disabled = true;
+            fileInputDepara.value = '';
         }
 
-        // Processar arquivo DE-PARA
-        async function processarArquivoDepara() {
-            if (!selectedFileDepara) return;
+        async function processarPlanilhaDepara() {
+            if (!arquivoDepara) return;
 
-            // Mostrar progress
-            document.getElementById('progressSectionDepara').style.display = 'block';
-            document.getElementById('resultsSectionDepara').style.display = 'none';
-            document.getElementById('uploadBtnDepara').disabled = true;
-
-            // Simular progresso
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 90) progress = 90;
-                atualizarProgressoDepara(progress, 'Processando planilha...');
-            }, 300);
+            const formData = new FormData();
+            formData.append('file', arquivoDepara);
 
             try {
-                const formData = new FormData();
-                formData.append('file', selectedFileDepara);
+                document.getElementById('btn-processar-depara').disabled = true;
+                document.getElementById('btn-processar-depara').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
 
                 const response = await fetch('/api/motoristas/upload', {
                     method: 'POST',
                     body: formData
                 });
 
-                clearInterval(progressInterval);
-                atualizarProgressoDepara(100, 'Processamento concluído!');
+                const data = await response.json();
 
-                const result = await response.json();
-
-                setTimeout(() => {
-                    document.getElementById('progressSectionDepara').style.display = 'none';
-                    mostrarResultadosDepara(result);
-                    
-                    // Recarregar dados após upload
-                    setTimeout(carregarDados, 2000);
-                }, 1000);
-
-            } catch (error) {
-                clearInterval(progressInterval);
-                console.error('Erro no upload DE-PARA:', error);
-                
-                setTimeout(() => {
-                    document.getElementById('progressSectionDepara').style.display = 'none';
-                    mostrarErroDepara('Erro ao processar planilha: ' + error.message);
-                }, 1000);
-            }
-
-            document.getElementById('uploadBtnDepara').disabled = false;
-        }
-
-        // Atualizar progresso DE-PARA
-        function atualizarProgressoDepara(percent, text) {
-            document.getElementById('progressFillDepara').style.width = percent + '%';
-            document.getElementById('progressPercentDepara').textContent = Math.round(percent) + '%';
-            document.getElementById('progressTextDepara').textContent = text;
-        }
-
-        // Mostrar resultados DE-PARA
-        function mostrarResultadosDepara(result) {
-            if (result.success) {
-                document.getElementById('processedCountDepara').textContent = result.data.motoristas_processados || 0;
-                document.getElementById('errorCountDepara').textContent = result.data.motoristas_erro || 0;
-                document.getElementById('totalCountDepara').textContent = result.data.total_motoristas || 0;
-                document.getElementById('supabaseStatusDepara').textContent = result.data.saved_to_supabase ? '✅' : '❌';
-                document.getElementById('resultMessageDepara').textContent = result.message || 'Planilha processada com sucesso!';
-                document.getElementById('resultMessageDepara').className = 'success-message';
-            } else {
-                mostrarErroDepara(result.error || 'Erro desconhecido');
-            }
-            
-            document.getElementById('resultsSectionDepara').style.display = 'block';
-        }
-
-        // Mostrar erro DE-PARA
-        function mostrarErroDepara(message) {
-            document.getElementById('processedCountDepara').textContent = '0';
-            document.getElementById('errorCountDepara').textContent = '-';
-            document.getElementById('totalCountDepara').textContent = '-';
-            document.getElementById('supabaseStatusDepara').textContent = '❌';
-            document.getElementById('resultMessageDepara').textContent = message;
-            document.getElementById('resultMessageDepara').className = 'error-message';
-            
-            document.getElementById('resultsSectionDepara').style.display = 'block';
-        }
-
-        // Carregar dados
-        async function carregarDados() {
-            await Promise.all([
-                carregarEstatisticas(),
-                carregarMotoristas()
-            ]);
-        }
-
-        // Carregar estatísticas
-        async function carregarEstatisticas() {
-            try {
-                const response = await fetch('/api/prestadores/estatisticas');
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.success) {
-                        atualizarEstatisticas(result.data);
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao carregar estatísticas:', error);
-            }
-        }
-
-        // Atualizar estatísticas
-        function atualizarEstatisticas(data) {
-            document.getElementById('totalMotoristas').textContent = data.total_motoristas || 0;
-            document.getElementById('totalPrestadores').textContent = data.total_prestadores || 0;
-            document.getElementById('motoristasGrupos').textContent = data.motoristas_em_grupos || 0;
-            document.getElementById('motoristasIndividuais').textContent = data.motoristas_individuais || 0;
-        }
-
-        // Carregar motoristas
-        async function carregarMotoristas() {
-            mostrarLoadingMotoristas();
-            
-            try {
-                const response = await fetch('/api/motoristas');
-                
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    motoristasData = result.data || [];
-                    motoristasFiltered = [...motoristasData];
-                    mostrarMotoristas();
+                if (data.success) {
+                    alert(`Sucesso! ${data.data.motoristas_processados} motoristas cadastrados.`);
+                    removerArquivoDepara();
+                    await carregarDados(); // Recarregar dados
                 } else {
-                    throw new Error(result.error || 'Erro desconhecido');
+                    throw new Error(data.error || 'Erro no processamento');
                 }
-                
+
             } catch (error) {
-                console.error('Erro ao carregar motoristas:', error);
-                mostrarErroMotoristas(error.message);
+                console.error('Erro no upload:', error);
+                alert('Erro ao processar planilha: ' + error.message);
+            } finally {
+                document.getElementById('btn-processar-depara').disabled = false;
+                document.getElementById('btn-processar-depara').innerHTML = '<i class="fas fa-play"></i> Processar Planilha DE-PARA';
             }
         }
 
-        // Mostrar loading motoristas
-        function mostrarLoadingMotoristas() {
-            document.getElementById('loadingMotoristas').style.display = 'block';
-            document.getElementById('listaMotoristas').style.display = 'none';
-            document.getElementById('erroMotoristas').style.display = 'none';
+        function formatarTamanho(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            const kb = bytes / 1024;
+            if (kb < 1024) return kb.toFixed(1) + ' KB';
+            const mb = kb / 1024;
+            return mb.toFixed(1) + ' MB';
         }
 
-        // Mostrar motoristas
-        function mostrarMotoristas() {
-            document.getElementById('loadingMotoristas').style.display = 'none';
-            document.getElementById('listaMotoristas').style.display = 'block';
-            document.getElementById('erroMotoristas').style.display = 'none';
-            
-            renderizarListaMotoristas();
-        }
-
-        // Mostrar erro motoristas
-        function mostrarErroMotoristas(message) {
-            document.getElementById('loadingMotoristas').style.display = 'none';
-            document.getElementById('listaMotoristas').style.display = 'none';
-            document.getElementById('erroMotoristas').style.display = 'block';
-            document.getElementById('erroMessageMotoristas').textContent = message;
-        }
-
-        // Renderizar lista de motoristas
-        function renderizarListaMotoristas() {
-            const container = document.getElementById('listaMotoristas');
-            
-            if (motoristasFiltered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>Nenhum entregador encontrado</h3>
-                        <p>Faça upload da planilha DE-PARA para cadastrar entregadores.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const html = motoristasFiltered.map(motorista => `
-                <div class="motorista-item">
-                    <div class="motorista-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="motorista-info">
-                        <h4>${motorista.nome_motorista}</h4>
-                        <span class="motorista-id">ID: ${motorista.id_motorista}</span>
-                        <span class="motorista-data">Cadastrado: ${new Date(motorista.created_at).toLocaleDateString('pt-BR')}</span>
-                    </div>
-                    <div class="motorista-actions">
-                        <button class="btn btn-sm btn-secondary" onclick="editarMotorista(${motorista.id_motorista})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-primary" onclick="adicionarAoGrupo(${motorista.id_motorista})">
-                            <i class="fas fa-users"></i> Grupo
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            container.innerHTML = html;
-        }
-
-        // Filtrar motoristas
-        function filtrarMotoristas() {
-            const termo = document.getElementById('searchMotoristas').value.toLowerCase();
-            
-            motoristasFiltered = motoristasData.filter(motorista => 
-                motorista.nome_motorista.toLowerCase().includes(termo) ||
-                motorista.id_motorista.toString().includes(termo)
+        // Busca
+        document.getElementById('search-motoristas').addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase();
+            const filtrados = motoristas.filter(m => 
+                m.nome_motorista.toLowerCase().includes(termo) ||
+                m.id_motorista.toString().includes(termo)
             );
-            
-            renderizarListaMotoristas();
-        }
+            renderizarListaMotoristas(filtrados);
+        });
 
-        // Funções placeholder
-        function editarMotorista(id) {
-            alert(`Editar motorista ${id} - Funcionalidade em desenvolvimento`);
-        }
-
-        function adicionarAoGrupo(id) {
-            alert(`Adicionar motorista ${id} ao grupo - Funcionalidade em desenvolvimento`);
+        function atualizarLista() {
+            carregarMotoristas();
         }
 
         function criarGrupo() {
-            alert('Criar novo grupo - Funcionalidade em desenvolvimento');
+            alert('Funcionalidade de criação de grupos será implementada em breve!');
         }
 
-        // Formatar tamanho do arquivo
-        function formatarTamanho(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        function editarMotorista(id) {
+            alert(`Editar motorista ID: ${id} - Funcionalidade em desenvolvimento`);
         }
+
+        function adicionarAoGrupo(id) {
+            alert(`Adicionar motorista ID: ${id} ao grupo - Funcionalidade em desenvolvimento`);
+        }
+
+        // Carregar dados ao inicializar
+        document.addEventListener('DOMContentLoaded', carregarDados);
     </script>
 </body>
 </html>
