@@ -3,332 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MenezesLog SaaS - Sistema de Gestão</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>MenezesLog - Sistema de Gestão</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Estilos específicos para a página de login */
+        .login-page {
             min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
         }
-
+        
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
             width: 100%;
             max-width: 450px;
             text-align: center;
-            animation: slideUp 0.6s ease-out;
         }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
+        
         .logo-container {
-            margin-bottom: 2rem;
+            margin-bottom: 30px;
         }
-
-        .logo-container img {
-            max-width: 280px;
-            height: auto;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        
+        .logo-container i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 10px;
         }
-
-        .system-title {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+        
+        .logo-container h1 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
         }
-
-        .system-subtitle {
-            color: #7f8c8d;
-            font-size: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .saas-badge {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: white;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-        }
-
-        .form-floating {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        .btn-login {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            border: none;
-            border-radius: 12px;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: white;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
-            background: linear-gradient(45deg, #0056b3, #004085);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .features-list {
-            margin-top: 2rem;
-            text-align: left;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.8rem;
-            color: #495057;
+        
+        .logo-container p {
+            color: #666;
+            margin: 5px 0 0 0;
             font-size: 0.9rem;
         }
-
-        .feature-item i {
-            color: #28a745;
-            margin-right: 0.8rem;
-            width: 16px;
+        
+        .login-form {
+            margin-top: 30px;
         }
-
-        .version-info {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            z-index: 2;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: none;
+        }
+        
+        .alert-danger {
+            background: #fee;
+            color: #c33;
+            border-left: 4px solid #c33;
+        }
+        
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+            border-left: 4px solid #3c3;
+        }
+        
+        .system-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
             font-size: 0.8rem;
+            color: #666;
         }
-
-        .loading-spinner {
-            display: none;
+        
+        .feature i {
+            color: #667eea;
+            margin-right: 8px;
+            font-size: 0.9rem;
         }
-
-        .loading .loading-spinner {
-            display: inline-block;
-        }
-
-        .loading .btn-text {
-            display: none;
-        }
-
-        @media (max-width: 576px) {
+        
+        @media (max-width: 768px) {
             .login-container {
-                margin: 1rem;
-                padding: 2rem;
+                padding: 30px 20px;
+                margin: 10px;
             }
             
-            .logo-container img {
-                max-width: 240px;
+            .features {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <!-- Logo -->
-        <div class="logo-container">
-            <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo" onerror="this.style.display='none'">
-        </div>
-
-        <!-- Título do Sistema -->
-        <h1 class="system-title">Sistema de Gestão SaaS</h1>
-        <p class="system-subtitle">Controle completo de entregas e pagamentos</p>
-        
-        <!-- Badge SaaS -->
-        <div class="saas-badge">
-            <i class="fas fa-rocket me-2"></i>
-            SaaS v6.1.0
-        </div>
-
-        <!-- Formulário de Login -->
-        <form id="loginForm">
-            <div class="form-floating">
-                <input type="text" class="form-control" id="username" placeholder="Usuário" value="admin" required>
-                <label for="username">
-                    <i class="fas fa-user me-2"></i>Usuário
-                </label>
+    <div class="login-page">
+        <div class="login-container">
+            <!-- Logo e Título -->
+            <div class="logo-container">
+                <i class="fas fa-truck"></i>
+                <h1>MenezesLog</h1>
+                <p>Sistema de Gestão de Entregas</p>
             </div>
-
-            <div class="form-floating">
-                <input type="password" class="form-control" id="password" placeholder="Senha" value="admin" required>
-                <label for="password">
-                    <i class="fas fa-lock me-2"></i>Senha
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-login" id="loginBtn">
-                <span class="btn-text">
-                    <i class="fas fa-sign-in-alt me-2"></i>
-                    Entrar no Sistema
-                </span>
-                <span class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin me-2"></i>
-                    Entrando...
-                </span>
-            </button>
-        </form>
-
-        <!-- Funcionalidades -->
-        <div class="features-list">
-            <div class="feature-item">
-                <i class="fas fa-barcode"></i>
-                <span>Controle de AWBs únicos</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Ciclos de pagamento configuráveis</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-users-cog"></i>
-                <span>Gestão de prestadores e motoristas</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-money-bill-wave"></i>
-                <span>Tarifas personalizadas</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-chart-line"></i>
-                <span>Relatórios avançados</span>
-            </div>
-        </div>
-
-        <!-- Informações da Versão -->
-        <div class="version-info">
-            <div><strong>MenezesLog SaaS v6.1.0</strong></div>
-            <div>Sistema completo de gestão logística</div>
-            <div class="mt-1">
-                <i class="fas fa-shield-alt me-1"></i>
-                Seguro e confiável
+            
+            <!-- Mensagens de Erro/Sucesso -->
+            <div id="alert-container"></div>
+            
+            <!-- Formulário de Login -->
+            <form class="login-form" id="login-form">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
+                </button>
+            </form>
+            
+            <!-- Informações do Sistema -->
+            <div class="system-info">
+                <strong>Funcionalidades do Sistema:</strong>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-users"></i>
+                        Gestão de Prestadores
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-upload"></i>
+                        Upload de Arquivos
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-dollar-sign"></i>
+                        Controle de Tarifas
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-calendar-alt"></i>
+                        Ciclos de Pagamento
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-barcode"></i>
+                        Gestão de AWBs
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard Completo
+                    </div>
+                </div>
+                <p style="margin-top: 15px;">
+                    <strong>Versão:</strong> v7.6 DEFINITIVO<br>
+                    <strong>Status:</strong> <span style="color: #28a745;"><i class="fas fa-check-circle"></i> Sistema Operacional</span>
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Verificar se já está logado
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('[Login] MenezesLog SaaS v6.1.0 carregado!');
-            
-            // Verificar se já está logado
             const isLoggedIn = localStorage.getItem('menezeslog_logged_in');
             if (isLoggedIn === 'true') {
-                window.location.href = 'admin_dashboard.html';
-                return;
+                window.location.href = '/admin_dashboard.html';
             }
-
-            // Configurar formulário de login
-            const loginForm = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
-
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-
-                // Validação simples
-                if (!username || !password) {
-                    alert('Por favor, preencha todos os campos.');
-                    return;
-                }
-
-                // Mostrar loading
-                loginBtn.classList.add('loading');
-                loginBtn.disabled = true;
-
-                // Simular autenticação
-                setTimeout(() => {
-                    // Por enquanto, aceitar qualquer usuário/senha
-                    if (username && password) {
-                        // Salvar estado de login
-                        localStorage.setItem('menezeslog_logged_in', 'true');
-                        localStorage.setItem('menezeslog_user', username);
-                        localStorage.setItem('menezeslog_login_time', new Date().toISOString());
-
-                        // Redirecionar para dashboard
-                        window.location.href = 'admin_dashboard.html';
-                    } else {
-                        // Remover loading
-                        loginBtn.classList.remove('loading');
-                        loginBtn.disabled = false;
-                        
-                        alert('Usuário ou senha inválidos.');
-                    }
-                }, 1500);
-            });
-
-            // Enter para submeter
-            document.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    loginForm.dispatchEvent(new Event('submit'));
-                }
-            });
-
-            // Animação de entrada
-            setTimeout(() => {
-                document.querySelector('.login-container').style.opacity = '1';
-            }, 100);
         });
 
-        // Função de logout (para ser chamada de outras páginas)
-        function logout() {
-            localStorage.removeItem('menezeslog_logged_in');
-            localStorage.removeItem('menezeslog_user');
-            localStorage.removeItem('menezeslog_login_time');
-            window.location.href = 'index.html';
-        }
-
-        // Verificar autenticação (para ser usado em outras páginas)
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('menezeslog_logged_in');
-            if (isLoggedIn !== 'true') {
-                window.location.href = 'index.html';
-                return false;
+        // Manipular formulário de login
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const alertContainer = document.getElementById('alert-container');
+            
+            // Limpar mensagens anteriores
+            alertContainer.innerHTML = '';
+            
+            // Validação básica
+            if (!username || !password) {
+                showAlert('Por favor, preencha todos os campos.', 'danger');
+                return;
             }
-            return true;
+            
+            // Simular loading
+            const submitBtn = document.querySelector('.login-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Simular chamada de API (substituir por chamada real)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Credenciais de demonstração (substituir por validação real)
+                if (username === 'admin' && password === 'admin') {
+                    showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+                    
+                    // Salvar estado de login
+                    localStorage.setItem('menezeslog_logged_in', 'true');
+                    localStorage.setItem('menezeslog_user', username);
+                    
+                    // Redirecionar após 1 segundo
+                    setTimeout(() => {
+                        window.location.href = '/admin_dashboard.html';
+                    }, 1000);
+                    
+                } else {
+                    showAlert('Usuário ou senha incorretos. Tente novamente.', 'danger');
+                }
+                
+            } catch (error) {
+                console.error('Erro no login:', error);
+                showAlert('Erro interno do sistema. Tente novamente.', 'danger');
+            } finally {
+                // Restaurar botão
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto-remover após 5 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
         }
+        
+        // Easter egg - pressionar Enter no campo senha
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('login-form').dispatchEvent(new Event('submit'));
+            }
+        });
     </script>
 </body>
 </html>

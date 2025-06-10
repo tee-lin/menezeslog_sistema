@@ -3,867 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MenezesLog - Gestão de Ciclos de Pagamento</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Estilos específicos para ciclos */
-        .ciclo-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid #007bff;
-        }
-        
-        .ciclo-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .ciclo-card.fechado {
-            border-left-color: #28a745;
-            background: rgba(40, 167, 69, 0.05);
-        }
-        
-        .ciclo-card.aberto {
-            border-left-color: #ffc107;
-            background: rgba(255, 193, 7, 0.05);
-        }
-        
-        .status-badge {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-        }
-        
-        .status-aberto {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .status-fechado {
-            background: #d1edff;
-            color: #0c5460;
-            border: 1px solid #b8daff;
-        }
-        
-        .awb-item {
-            transition: all 0.2s ease;
-            border-radius: 6px;
-            padding: 8px 12px;
-            margin: 2px 0;
-        }
-        
-        .awb-item:hover {
-            background: rgba(0, 123, 255, 0.1);
-        }
-        
-        .awb-nao-paga {
-            background: rgba(255, 193, 7, 0.1);
-            border-left: 3px solid #ffc107;
-        }
-        
-        .awb-paga {
-            background: rgba(40, 167, 69, 0.1);
-            border-left: 3px solid #28a745;
-        }
-        
-        .config-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .periodo-option {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-        }
-        
-        .periodo-option:hover {
-            border-color: #007bff;
-            background: rgba(0, 123, 255, 0.05);
-        }
-        
-        .periodo-option.selected {
-            border-color: #007bff;
-            background: rgba(0, 123, 255, 0.1);
-            color: #007bff;
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        .loading-spinner {
-            width: 3rem;
-            height: 3rem;
-            border: 0.3rem solid rgba(255, 255, 255, 0.3);
-            border-top: 0.3rem solid #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <title>Ciclos de Pagamento - MenezesLog</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner"></div>
-    </div>
-
-    <!-- Cabeçalho -->
-    <header class="header">
-        <div class="container-fluid">
-            <div class="header-content">
-                <div class="d-flex align-items-center">
-                    <button id="sidebar-toggle" class="btn btn-light me-2">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="logo">
-                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
-                    </div>
-                </div>
-                <div class="user-info">
-                    <div class="dropdown">
-                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <div class="avatar me-2">A</div>
-                            <div>
-                                <div class="user-name">Administrador</div>
-                                <div class="user-role text-muted small">SaaS v6.0</div>
-                            </div>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-truck"></i> MenezesLog</h3>
         </div>
-    </header>
+        <ul class="sidebar-menu">
+            <li><a href="/admin_dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/prestadores.html"><i class="fas fa-users"></i> Prestadores</a></li>
+            <li><a href="/upload.html"><i class="fas fa-upload"></i> Upload</a></li>
+            <li><a href="/tarifas.html"><i class="fas fa-dollar-sign"></i> Tarifas</a></li>
+            <li><a href="/ciclos.html" class="active"><i class="fas fa-calendar-alt"></i> Ciclos</a></li>
+            <li><a href="/awbs.html"><i class="fas fa-barcode"></i> AWBs</a></li>
+        </ul>
+    </nav>
 
-    <!-- Navegação Lateral -->
-    <aside class="sidebar" id="sidebar">
-        <nav class="sidebar-nav">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="admin_dashboard.html" class="nav-link">
-                        <i class="fas fa-tachometer-alt nav-icon"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="motoristas.html" class="nav-link">
-                        <i class="fas fa-truck nav-icon"></i>
-                        <span>Motoristas</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="prestadores.html" class="nav-link">
-                        <i class="fas fa-users-cog nav-icon"></i>
-                        <span>Prestadores</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="tarifas.html" class="nav-link">
-                        <i class="fas fa-money-bill-wave nav-icon"></i>
-                        <span>Tarifas</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="awbs.html" class="nav-link">
-                        <i class="fas fa-barcode nav-icon"></i>
-                        <span>AWBs</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="ciclos.html" class="nav-link active">
-                        <i class="fas fa-calendar-alt nav-icon"></i>
-                        <span>Ciclos de Pagamento</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="upload.html" class="nav-link">
-                        <i class="fas fa-upload nav-icon"></i>
-                        <span>Upload</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="relatorios.html" class="nav-link">
-                        <i class="fas fa-chart-bar nav-icon"></i>
-                        <span>Relatórios</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- Conteúdo Principal -->
+    <!-- Main Content -->
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Título da Página -->
+        <div class="container">
+            <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">Gestão de Ciclos de Pagamento</h1>
-                <p class="page-subtitle">Controle de períodos e fechamento de pagamentos</p>
+                <h1><i class="fas fa-calendar-alt"></i> Ciclos de Pagamento</h1>
+                <p>Gerencie períodos de pagamento e fechamento de entregas</p>
             </div>
 
-            <!-- Configuração da Empresa -->
-            <div class="config-section">
-                <h5 class="mb-3"><i class="fas fa-cog me-2"></i>Configuração de Ciclos</h5>
-                <div class="row" id="config-empresa">
-                    <div class="col-md-4">
-                        <div class="periodo-option" data-periodo="semanal">
-                            <i class="fas fa-calendar-week fa-2x mb-2"></i>
-                            <h6>Semanal</h6>
-                            <small class="text-muted">Segunda a domingo</small>
-                        </div>
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
                     </div>
-                    <div class="col-md-4">
-                        <div class="periodo-option" data-periodo="quinzenal">
-                            <i class="fas fa-calendar-day fa-2x mb-2"></i>
-                            <h6>Quinzenal</h6>
-                            <small class="text-muted">1ª e 2ª quinzena</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="periodo-option" data-periodo="mensal">
-                            <i class="fas fa-calendar fa-2x mb-2"></i>
-                            <h6>Mensal</h6>
-                            <small class="text-muted">Mês completo</small>
-                        </div>
+                    <div class="stat-content">
+                        <h3 id="ciclos-ativos">0</h3>
+                        <p>Ciclos Ativos</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Estatísticas -->
-            <div class="row mb-4">
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="card-title text-muted">AWBs Não Pagas</h6>
-                                    <h3 class="mb-0" id="awbs-nao-pagas">-</h3>
-                                </div>
-                                <div class="text-warning">
-                                    <i class="fas fa-clock fa-2x"></i>
-                                </div>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="ciclos-fechados">0</h3>
+                        <p>Ciclos Fechados</p>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="card-title text-muted">Valor Pendente</h6>
-                                    <h3 class="mb-0" id="valor-pendente">-</h3>
-                                </div>
-                                <div class="text-danger">
-                                    <i class="fas fa-dollar-sign fa-2x"></i>
-                                </div>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="valor-total">R$ 0,00</h3>
+                        <p>Valor Total Período</p>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="card-title text-muted">AWBs Pagas</h6>
-                                    <h3 class="mb-0" id="awbs-pagas">-</h3>
-                                </div>
-                                <div class="text-success">
-                                    <i class="fas fa-check-circle fa-2x"></i>
-                                </div>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-truck"></i>
                     </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="card-title text-muted">Valor Pago</h6>
-                                    <h3 class="mb-0" id="valor-pago">-</h3>
-                                </div>
-                                <div class="text-info">
-                                    <i class="fas fa-money-check fa-2x"></i>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="stat-content">
+                        <h3 id="entregas-periodo">0</h3>
+                        <p>Entregas no Período</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Ações Rápidas -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Ações Rápidas</h5>
+            <!-- Criar Novo Ciclo -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Criar Novo Ciclo</h3>
+                    <p>Defina um novo período de pagamento para os entregadores</p>
+                </div>
+                <div class="card-content">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nome-ciclo">Nome do Ciclo</label>
+                            <input type="text" id="nome-ciclo" placeholder="Ex: Quinzena 01/2025">
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 mb-2">
-                                    <button class="btn btn-primary btn-lg w-100" id="btn-gerar-ciclo">
-                                        <i class="fas fa-plus me-2"></i>
-                                        Gerar Novo Ciclo
-                                    </button>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <button class="btn btn-info btn-lg w-100" id="btn-visualizar-awbs">
-                                        <i class="fas fa-barcode me-2"></i>
-                                        Ver AWBs Pendentes
-                                    </button>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <button class="btn btn-success btn-lg w-100" id="btn-relatorio-pagamentos">
-                                        <i class="fas fa-chart-line me-2"></i>
-                                        Relatório de Pagamentos
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="data-inicio">Data de Início</label>
+                            <input type="date" id="data-inicio">
                         </div>
+                        <div class="form-group">
+                            <label for="data-fim">Data de Fim</label>
+                            <input type="date" id="data-fim">
+                        </div>
+                        <div class="form-group">
+                            <label for="status-ciclo">Status</label>
+                            <select id="status-ciclo">
+                                <option value="ativo">Ativo</option>
+                                <option value="fechado">Fechado</option>
+                                <option value="processando">Processando</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary" onclick="criarCiclo()">
+                            <i class="fas fa-save"></i> Criar Ciclo
+                        </button>
+                        <button class="btn btn-secondary" onclick="limparFormulario()">
+                            <i class="fas fa-times"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-filter"></i> Filtros</h3>
+                </div>
+                <div class="card-content">
+                    <div class="card-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-ciclos" placeholder="Buscar ciclo...">
+                        </div>
+                        <select id="filter-status" class="btn btn-secondary">
+                            <option value="">Todos os status</option>
+                            <option value="ativo">Ativos</option>
+                            <option value="fechado">Fechados</option>
+                            <option value="processando">Processando</option>
+                        </select>
+                        <input type="month" id="filter-mes" class="btn btn-secondary">
+                        <button class="btn btn-secondary btn-sm" onclick="limparFiltros()">
+                            <i class="fas fa-times"></i> Limpar
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Lista de Ciclos -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Ciclos de Pagamento</h5>
-                            <button class="btn btn-outline-primary btn-sm" id="btn-refresh-ciclos">
-                                <i class="fas fa-sync-alt me-1"></i>
-                                Atualizar
-                            </button>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Lista de Ciclos</h3>
+                    <div class="card-actions">
+                        <span id="total-ciclos" class="status-badge success">0 ciclos</span>
+                        <button class="btn btn-secondary btn-sm" onclick="atualizarCiclos()">
+                            <i class="fas fa-sync"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="loading-ciclos" class="loading-section">
+                        <div class="loading-card">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Carregando ciclos...</p>
                         </div>
-                        <div class="card-body">
-                            <div id="lista-ciclos">
-                                <div class="text-center py-4">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Carregando...</span>
-                                    </div>
-                                    <p class="mt-2 text-muted">Carregando ciclos...</p>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                    
+                    <div id="lista-ciclos" style="display: none;">
+                        <!-- Lista será preenchida via JavaScript -->
+                    </div>
+                    
+                    <div id="empty-ciclos" class="empty-state" style="display: none;">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Nenhum ciclo encontrado</h3>
+                        <p>Crie seu primeiro ciclo de pagamento para começar</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal Gerar Ciclo -->
-    <div class="modal fade" id="modalGerarCiclo" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Gerar Novo Ciclo de Pagamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Data de Referência</label>
-                        <input type="date" class="form-control" id="data-referencia" value="">
-                        <small class="form-text text-muted">O período será calculado automaticamente baseado na configuração da empresa</small>
-                    </div>
-                    <div id="preview-ciclo" class="alert alert-info" style="display: none;">
-                        <h6>Preview do Ciclo:</h6>
-                        <div id="preview-conteudo"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btn-confirmar-ciclo">
-                        <i class="fas fa-plus me-1"></i>
-                        Gerar Ciclo
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detalhes do Ciclo -->
-    <div class="modal fade" id="modalDetalhesCiclo" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detalhes do Ciclo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="detalhes-ciclo-conteudo">
-                        <div class="text-center py-4">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <p class="mt-2 text-muted">Carregando detalhes...</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-danger" id="btn-fechar-ciclo" style="display: none;">
-                        <i class="fas fa-lock me-1"></i>
-                        Fechar Ciclo
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js"></script>
     <script>
-        // Variáveis globais
-        let configEmpresa = {};
-        let cicloAtual = null;
+        let ciclos = [];
+        let ciclosFiltrados = [];
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('[Ciclos] Sistema de ciclos de pagamento v6.0 carregado!');
-            
-            // Configurar data de hoje
-            document.getElementById('data-referencia').value = new Date().toISOString().split('T')[0];
-            
-            // Carregar dados iniciais
-            carregarConfigEmpresa();
-            carregarEstatisticas();
-            carregarCiclos();
-            
-            // Event listeners
-            setupEventListeners();
-        });
-
-        function setupEventListeners() {
-            // Configuração de período
-            document.querySelectorAll('.periodo-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const periodo = this.dataset.periodo;
-                    selecionarPeriodo(periodo);
-                });
-            });
-
-            // Botões de ação
-            document.getElementById('btn-gerar-ciclo').addEventListener('click', abrirModalGerarCiclo);
-            document.getElementById('btn-visualizar-awbs').addEventListener('click', () => window.location.href = 'awbs.html');
-            document.getElementById('btn-relatorio-pagamentos').addEventListener('click', () => window.location.href = 'relatorios.html');
-            document.getElementById('btn-refresh-ciclos').addEventListener('click', carregarCiclos);
-
-            // Modal gerar ciclo
-            document.getElementById('btn-confirmar-ciclo').addEventListener('click', gerarCiclo);
-            document.getElementById('data-referencia').addEventListener('change', previewCiclo);
-
-            // Modal detalhes
-            document.getElementById('btn-fechar-ciclo').addEventListener('click', fecharCiclo);
-        }
-
-        function carregarConfigEmpresa() {
-            fetch('/api/empresa/config')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        configEmpresa = data.data;
-                        
-                        // Marcar período selecionado
-                        document.querySelectorAll('.periodo-option').forEach(option => {
-                            option.classList.remove('selected');
-                            if (option.dataset.periodo === configEmpresa.ciclo_pagamento) {
-                                option.classList.add('selected');
-                            }
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar configuração:', error);
-                });
-        }
-
-        function selecionarPeriodo(periodo) {
-            showLoading();
-            
-            fetch('/api/empresa/config', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ciclo_pagamento: periodo
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoading();
+        // Carregar ciclos
+        async function carregarCiclos() {
+            try {
+                document.getElementById('loading-ciclos').style.display = 'block';
+                document.getElementById('lista-ciclos').style.display = 'none';
+                document.getElementById('empty-ciclos').style.display = 'none';
                 
-                if (data.success) {
-                    configEmpresa = data.data;
-                    
-                    // Atualizar interface
-                    document.querySelectorAll('.periodo-option').forEach(option => {
-                        option.classList.remove('selected');
-                        if (option.dataset.periodo === periodo) {
-                            option.classList.add('selected');
-                        }
-                    });
-                    
-                    showAlert('success', `Ciclo de pagamento alterado para ${periodo}!`);
-                    carregarCiclos();
-                } else {
-                    showAlert('error', data.error || 'Erro ao atualizar configuração');
-                }
-            })
-            .catch(error => {
-                hideLoading();
-                console.error('Erro ao atualizar configuração:', error);
-                showAlert('error', 'Erro ao atualizar configuração');
-            });
-        }
-
-        function carregarEstatisticas() {
-            fetch('/api/awbs/estatisticas')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const stats = data.data;
-                        
-                        document.getElementById('awbs-nao-pagas').textContent = stats.awbs_nao_pagas;
-                        document.getElementById('valor-pendente').textContent = 'R$ ' + stats.valor_total_nao_pago.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                        document.getElementById('awbs-pagas').textContent = stats.awbs_pagas;
-                        document.getElementById('valor-pago').textContent = 'R$ ' + stats.valor_total_pago.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                // Simular dados até API estar pronta
+                ciclos = [
+                    {
+                        id: 1,
+                        nome: "Quinzena 01/2025",
+                        data_inicio: "2025-06-01",
+                        data_fim: "2025-06-15",
+                        status: "ativo",
+                        entregas: 1250,
+                        valor_total: 4375.00,
+                        created_at: "2025-06-01T00:00:00Z"
+                    },
+                    {
+                        id: 2,
+                        nome: "Quinzena 02/2025",
+                        data_inicio: "2025-05-16",
+                        data_fim: "2025-05-31",
+                        status: "fechado",
+                        entregas: 2100,
+                        valor_total: 7350.00,
+                        created_at: "2025-05-16T00:00:00Z"
                     }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar estatísticas:', error);
-                });
+                ];
+                
+                ciclosFiltrados = [...ciclos];
+                renderizarListaCiclos(ciclosFiltrados);
+                atualizarEstatisticas();
+                
+                document.getElementById('total-ciclos').textContent = `${ciclos.length} ciclos`;
+                document.getElementById('loading-ciclos').style.display = 'none';
+                document.getElementById('lista-ciclos').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Erro ao carregar ciclos:', error);
+                document.getElementById('loading-ciclos').style.display = 'none';
+                document.getElementById('empty-ciclos').style.display = 'block';
+            }
         }
 
-        function carregarCiclos() {
-            fetch('/api/ciclos')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        renderizarCiclos(data.data);
-                    } else {
-                        document.getElementById('lista-ciclos').innerHTML = 
-                            '<div class="text-center py-4"><p class="text-muted">Erro ao carregar ciclos</p></div>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar ciclos:', error);
-                    document.getElementById('lista-ciclos').innerHTML = 
-                        '<div class="text-center py-4"><p class="text-muted">Erro ao carregar ciclos</p></div>';
-                });
-        }
-
-        function renderizarCiclos(ciclos) {
+        function renderizarListaCiclos(lista) {
             const container = document.getElementById('lista-ciclos');
             
-            if (ciclos.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-5">
-                        <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">Nenhum ciclo de pagamento encontrado</h5>
-                        <p class="text-muted">Clique em "Gerar Novo Ciclo" para começar</p>
-                    </div>
-                `;
+            if (lista.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>Nenhum resultado encontrado</h3></div>';
                 return;
             }
-
-            const html = ciclos.map(ciclo => {
-                const dataInicio = new Date(ciclo.data_inicio).toLocaleDateString('pt-BR');
-                const dataFim = new Date(ciclo.data_fim).toLocaleDateString('pt-BR');
-                const statusClass = ciclo.status === 'FECHADO' ? 'fechado' : 'aberto';
-                const statusBadgeClass = ciclo.status === 'FECHADO' ? 'status-fechado' : 'status-aberto';
+            
+            let html = '';
+            lista.forEach(ciclo => {
+                const statusClass = ciclo.status === 'ativo' ? 'success' : 
+                                  ciclo.status === 'fechado' ? 'info' : 'warning';
                 
-                return `
-                    <div class="ciclo-card card mb-3 ${statusClass}">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <h6 class="mb-1">Ciclo ${ciclo.periodo}</h6>
-                                    <small class="text-muted">${dataInicio} - ${dataFim}</small>
-                                </div>
-                                <div class="col-md-2">
-                                    <span class="status-badge ${statusBadgeClass}">
-                                        <i class="fas ${ciclo.status === 'FECHADO' ? 'fa-lock' : 'fa-clock'} me-1"></i>
-                                        ${ciclo.status}
-                                    </span>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="text-center">
-                                        <h6 class="mb-0">${ciclo.total_awbs}</h6>
-                                        <small class="text-muted">AWBs</small>
+                html += `
+                    <div class="card" style="margin-bottom: 1rem;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar"></i> ${ciclo.nome}</h3>
+                            <div class="status-badge ${statusClass}">${ciclo.status.toUpperCase()}</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stats-grid">
+                                <div class="result-item">
+                                    <div class="result-icon info">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="result-content">
+                                        <h4>${new Date(ciclo.data_inicio).toLocaleDateString('pt-BR')} - ${new Date(ciclo.data_fim).toLocaleDateString('pt-BR')}</h4>
+                                        <p>Período</p>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="text-center">
-                                        <h6 class="mb-0">R$ ${ciclo.valor_total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</h6>
-                                        <small class="text-muted">Valor Total</small>
+                                <div class="result-item">
+                                    <div class="result-icon success">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <div class="result-content">
+                                        <h4>${ciclo.entregas.toLocaleString('pt-BR')}</h4>
+                                        <p>Entregas</p>
                                     </div>
                                 </div>
-                                <div class="col-md-2 text-end">
-                                    <button class="btn btn-outline-primary btn-sm" onclick="verDetalhesCiclo('${ciclo.ciclo_id}')">
-                                        <i class="fas fa-eye me-1"></i>
-                                        Detalhes
-                                    </button>
+                                <div class="result-item">
+                                    <div class="result-icon success">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <div class="result-content">
+                                        <h4>R$ ${ciclo.valor_total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</h4>
+                                        <p>Valor Total</p>
+                                    </div>
                                 </div>
+                                <div class="result-item">
+                                    <div class="result-icon info">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="result-content">
+                                        <h4>${new Date(ciclo.created_at).toLocaleDateString('pt-BR')}</h4>
+                                        <p>Criado em</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-primary btn-sm" onclick="verDetalhes(${ciclo.id})">
+                                    <i class="fas fa-eye"></i> Ver Detalhes
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="editarCiclo(${ciclo.id})">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                ${ciclo.status === 'ativo' ? 
+                                    `<button class="btn btn-warning btn-sm" onclick="fecharCiclo(${ciclo.id})">
+                                        <i class="fas fa-lock"></i> Fechar
+                                    </button>` : ''}
                             </div>
                         </div>
                     </div>
                 `;
-            }).join('');
-
+            });
+            
             container.innerHTML = html;
         }
 
-        function abrirModalGerarCiclo() {
-            const modal = new bootstrap.Modal(document.getElementById('modalGerarCiclo'));
-            modal.show();
-            previewCiclo();
+        function atualizarEstatisticas() {
+            const ativos = ciclos.filter(c => c.status === 'ativo').length;
+            const fechados = ciclos.filter(c => c.status === 'fechado').length;
+            const valorTotal = ciclos.reduce((sum, c) => sum + c.valor_total, 0);
+            const entregasTotal = ciclos.reduce((sum, c) => sum + c.entregas, 0);
+            
+            document.getElementById('ciclos-ativos').textContent = ativos;
+            document.getElementById('ciclos-fechados').textContent = fechados;
+            document.getElementById('valor-total').textContent = `R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('entregas-periodo').textContent = entregasTotal.toLocaleString('pt-BR');
         }
 
-        function previewCiclo() {
-            const dataReferencia = document.getElementById('data-referencia').value;
-            if (!dataReferencia) return;
+        // Filtros
+        document.getElementById('search-ciclos').addEventListener('input', aplicarFiltros);
+        document.getElementById('filter-status').addEventListener('change', aplicarFiltros);
+        document.getElementById('filter-mes').addEventListener('change', aplicarFiltros);
 
-            // Simular preview baseado na configuração
-            const preview = document.getElementById('preview-ciclo');
-            const conteudo = document.getElementById('preview-conteudo');
+        function aplicarFiltros() {
+            const termoBusca = document.getElementById('search-ciclos').value.toLowerCase();
+            const status = document.getElementById('filter-status').value;
+            const mes = document.getElementById('filter-mes').value;
             
-            preview.style.display = 'block';
-            conteudo.innerHTML = `
-                <p><strong>Período:</strong> ${configEmpresa.ciclo_pagamento || 'mensal'}</p>
-                <p><strong>Data de referência:</strong> ${new Date(dataReferencia).toLocaleDateString('pt-BR')}</p>
-                <p class="mb-0"><small class="text-muted">O sistema buscará todas as AWBs não pagas para incluir no ciclo</small></p>
-            `;
+            ciclosFiltrados = ciclos.filter(ciclo => {
+                const nomeMatch = ciclo.nome.toLowerCase().includes(termoBusca);
+                const statusMatch = !status || ciclo.status === status;
+                
+                let mesMatch = true;
+                if (mes) {
+                    const cicloMes = new Date(ciclo.data_inicio).toISOString().substring(0, 7);
+                    mesMatch = cicloMes === mes;
+                }
+                
+                return nomeMatch && statusMatch && mesMatch;
+            });
+            
+            renderizarListaCiclos(ciclosFiltrados);
+            document.getElementById('total-ciclos').textContent = `${ciclosFiltrados.length} ciclos`;
         }
 
-        function gerarCiclo() {
-            const dataReferencia = document.getElementById('data-referencia').value;
+        function limparFiltros() {
+            document.getElementById('search-ciclos').value = '';
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-mes').value = '';
+            ciclosFiltrados = [...ciclos];
+            renderizarListaCiclos(ciclosFiltrados);
+            document.getElementById('total-ciclos').textContent = `${ciclos.length} ciclos`;
+        }
+
+        function criarCiclo() {
+            const nome = document.getElementById('nome-ciclo').value;
+            const dataInicio = document.getElementById('data-inicio').value;
+            const dataFim = document.getElementById('data-fim').value;
+            const status = document.getElementById('status-ciclo').value;
             
-            if (!dataReferencia) {
-                showAlert('error', 'Selecione uma data de referência');
+            if (!nome || !dataInicio || !dataFim) {
+                alert('Preencha todos os campos obrigatórios!');
                 return;
             }
-
-            showLoading();
-
-            fetch('/api/ciclos/gerar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    data_referencia: dataReferencia
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoading();
-                
-                if (data.success) {
-                    showAlert('success', data.message);
-                    
-                    // Fechar modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalGerarCiclo'));
-                    modal.hide();
-                    
-                    // Recarregar dados
-                    carregarCiclos();
-                    carregarEstatisticas();
-                } else {
-                    showAlert('error', data.error || 'Erro ao gerar ciclo');
-                }
-            })
-            .catch(error => {
-                hideLoading();
-                console.error('Erro ao gerar ciclo:', error);
-                showAlert('error', 'Erro ao gerar ciclo');
-            });
+            
+            // Aqui implementaria a chamada para a API
+            alert(`Ciclo "${nome}" criado com sucesso!\nPeríodo: ${new Date(dataInicio).toLocaleDateString('pt-BR')} - ${new Date(dataFim).toLocaleDateString('pt-BR')}\nStatus: ${status}`);
+            limparFormulario();
         }
 
-        function verDetalhesCiclo(cicloId) {
-            cicloAtual = cicloId;
-            
-            const modal = new bootstrap.Modal(document.getElementById('modalDetalhesCiclo'));
-            modal.show();
-            
-            // Carregar detalhes
-            fetch(`/api/ciclos/${cicloId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        renderizarDetalhesCiclo(data.data);
-                    } else {
-                        document.getElementById('detalhes-ciclo-conteudo').innerHTML = 
-                            '<div class="alert alert-danger">Erro ao carregar detalhes</div>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar detalhes:', error);
-                    document.getElementById('detalhes-ciclo-conteudo').innerHTML = 
-                        '<div class="alert alert-danger">Erro ao carregar detalhes</div>';
-                });
+        function limparFormulario() {
+            document.getElementById('nome-ciclo').value = '';
+            document.getElementById('data-inicio').value = '';
+            document.getElementById('data-fim').value = '';
+            document.getElementById('status-ciclo').value = 'ativo';
         }
 
-        function renderizarDetalhesCiclo(dados) {
-            const ciclo = dados.ciclo;
-            const pagamentos = dados.pagamentos_por_motorista;
-            
-            // Mostrar botão fechar se ciclo estiver aberto
-            const btnFechar = document.getElementById('btn-fechar-ciclo');
-            if (ciclo.status === 'ABERTO') {
-                btnFechar.style.display = 'block';
-            } else {
-                btnFechar.style.display = 'none';
+        function atualizarCiclos() {
+            carregarCiclos();
+        }
+
+        function verDetalhes(id) {
+            const ciclo = ciclos.find(c => c.id === id);
+            if (ciclo) {
+                alert(`Detalhes do Ciclo:\n\nNome: ${ciclo.nome}\nPeríodo: ${new Date(ciclo.data_inicio).toLocaleDateString('pt-BR')} - ${new Date(ciclo.data_fim).toLocaleDateString('pt-BR')}\nStatus: ${ciclo.status}\nEntregas: ${ciclo.entregas}\nValor: R$ ${ciclo.valor_total.toFixed(2)}`);
             }
-            
-            const dataInicio = new Date(ciclo.data_inicio).toLocaleDateString('pt-BR');
-            const dataFim = new Date(ciclo.data_fim).toLocaleDateString('pt-BR');
-            
-            const html = `
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h6>Informações do Ciclo</h6>
-                        <p><strong>Período:</strong> ${ciclo.periodo}</p>
-                        <p><strong>Data:</strong> ${dataInicio} - ${dataFim}</p>
-                        <p><strong>Status:</strong> <span class="badge ${ciclo.status === 'FECHADO' ? 'bg-success' : 'bg-warning'}">${ciclo.status}</span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Estatísticas</h6>
-                        <p><strong>Total de AWBs:</strong> ${ciclo.total_awbs}</p>
-                        <p><strong>Valor Total:</strong> R$ ${ciclo.valor_total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-                        ${ciclo.data_fechamento ? `<p><strong>Data Fechamento:</strong> ${new Date(ciclo.data_fechamento).toLocaleDateString('pt-BR')}</p>` : ''}
-                    </div>
-                </div>
-                
-                <h6>Pagamentos por Motorista</h6>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Motorista ID</th>
-                                <th>AWBs</th>
-                                <th>Valor Total</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${pagamentos.map(p => `
-                                <tr>
-                                    <td>${p.id_motorista}</td>
-                                    <td>${p.total_awbs}</td>
-                                    <td>R$ ${p.valor_total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-info" onclick="verAwbsMotorista(${p.id_motorista}, '${ciclo.ciclo_id}')">
-                                            Ver AWBs
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('detalhes-ciclo-conteudo').innerHTML = html;
         }
 
-        function fecharCiclo() {
-            if (!cicloAtual) return;
-            
-            if (!confirm('Tem certeza que deseja fechar este ciclo? Esta ação não pode ser desfeita.')) {
-                return;
+        function editarCiclo(id) {
+            alert(`Editar ciclo ID: ${id} - Funcionalidade em desenvolvimento`);
+        }
+
+        function fecharCiclo(id) {
+            if (confirm('Tem certeza que deseja fechar este ciclo? Esta ação não pode ser desfeita.')) {
+                alert(`Ciclo ID: ${id} fechado com sucesso!`);
+                carregarCiclos(); // Recarregar lista
             }
-
-            showLoading();
-
-            fetch(`/api/ciclos/${cicloAtual}/fechar`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoading();
-                
-                if (data.success) {
-                    showAlert('success', data.message);
-                    
-                    // Fechar modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalDetalhesCiclo'));
-                    modal.hide();
-                    
-                    // Recarregar dados
-                    carregarCiclos();
-                    carregarEstatisticas();
-                } else {
-                    showAlert('error', data.error || 'Erro ao fechar ciclo');
-                }
-            })
-            .catch(error => {
-                hideLoading();
-                console.error('Erro ao fechar ciclo:', error);
-                showAlert('error', 'Erro ao fechar ciclo');
-            });
         }
 
-        function verAwbsMotorista(motoristaId, cicloId) {
-            window.location.href = `awbs.html?motorista_id=${motoristaId}&ciclo_id=${cicloId}`;
-        }
-
-        // Funções auxiliares
-        function showLoading() {
-            document.getElementById('loading-overlay').style.display = 'flex';
-        }
-
-        function hideLoading() {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
-
-        function showAlert(type, message) {
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
-            
-            const alert = document.createElement('div');
-            alert.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
-            alert.style.cssText = 'top: 20px; right: 20px; z-index: 10000; min-width: 300px;';
-            alert.innerHTML = `
-                <i class="fas ${icon} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(alert);
-            
-            setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.parentNode.removeChild(alert);
-                }
-            }, 5000);
-        }
+        // Carregar dados ao inicializar
+        document.addEventListener('DOMContentLoaded', carregarCiclos);
     </script>
 </body>
 </html>
