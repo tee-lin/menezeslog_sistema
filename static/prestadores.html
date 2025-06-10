@@ -6,23 +6,255 @@
     <title>MenezesLog SaaS - Gestão de Prestadores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* CORREÇÃO CRÍTICA: Z-index do modal */
-        .modal {
-            z-index: 1060 !important;
+        /* Estilos globais */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --border-color: #dee2e6;
         }
-        
-        .modal-backdrop {
-            z-index: 1050 !important;
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            margin: 0;
+            padding: 0;
         }
-        
-        .modal-dialog {
-            z-index: 1070 !important;
-            position: relative;
+
+        /* Layout principal */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
         }
-        
-        /* Estilos específicos da página Prestadores */
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.2rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: var(--secondary-color);
+        }
+
+        .nav-link.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: white;
+            border-left-color: var(--secondary-color);
+        }
+
+        .nav-icon {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Conteúdo principal */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 2rem;
+            background-color: var(--light-bg);
+        }
+
+        /* Header da página */
+        .page-header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .page-subtitle {
+            margin: 0.5rem 0 0 0;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1rem 1.5rem;
+            border: none;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Botões */
+        .btn {
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #229954 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #229954 0%, #1e7e34 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--secondary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--success-color);
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        /* Estatísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0.5rem 0 0 0;
+        }
+
+        /* Prestadores */
         .prestador-card {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 12px;
@@ -32,12 +264,12 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
-        
+
         .prestador-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
-        
+
         .motorista-card {
             background: white;
             border-radius: 8px;
@@ -47,399 +279,307 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        
+
         .motorista-card:hover {
-            border-color: #007bff;
-            transform: translateX(5px);
+            border-color: var(--secondary-color);
+            background: rgba(52, 152, 219, 0.05);
         }
-        
+
+        .motorista-card.selected {
+            border-color: var(--success-color);
+            background: rgba(39, 174, 96, 0.1);
+        }
+
         .motorista-principal {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: var(--warning-color) !important;
+            background: rgba(243, 156, 18, 0.1) !important;
         }
-        
-        .motorista-ajudante {
-            border-color: #ffc107;
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+
+        .crown-icon {
+            color: var(--warning-color);
+            margin-left: 0.5rem;
         }
-        
-        .upload-area {
-            border: 2px dashed #007bff;
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
-            transition: all 0.3s ease;
-            cursor: pointer;
+
+        /* Modal */
+        .modal {
+            z-index: 1060 !important;
         }
-        
-        .upload-area:hover {
-            border-color: #0056b3;
-            background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+
+        .modal-backdrop {
+            z-index: 1050 !important;
         }
-        
-        .upload-area.dragover {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        }
-        
-        .stats-card {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-        }
-        
-        .btn-criar-grupo {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-criar-grupo:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-            color: white;
-        }
-        
-        .grupo-badge {
-            background: linear-gradient(45deg, #6f42c1, #5a2d91);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-        
-        .nav-menu .nav-item .nav-link {
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            margin: 2px 8px;
-        }
-        
-        .nav-menu .nav-item .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-        
-        .nav-menu .nav-item .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid #fff;
-        }
-        
-        .nav-icon {
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Garantir que botões do modal sejam clicáveis */
-        .modal-footer .btn {
-            z-index: 1080 !important;
+
+        .modal-dialog {
+            z-index: 1070 !important;
             position: relative;
         }
-        
-        .modal-body .form-control,
-        .modal-body .form-select {
-            z-index: 1075 !important;
-            position: relative;
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            border: none;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Notificações */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.success {
+            background: var(--success-color);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .notification.warning {
+            background: var(--warning-color);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <header class="header">
-        <div class="container-fluid">
-            <div class="header-content">
-                <div class="d-flex align-items-center">
-                    <button id="sidebar-toggle" class="btn btn-light me-2">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="logo">
-                        <img src="assets/MENEZESLOG-MarcaAzulH.png" alt="MenezesLog Logo">
-                    </div>
-                    <span class="badge bg-primary ms-2">SaaS v6.2</span>
-                </div>
-                <div class="user-info">
-                    <div class="dropdown">
-                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <div class="avatar me-2">A</div>
-                            <div>
-                                <div class="user-name">Administrador</div>
-                                <div class="user-role text-muted small">Gestão de Prestadores</div>
-                            </div>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="configuracoes.html"><i class="fas fa-cog me-2"></i>Configurações</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Sair</a></li>
-                        </ul>
-                    </div>
-                </div>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-truck"></i> MenezesLog</h3>
+                <small>Sistema SaaS v7.1</small>
             </div>
-        </div>
-    </header>
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="admin_dashboard.html" class="nav-link">
+                            <i class="fas fa-tachometer-alt nav-icon"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="prestadores.html" class="nav-link active">
+                            <i class="fas fa-users-cog nav-icon"></i>
+                            <span>Prestadores</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="tarifas.html" class="nav-link">
+                            <i class="fas fa-dollar-sign nav-icon"></i>
+                            <span>Tarifas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="ciclos.html" class="nav-link">
+                            <i class="fas fa-calendar-alt nav-icon"></i>
+                            <span>Ciclos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="awbs.html" class="nav-link">
+                            <i class="fas fa-box nav-icon"></i>
+                            <span>AWBs</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="upload.html" class="nav-link">
+                            <i class="fas fa-upload nav-icon"></i>
+                            <span>Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="relatorios.html" class="nav-link">
+                            <i class="fas fa-chart-bar nav-icon"></i>
+                            <span>Relatórios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="configuracoes.html" class="nav-link">
+                            <i class="fas fa-cog nav-icon"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
 
-    <!-- Navegação Lateral ATUALIZADA -->
-    <aside class="sidebar" id="sidebar">
-        <nav class="sidebar-nav">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="admin_dashboard.html" class="nav-link">
-                        <i class="fas fa-tachometer-alt nav-icon"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="prestadores.html" class="nav-link active">
-                        <i class="fas fa-users-cog nav-icon"></i>
-                        <span>Prestadores</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="tarifas.html" class="nav-link">
-                        <i class="fas fa-money-bill-wave nav-icon"></i>
-                        <span>Tarifas</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="ciclos.html" class="nav-link">
-                        <i class="fas fa-calendar-alt nav-icon"></i>
-                        <span>Ciclos</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="awbs.html" class="nav-link">
-                        <i class="fas fa-barcode nav-icon"></i>
-                        <span>AWBs</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="upload.html" class="nav-link">
-                        <i class="fas fa-upload nav-icon"></i>
-                        <span>Upload</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="relatorios.html" class="nav-link">
-                        <i class="fas fa-chart-bar nav-icon"></i>
-                        <span>Relatórios</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="configuracoes.html" class="nav-link">
-                        <i class="fas fa-cog nav-icon"></i>
-                        <span>Configurações</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <!-- Conteúdo Principal -->
-    <main class="main-content">
-        <div class="container-fluid">
-            <!-- Cabeçalho da Página -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h1 class="h3 mb-0">
-                                <i class="fas fa-users-cog me-2 text-primary"></i>
-                                Gestão de Prestadores
-                            </h1>
-                            <p class="text-muted mb-0">Gerencie motoristas e grupos de prestadores</p>
-                        </div>
-                        <div class="grupo-badge">
-                            <i class="fas fa-rocket me-1"></i>
-                            Sistema SaaS v6.2
-                        </div>
-                    </div>
-                </div>
+        <!-- Conteúdo principal -->
+        <main class="main-content">
+            <!-- Header da página -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-users-cog"></i> Gestão de Prestadores
+                </h1>
+                <p class="page-subtitle">Gerencie motoristas e grupos de prestadores de serviços</p>
             </div>
 
             <!-- Estatísticas -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Motoristas</h6>
-                                <h3 class="mb-0" id="total-motoristas">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-truck fa-2x opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 class="stat-number" id="totalMotoristas">0</h3>
+                    <p class="stat-label">Motoristas</p>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Prestadores</h6>
-                                <h3 class="mb-0" id="total-prestadores">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-users-cog fa-2x opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
+                <div class="stat-card">
+                    <h3 class="stat-number" id="totalPrestadores">0</h3>
+                    <p class="stat-label">Prestadores</p>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Em Grupos</h6>
-                                <h3 class="mb-0" id="motoristas-grupos">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-users fa-2x opacity-75"></i>
-                            </div>
-                        </div>
-                    </div>
+                <div class="stat-card">
+                    <h3 class="stat-number" id="motoristasEmGrupos">0</h3>
+                    <p class="stat-label">Em Grupos</p>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">Individuais</h6>
-                                <h3 class="mb-0" id="motoristas-individuais">0</h3>
-                            </div>
-                            <div class="ms-3">
-                                <i class="fas fa-user fa-2x opacity-75"></i>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <h3 class="stat-number" id="motoristasIndividuais">0</h3>
+                    <p class="stat-label">Individuais</p>
+                </div>
+            </div>
+
+            <!-- Upload de planilha DE-PARA -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-upload"></i> Upload Planilha DE-PARA
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #6c757d;"></i>
+                        <h5>Arraste a planilha DE-PARA aqui</h5>
+                        <p class="text-muted">ou clique para selecionar o arquivo</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-file-upload"></i> Selecionar Arquivo
+                        </button>
+                        <button class="btn btn-success ms-2" onclick="recarregarMotoristas()">
+                            <i class="fas fa-sync-alt"></i> Recarregar Lista
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Upload de Motoristas -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-upload me-2"></i>
-                                Upload Planilha DE-PARA
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="upload-area" id="upload-area">
-                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                                <h5>Arraste a planilha DE-PARA aqui</h5>
-                                <p class="text-muted">ou clique para selecionar arquivo (.xlsx, .xls, .csv)</p>
-                                <input type="file" id="file-input" class="d-none" accept=".xlsx,.xls,.csv">
-                                <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-                                    <i class="fas fa-folder-open me-2"></i>
-                                    Selecionar Arquivo
-                                </button>
-                            </div>
-                            <div id="upload-status" class="mt-3"></div>
-                        </div>
-                    </div>
+            <!-- Lista de motoristas disponíveis -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-users"></i> Motoristas Disponíveis
+                    </h5>
                 </div>
-            </div>
-
-            <!-- Lista de Motoristas e Prestadores -->
-            <div class="row">
-                <!-- Motoristas Disponíveis -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-truck me-2"></i>
-                                Motoristas Disponíveis
-                            </h5>
-                            <button class="btn btn-sm btn-outline-primary" onclick="recarregarMotoristas()">
-                                <i class="fas fa-sync-alt"></i>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control mb-3" id="searchMotoristas" 
+                                   placeholder="Buscar motoristas...">
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-primary" onclick="abrirModalCriarGrupo()">
+                                <i class="fas fa-plus"></i> Criar Grupo
                             </button>
                         </div>
-                        <div class="card-body">
-                            <div id="lista-motoristas">
-                                <div class="text-center text-muted py-4">
-                                    <i class="fas fa-upload fa-2x mb-2"></i>
-                                    <p>Faça upload da planilha DE-PARA para carregar os motoristas</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                </div>
-
-                <!-- Grupos de Prestadores -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-users-cog me-2"></i>
-                                Grupos de Prestadores
-                            </h5>
-                            <button class="btn btn-sm btn-success" onclick="abrirModalCriarGrupo()">
-                                <i class="fas fa-plus me-1"></i>
-                                Criar Grupo
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div id="lista-prestadores">
-                                <div class="text-center text-muted py-4">
-                                    <i class="fas fa-users-cog fa-2x mb-2"></i>
-                                    <p>Nenhum grupo criado ainda</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="listaMotoristas" class="row">
+                        <!-- Motoristas serão carregados aqui -->
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <!-- Modal Criar Grupo - CORRIGIDO -->
-    <div class="modal fade" id="modalCriarGrupo" tabindex="-1" aria-labelledby="modalCriarGrupoLabel" aria-hidden="true">
+            <!-- Lista de prestadores/grupos -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-layer-group"></i> Grupos de Prestadores
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="listaPrestadores">
+                        <!-- Prestadores serão carregados aqui -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para criar grupo -->
+    <div class="modal fade" id="modalCriarGrupo" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalCriarGrupoLabel">
-                        <i class="fas fa-users-cog me-2"></i>
-                        Criar Grupo de Prestadores
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus"></i> Criar Grupo de Prestadores
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="form-criar-grupo">
+                    <form id="formCriarGrupo">
                         <div class="mb-3">
-                            <label for="motorista-principal" class="form-label">Motorista Principal</label>
-                            <select class="form-select" id="motorista-principal" required>
+                            <label class="form-label">Nome do Prestador</label>
+                            <input type="text" class="form-control" id="nomePrestador" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Motorista Principal</label>
+                            <select class="form-select" id="motoristaPrincipal" required>
                                 <option value="">Selecione o motorista principal</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="nome-prestador" class="form-label">Nome do Prestador</label>
-                            <input type="text" class="form-control" id="nome-prestador" placeholder="Nome será preenchido automaticamente" readonly>
+                            <label class="form-label">Motoristas Ajudantes (opcional)</label>
+                            <div id="motoristasAjudantes">
+                                <!-- Checkboxes serão adicionados aqui -->
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="motoristas-ajudantes" class="form-label">Motoristas Ajudantes (opcional)</label>
-                            <select class="form-select" id="motoristas-ajudantes" multiple size="4">
-                                <!-- Preenchido dinamicamente -->
-                            </select>
-                            <div class="form-text">Segure Ctrl para selecionar múltiplos motoristas</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="observacoes" class="form-label">Observações</label>
-                            <textarea class="form-control" id="observacoes" rows="3" placeholder="Observações sobre o grupo..."></textarea>
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" id="observacoes" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-success" onclick="criarGrupo()">
-                        <i class="fas fa-save me-2"></i>
-                        Criar Grupo
+                        <i class="fas fa-save"></i> Criar Grupo
                     </button>
                 </div>
             </div>
@@ -449,36 +589,31 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        console.log('[Prestadores] Sistema de gestão de prestadores v6.2 carregado!');
-        
+        // Variáveis globais
         let motoristas = [];
         let prestadores = [];
+        let motoristaSelecionado = null;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Prestadores] Sistema de gestão de prestadores v7.1 carregado!');
+            
+            // Configurar upload
+            configurarUpload();
+            
+            // Carregar dados
             carregarMotoristas();
             carregarPrestadores();
             carregarEstatisticas();
-            configurarUpload();
-            configurarSidebar();
+            
+            // Configurar busca
+            document.getElementById('searchMotoristas').addEventListener('input', filtrarMotoristas);
         });
 
-        // Configurar sidebar
-        function configurarSidebar() {
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const sidebar = document.getElementById('sidebar');
-            
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('collapsed');
-                });
-            }
-        }
-
-        // Configurar upload
+        // Configuração de upload
         function configurarUpload() {
-            const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
 
             // Drag and drop
             uploadArea.addEventListener('dragover', function(e) {
@@ -501,7 +636,7 @@
                 }
             });
 
-            // Click para upload
+            // Click para selecionar
             uploadArea.addEventListener('click', function() {
                 fileInput.click();
             });
@@ -513,362 +648,356 @@
             });
         }
 
-        // Processar arquivo
-        function processarArquivo(file) {
-            const statusDiv = document.getElementById('upload-status');
-            
-            // Validar tipo de arquivo
-            const allowedTypes = ['.xlsx', '.xls', '.csv'];
-            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-            
-            if (!allowedTypes.includes(fileExtension)) {
-                statusDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Tipo de arquivo não permitido. Use .xlsx, .xls ou .csv
-                    </div>
-                `;
-                return;
-            }
+        // Processar arquivo DE-PARA
+        async function processarArquivo(file) {
+            try {
+                showNotification('Processando planilha DE-PARA...', 'info');
+                
+                const formData = new FormData();
+                formData.append('file', file);
 
-            // Mostrar loading
-            statusDiv.innerHTML = `
-                <div class="alert alert-info">
-                    <i class="fas fa-spinner fa-spin me-2"></i>
-                    Processando planilha DE-PARA...
-                </div>
-            `;
+                const response = await fetch('/api/motoristas/upload', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            // Upload
-            const formData = new FormData();
-            formData.append('file', file);
+                const result = await response.json();
 
-            fetch('/api/motoristas/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    statusDiv.innerHTML = `
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            ${data.message}
-                        </div>
-                    `;
+                if (response.ok) {
+                    showNotification(`✅ ${result.message}`, 'success');
                     
-                    // Recarregar listas
-                    carregarMotoristas();
-                    carregarEstatisticas();
+                    // Recarregar dados
+                    await carregarMotoristas();
+                    await carregarEstatisticas();
                 } else {
-                    statusDiv.innerHTML = `
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            ${data.error}
-                        </div>
-                    `;
+                    showNotification(`❌ Erro: ${result.error}`, 'error');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Erro no upload:', error);
-                statusDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Erro ao processar arquivo: ${error.message}
-                    </div>
-                `;
-            });
+                showNotification('❌ Erro no upload da planilha', 'error');
+            }
         }
 
         // Carregar motoristas
-        function carregarMotoristas() {
-            fetch('/api/motoristas')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    motoristas = data.data;
+        async function carregarMotoristas() {
+            try {
+                const response = await fetch('/api/motoristas');
+                const result = await response.json();
+
+                if (response.ok) {
+                    motoristas = result.data || [];
                     renderizarMotoristas();
-                    atualizarSelectsModal();
+                    atualizarSelectMotoristas();
+                } else {
+                    console.error('Erro ao carregar motoristas:', result.error);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Erro ao carregar motoristas:', error);
-            });
+            }
         }
 
-        // Renderizar motoristas
+        // Renderizar lista de motoristas
         function renderizarMotoristas() {
-            const container = document.getElementById('lista-motoristas');
+            const container = document.getElementById('listaMotoristas');
             
             if (motoristas.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-upload fa-2x mb-2"></i>
-                        <p>Faça upload da planilha DE-PARA para carregar os motoristas</p>
+                    <div class="col-12">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-users fa-3x mb-3"></i>
+                            <h5>Nenhum motorista cadastrado</h5>
+                            <p>Faça upload da planilha DE-PARA para cadastrar motoristas</p>
+                        </div>
                     </div>
                 `;
                 return;
             }
 
-            const html = motoristas.map(motorista => `
-                <div class="motorista-card" data-id="${motorista.id_motorista}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">${motorista.nome_motorista}</h6>
-                            <small class="text-muted">ID: ${motorista.id_motorista}</small>
+            container.innerHTML = motoristas.map(motorista => `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="motorista-card" onclick="selecionarMotorista(${motorista.id_motorista})">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${motorista.nome_motorista}</h6>
+                                <small class="text-muted">ID: ${motorista.id_motorista}</small>
+                            </div>
+                            <div>
+                                <i class="fas fa-user"></i>
+                            </div>
                         </div>
-                        <button class="btn btn-criar-grupo btn-sm" onclick="criarGrupoRapido(${motorista.id_motorista})">
-                            <i class="fas fa-plus me-1"></i>
-                            Criar Grupo
-                        </button>
                     </div>
                 </div>
             `).join('');
-
-            container.innerHTML = html;
         }
 
         // Carregar prestadores
-        function carregarPrestadores() {
-            fetch('/api/prestadores')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    prestadores = data.data;
+        async function carregarPrestadores() {
+            try {
+                const response = await fetch('/api/prestadores');
+                const result = await response.json();
+
+                if (response.ok) {
+                    prestadores = result.data || [];
                     renderizarPrestadores();
+                } else {
+                    console.error('Erro ao carregar prestadores:', result.error);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Erro ao carregar prestadores:', error);
-            });
+            }
         }
 
         // Renderizar prestadores
         function renderizarPrestadores() {
-            const container = document.getElementById('lista-prestadores');
+            const container = document.getElementById('listaPrestadores');
             
             if (prestadores.length === 0) {
                 container.innerHTML = `
                     <div class="text-center text-muted py-4">
-                        <i class="fas fa-users-cog fa-2x mb-2"></i>
-                        <p>Nenhum grupo criado ainda</p>
+                        <i class="fas fa-layer-group fa-3x mb-3"></i>
+                        <h5>Nenhum grupo criado ainda</h5>
+                        <p>Crie grupos para organizar motoristas em prestadores</p>
                     </div>
                 `;
                 return;
             }
 
-            const html = prestadores.map(prestador => {
-                const principal = motoristas.find(m => m.id_motorista === prestador.motorista_principal);
-                const ajudantes = prestador.motoristas_ajudantes.map(id => 
-                    motoristas.find(m => m.id_motorista === id)
-                ).filter(Boolean);
-
+            container.innerHTML = prestadores.map(prestador => {
+                const motoristaPrincipal = motoristas.find(m => m.id_motorista === prestador.motorista_principal);
+                const ajudantes = prestador.motoristas_ajudantes || [];
+                
                 return `
                     <div class="prestador-card">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0">${prestador.nome_prestador}</h6>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                    <i class="fas fa-ellipsis-v"></i>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-2">
+                                    <i class="fas fa-layer-group"></i> ${prestador.nome_prestador}
+                                </h5>
+                                <div class="mb-2">
+                                    <strong>Motorista Principal:</strong>
+                                    <span class="badge bg-warning text-dark ms-2">
+                                        <i class="fas fa-crown"></i> ${motoristaPrincipal ? motoristaPrincipal.nome_motorista : 'N/A'}
+                                    </span>
+                                </div>
+                                ${ajudantes.length > 0 ? `
+                                    <div class="mb-2">
+                                        <strong>Ajudantes:</strong>
+                                        ${ajudantes.map(id => {
+                                            const ajudante = motoristas.find(m => m.id_motorista === id);
+                                            return `<span class="badge bg-secondary ms-1">${ajudante ? ajudante.nome_motorista : 'N/A'}</span>`;
+                                        }).join('')}
+                                    </div>
+                                ` : ''}
+                                ${prestador.observacoes ? `
+                                    <div class="mb-2">
+                                        <strong>Observações:</strong> ${prestador.observacoes}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div>
+                                <button class="btn btn-danger btn-sm" onclick="excluirPrestador(${prestador.id})">
+                                    <i class="fas fa-trash"></i>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" onclick="editarPrestador(${prestador.id})">
-                                        <i class="fas fa-edit me-2"></i>Editar
-                                    </a></li>
-                                    <li><a class="dropdown-item text-danger" href="#" onclick="excluirPrestador(${prestador.id})">
-                                        <i class="fas fa-trash me-2"></i>Excluir
-                                    </a></li>
-                                </ul>
                             </div>
                         </div>
-                        
-                        <div class="mb-2">
-                            <span class="badge bg-success me-1">
-                                <i class="fas fa-crown me-1"></i>
-                                ${principal ? principal.nome_motorista : 'N/A'}
-                            </span>
-                            ${ajudantes.map(ajudante => `
-                                <span class="badge bg-warning text-dark me-1">
-                                    ${ajudante.nome_motorista}
-                                </span>
-                            `).join('')}
-                        </div>
-                        
-                        ${prestador.observacoes ? `
-                            <small class="text-muted">${prestador.observacoes}</small>
-                        ` : ''}
                     </div>
                 `;
             }).join('');
-
-            container.innerHTML = html;
         }
 
         // Carregar estatísticas
-        function carregarEstatisticas() {
-            fetch('/api/prestadores/estatisticas')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('total-motoristas').textContent = data.data.total_motoristas;
-                    document.getElementById('total-prestadores').textContent = data.data.total_prestadores;
-                    document.getElementById('motoristas-grupos').textContent = data.data.motoristas_em_grupos;
-                    document.getElementById('motoristas-individuais').textContent = data.data.motoristas_individuais;
+        async function carregarEstatisticas() {
+            try {
+                const response = await fetch('/api/prestadores/estatisticas');
+                const result = await response.json();
+
+                if (response.ok) {
+                    const stats = result.data;
+                    document.getElementById('totalMotoristas').textContent = stats.total_motoristas || 0;
+                    document.getElementById('totalPrestadores').textContent = stats.total_prestadores || 0;
+                    document.getElementById('motoristasEmGrupos').textContent = stats.motoristas_em_grupos || 0;
+                    document.getElementById('motoristasIndividuais').textContent = stats.motoristas_individuais || 0;
+                } else {
+                    console.error('Erro ao carregar estatísticas:', result.error);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Erro ao carregar estatísticas:', error);
-            });
-        }
-
-        // Atualizar selects do modal
-        function atualizarSelectsModal() {
-            const selectPrincipal = document.getElementById('motorista-principal');
-            const selectAjudantes = document.getElementById('motoristas-ajudantes');
-
-            // Limpar selects
-            selectPrincipal.innerHTML = '<option value="">Selecione o motorista principal</option>';
-            selectAjudantes.innerHTML = '';
-
-            // Preencher com motoristas
-            motoristas.forEach(motorista => {
-                selectPrincipal.innerHTML += `
-                    <option value="${motorista.id_motorista}">${motorista.nome_motorista}</option>
-                `;
-                selectAjudantes.innerHTML += `
-                    <option value="${motorista.id_motorista}">${motorista.nome_motorista}</option>
-                `;
-            });
-
-            // Auto-preencher nome do prestador
-            selectPrincipal.addEventListener('change', function() {
-                const motoristaId = parseInt(this.value);
-                const motorista = motoristas.find(m => m.id_motorista === motoristaId);
-                
-                if (motorista) {
-                    document.getElementById('nome-prestador').value = motorista.nome_motorista;
-                } else {
-                    document.getElementById('nome-prestador').value = '';
-                }
-            });
-        }
-
-        // Abrir modal criar grupo
-        function abrirModalCriarGrupo() {
-            const modal = new bootstrap.Modal(document.getElementById('modalCriarGrupo'));
-            modal.show();
-        }
-
-        // Criar grupo rápido
-        function criarGrupoRapido(motoristaId) {
-            const motorista = motoristas.find(m => m.id_motorista === motoristaId);
-            if (motorista) {
-                document.getElementById('motorista-principal').value = motoristaId;
-                document.getElementById('nome-prestador').value = motorista.nome_motorista;
-                abrirModalCriarGrupo();
-            }
-        }
-
-        // Criar grupo
-        function criarGrupo() {
-            const form = document.getElementById('form-criar-grupo');
-            
-            const data = {
-                motorista_principal: parseInt(document.getElementById('motorista-principal').value),
-                nome_prestador: document.getElementById('nome-prestador').value,
-                motoristas_ajudantes: Array.from(document.getElementById('motoristas-ajudantes').selectedOptions).map(option => parseInt(option.value)),
-                observacoes: document.getElementById('observacoes').value
-            };
-
-            if (!data.motorista_principal || !data.nome_prestador) {
-                alert('Preencha os campos obrigatórios');
-                return;
-            }
-
-            fetch('/api/prestadores', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    // Fechar modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCriarGrupo'));
-                    modal.hide();
-                    
-                    // Limpar form
-                    form.reset();
-                    document.getElementById('nome-prestador').value = '';
-                    
-                    // Recarregar listas
-                    carregarPrestadores();
-                    carregarEstatisticas();
-                    
-                    // Mostrar sucesso
-                    alert(result.message);
-                } else {
-                    alert('Erro: ' + result.error);
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao criar grupo:', error);
-                alert('Erro ao criar grupo');
-            });
-        }
-
-        // Excluir prestador
-        function excluirPrestador(prestadorId) {
-            if (confirm('Tem certeza que deseja excluir este prestador?')) {
-                fetch(`/api/prestadores/${prestadorId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        carregarPrestadores();
-                        carregarEstatisticas();
-                        alert(result.message);
-                    } else {
-                        alert('Erro: ' + result.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao excluir prestador:', error);
-                    alert('Erro ao excluir prestador');
-                });
             }
         }
 
         // Recarregar motoristas
-        function recarregarMotoristas() {
-            carregarMotoristas();
-            carregarEstatisticas();
+        async function recarregarMotoristas() {
+            showNotification('Recarregando lista de motoristas...', 'info');
+            await carregarMotoristas();
+            await carregarEstatisticas();
+            showNotification('✅ Lista atualizada!', 'success');
         }
 
-        // Logout
-        function logout() {
-            if (confirm('Tem certeza que deseja sair?')) {
-                localStorage.removeItem('menezeslog_logged_in');
-                localStorage.removeItem('menezeslog_user');
-                window.location.href = 'index.html';
+        // Filtrar motoristas
+        function filtrarMotoristas() {
+            const termo = document.getElementById('searchMotoristas').value.toLowerCase();
+            const cards = document.querySelectorAll('.motorista-card');
+            
+            cards.forEach(card => {
+                const texto = card.textContent.toLowerCase();
+                const container = card.closest('.col-md-6');
+                if (texto.includes(termo)) {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        }
+
+        // Selecionar motorista
+        function selecionarMotorista(idMotorista) {
+            // Remover seleção anterior
+            document.querySelectorAll('.motorista-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            event.target.closest('.motorista-card').classList.add('selected');
+            motoristaSelecionado = idMotorista;
+        }
+
+        // Abrir modal criar grupo
+        function abrirModalCriarGrupo() {
+            atualizarSelectMotoristas();
+            const modal = new bootstrap.Modal(document.getElementById('modalCriarGrupo'));
+            modal.show();
+        }
+
+        // Atualizar select de motoristas
+        function atualizarSelectMotoristas() {
+            const select = document.getElementById('motoristaPrincipal');
+            const container = document.getElementById('motoristasAjudantes');
+            
+            // Limpar
+            select.innerHTML = '<option value="">Selecione o motorista principal</option>';
+            container.innerHTML = '';
+            
+            // Adicionar motoristas
+            motoristas.forEach(motorista => {
+                // Select principal
+                const option = document.createElement('option');
+                option.value = motorista.id_motorista;
+                option.textContent = `${motorista.nome_motorista} (ID: ${motorista.id_motorista})`;
+                select.appendChild(option);
+                
+                // Checkbox ajudantes
+                const div = document.createElement('div');
+                div.className = 'form-check';
+                div.innerHTML = `
+                    <input class="form-check-input" type="checkbox" value="${motorista.id_motorista}" id="ajudante_${motorista.id_motorista}">
+                    <label class="form-check-label" for="ajudante_${motorista.id_motorista}">
+                        ${motorista.nome_motorista} (ID: ${motorista.id_motorista})
+                    </label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Criar grupo
+        async function criarGrupo() {
+            try {
+                const nomePrestador = document.getElementById('nomePrestador').value;
+                const motoristaPrincipal = parseInt(document.getElementById('motoristaPrincipal').value);
+                const observacoes = document.getElementById('observacoes').value;
+                
+                if (!nomePrestador || !motoristaPrincipal) {
+                    showNotification('❌ Preencha todos os campos obrigatórios', 'error');
+                    return;
+                }
+                
+                // Coletar ajudantes selecionados
+                const ajudantes = [];
+                document.querySelectorAll('#motoristasAjudantes input:checked').forEach(checkbox => {
+                    const id = parseInt(checkbox.value);
+                    if (id !== motoristaPrincipal) {
+                        ajudantes.push(id);
+                    }
+                });
+                
+                const data = {
+                    nome_prestador: nomePrestador,
+                    motorista_principal: motoristaPrincipal,
+                    motoristas_ajudantes: ajudantes,
+                    observacoes: observacoes
+                };
+                
+                const response = await fetch('/api/prestadores', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('✅ Grupo criado com sucesso!', 'success');
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCriarGrupo'));
+                    modal.hide();
+                    
+                    // Limpar formulário
+                    document.getElementById('formCriarGrupo').reset();
+                    
+                    // Recarregar dados
+                    await carregarPrestadores();
+                    await carregarEstatisticas();
+                } else {
+                    showNotification(`❌ Erro: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao criar grupo:', error);
+                showNotification('❌ Erro ao criar grupo', 'error');
             }
         }
 
-        // Verificar autenticação
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('menezeslog_logged_in');
-            if (isLoggedIn !== 'true') {
-                window.location.href = 'index.html';
-                return false;
+        // Excluir prestador
+        async function excluirPrestador(prestadorId) {
+            if (!confirm('Tem certeza que deseja excluir este prestador?')) {
+                return;
             }
-            return true;
+            
+            try {
+                const response = await fetch(`/api/prestadores/${prestadorId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('✅ Prestador excluído com sucesso!', 'success');
+                    await carregarPrestadores();
+                    await carregarEstatisticas();
+                } else {
+                    showNotification(`❌ Erro: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir prestador:', error);
+                showNotification('❌ Erro ao excluir prestador', 'error');
+            }
         }
 
-        // Verificar auth na inicialização
-        checkAuth();
+        // Sistema de notificações
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+            
+            console.log(`[Notification] ${type.toUpperCase()}: ${message}`);
+        }
     </script>
 </body>
 </html>

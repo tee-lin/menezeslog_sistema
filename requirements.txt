@@ -1,34 +1,8 @@
-# MenezesLog SaaS - Dependências Python
-# Versão 6.1.0 - Sistema completo com suporte a Excel
-
-# Framework web principal
 Flask==2.3.3
 Flask-CORS==4.0.0
-
-# Processamento de planilhas Excel
-openpyxl==3.1.2
-
-# Utilitários web
-Werkzeug==2.3.7
 gunicorn==21.2.0
-
-# Manipulação de dados
+Werkzeug==2.3.7
 python-dateutil==2.8.2
-
-# Segurança e autenticação (futuro)
-PyJWT==2.8.0
-
-# Utilitários gerais
-requests==2.31.0
-urllib3==2.0.7
-
-# Processamento de arquivos
+openpyxl==3.1.2
 chardet==5.2.0
 
-# Logs e debugging
-colorama==0.4.6
-
-# Compatibilidade
-six==1.16.0
-
-chardet
