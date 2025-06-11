@@ -80,10 +80,10 @@
                 <div class="card-content">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="search-awb">Buscar AWB</label>
+                            <label for="search-awb">Buscar AWB ou Entregador</label>
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="search-awb" placeholder="Digite o código AWB...">
+                                <input type="text" id="search-awb" placeholder="Digite AWB ou nome do entregador...">
                             </div>
                         </div>
                         <div class="form-group">
@@ -110,14 +110,6 @@
                                 <option value="6">Revistas (R$ 0,50)</option>
                                 <option value="8">Revistas (R$ 0,50)</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="filter-data-inicio">Data Início</label>
-                            <input type="date" id="filter-data-inicio">
-                        </div>
-                        <div class="form-group">
-                            <label for="filter-data-fim">Data Fim</label>
-                            <input type="date" id="filter-data-fim">
                         </div>
                     </div>
                     <div class="card-actions">
@@ -149,7 +141,7 @@
                     <div id="loading-awbs" class="loading-section">
                         <div class="loading-card">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>Carregando AWBs...</p>
+                            <p>Carregando AWBs do Supabase...</p>
                         </div>
                     </div>
                     
@@ -161,15 +153,18 @@
                         <i class="fas fa-barcode"></i>
                         <h3>Nenhuma AWB encontrada</h3>
                         <p>Faça upload de arquivos CSV para ver as AWBs aqui</p>
+                        <button class="btn btn-primary" onclick="window.location.href='/upload.html'">
+                            <i class="fas fa-upload"></i> Fazer Upload
+                        </button>
                     </div>
 
                     <!-- Paginação -->
                     <div id="paginacao" class="pagination" style="display: none;">
-                        <button class="btn btn-secondary btn-sm" onclick="paginaAnterior()">
+                        <button class="btn btn-secondary btn-sm" onclick="paginaAnterior()" id="btn-anterior">
                             <i class="fas fa-chevron-left"></i> Anterior
                         </button>
                         <span id="info-pagina">Página 1 de 1</span>
-                        <button class="btn btn-secondary btn-sm" onclick="proximaPagina()">
+                        <button class="btn btn-secondary btn-sm" onclick="proximaPagina()" id="btn-proximo">
                             Próxima <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
@@ -179,85 +174,95 @@
     </main>
 
     <script>
-        let awbs = [];
+        let awbsData = [];
         let awbsFiltradas = [];
         let paginaAtual = 1;
-        const itensPorPagina = 50;
+        let totalPaginas = 1;
+        let itensPorPagina = 100; // Pro tier permite mais itens
+        let motoristasCache = [];
 
-        // Carregar AWBs
-        async function carregarAWBs() {
+        // Carregar AWBs do Supabase
+        async function carregarAWBs(page = 1, filters = {}) {
             try {
                 document.getElementById('loading-awbs').style.display = 'block';
                 document.getElementById('lista-awbs').style.display = 'none';
                 document.getElementById('empty-awbs').style.display = 'none';
                 
-                const response = await fetch('/api/awbs');
+                // Construir URL com filtros
+                const params = new URLSearchParams({
+                    page: page,
+                    per_page: itensPorPagina,
+                    ...filters
+                });
+                
+                const response = await fetch(`/api/awbs?${params}`);
+                
                 if (response.ok) {
-                    awbs = await response.json();
-                } else {
-                    // Dados simulados para demonstração
-                    awbs = [
-                        {
-                            id: 1,
-                            awb: "TXAS531420040tx",
-                            id_motorista: 270756,
-                            nome_motorista: "João Silva",
-                            tipo_servico: 0,
-                            valor_entrega: 3.50,
-                            status: "NAO_PAGA",
-                            data_entrega: "2025-06-09",
-                            created_at: "2025-06-09T10:30:00Z"
-                        },
-                        {
-                            id: 2,
-                            awb: "CARD123456789",
-                            id_motorista: 270756,
-                            nome_motorista: "João Silva",
-                            tipo_servico: 9,
-                            valor_entrega: 2.00,
-                            status: "PAGA",
-                            data_entrega: "2025-06-08",
-                            created_at: "2025-06-08T14:20:00Z"
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        awbsData = result.data.awbs || [];
+                        
+                        // Atualizar paginação
+                        if (result.data.pagination) {
+                            paginaAtual = result.data.pagination.page;
+                            totalPaginas = result.data.pagination.pages;
+                            atualizarPaginacao();
                         }
-                    ];
+                        
+                        renderizarLista();
+                        atualizarEstatisticas();
+                        
+                        if (awbsData.length === 0) {
+                            document.getElementById('empty-awbs').style.display = 'block';
+                        } else {
+                            document.getElementById('lista-awbs').style.display = 'block';
+                        }
+                    } else {
+                        throw new Error(result.error || 'Erro ao carregar AWBs');
+                    }
+                } else {
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 
-                awbsFiltradas = [...awbs];
-                await carregarMotoristas();
-                renderizarLista();
-                atualizarEstatisticas();
-                
                 document.getElementById('loading-awbs').style.display = 'none';
-                document.getElementById('lista-awbs').style.display = 'block';
                 
             } catch (error) {
                 console.error('Erro ao carregar AWBs:', error);
                 document.getElementById('loading-awbs').style.display = 'none';
                 document.getElementById('empty-awbs').style.display = 'block';
+                
+                // Mostrar erro específico
+                const emptyState = document.getElementById('empty-awbs');
+                emptyState.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erro ao carregar AWBs</h3>
+                    <p>${error.message}</p>
+                    <button class="btn btn-primary" onclick="carregarAWBs()">
+                        <i class="fas fa-sync"></i> Tentar Novamente
+                    </button>
+                `;
             }
         }
 
         async function carregarMotoristas() {
             try {
                 const response = await fetch('/api/motoristas');
-                let motoristas = [];
                 
                 if (response.ok) {
-                    motoristas = await response.json();
-                } else {
-                    // Dados simulados
-                    motoristas = [
-                        { id_motorista: 270756, nome_motorista: "João Silva" },
-                        { id_motorista: 123456, nome_motorista: "Maria Santos" }
-                    ];
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        motoristasCache = result.data || [];
+                    }
                 }
                 
                 const select = document.getElementById('filter-motorista');
                 select.innerHTML = '<option value="">Todos os entregadores</option>';
                 
-                motoristas.forEach(motorista => {
+                motoristasCache.forEach(motorista => {
                     const option = document.createElement('option');
-                    option.value = motorista.id_motorista;
+                    option.value = motorista.nome_motorista;
                     option.textContent = `${motorista.nome_motorista} (${motorista.id_motorista})`;
                     select.appendChild(option);
                 });
@@ -269,13 +274,9 @@
 
         function renderizarLista() {
             const container = document.getElementById('lista-awbs');
-            const inicio = (paginaAtual - 1) * itensPorPagina;
-            const fim = inicio + itensPorPagina;
-            const awbsPagina = awbsFiltradas.slice(inicio, fim);
             
-            if (awbsPagina.length === 0) {
+            if (awbsData.length === 0) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>Nenhum resultado encontrado</h3></div>';
-                document.getElementById('paginacao').style.display = 'none';
                 return;
             }
             
@@ -283,29 +284,34 @@
             html += '<th>AWB</th><th>Entregador</th><th>Tipo</th><th>Valor</th><th>Status</th><th>Data</th><th>Ações</th>';
             html += '</tr></thead><tbody>';
             
-            awbsPagina.forEach(awb => {
+            awbsData.forEach(awb => {
                 const statusClass = awb.status === 'PAGA' ? 'success' : 
                                   awb.status === 'PROCESSANDO' ? 'warning' : 'error';
                 
                 const tipoTexto = awb.tipo_servico === 0 ? 'Encomenda' :
                                 awb.tipo_servico === 9 ? 'Card' : 'Revista';
                 
+                const dataFormatada = awb.data_entrega ? 
+                    new Date(awb.data_entrega).toLocaleDateString('pt-BR') : 
+                    'N/A';
+                
                 html += `
                     <tr>
                         <td><strong>${awb.awb}</strong></td>
-                        <td>${awb.nome_motorista}<br><small>${awb.id_motorista}</small></td>
+                        <td>${awb.nome_motorista}<br><small>ID: ${awb.id_motorista}</small></td>
                         <td>${tipoTexto}<br><small>Tipo ${awb.tipo_servico}</small></td>
-                        <td><strong>R$ ${awb.valor_entrega.toFixed(2)}</strong></td>
+                        <td><strong>R$ ${parseFloat(awb.valor_entrega).toFixed(2)}</strong></td>
                         <td><span class="status-badge ${statusClass}">${awb.status.replace('_', ' ')}</span></td>
-                        <td>${new Date(awb.data_entrega).toLocaleDateString('pt-BR')}</td>
+                        <td>${dataFormatada}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="verDetalhes('${awb.awb}')">
+                            <button class="btn btn-sm btn-primary" onclick="verDetalhes('${awb.awb}')" title="Ver Detalhes">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            ${awb.status === 'NAO_PAGA' ? 
-                                `<button class="btn btn-success btn-sm" onclick="marcarPaga('${awb.awb}')">
+                            ${awb.status === 'NAO_PAGA' ? `
+                                <button class="btn btn-sm btn-success" onclick="marcarComoPaga('${awb.awb}')" title="Marcar como Paga">
                                     <i class="fas fa-check"></i>
-                                </button>` : ''}
+                                </button>
+                            ` : ''}
                         </td>
                     </tr>
                 `;
@@ -314,54 +320,64 @@
             html += '</tbody></table></div>';
             container.innerHTML = html;
             
-            // Atualizar paginação
-            const totalPaginas = Math.ceil(awbsFiltradas.length / itensPorPagina);
-            document.getElementById('info-pagina').textContent = `Página ${paginaAtual} de ${totalPaginas}`;
-            document.getElementById('paginacao').style.display = totalPaginas > 1 ? 'flex' : 'none';
-            
             // Atualizar contador
-            document.getElementById('total-resultados').textContent = `${awbsFiltradas.length} AWBs`;
+            document.getElementById('total-resultados').textContent = `${awbsData.length} AWBs`;
         }
 
-        function atualizarEstatisticas() {
-            const total = awbs.length;
-            const entregues = awbs.filter(a => a.status === 'PAGA').length;
-            const pendentes = awbs.filter(a => a.status === 'NAO_PAGA').length;
-            const valorTotal = awbs.reduce((sum, a) => sum + a.valor_entrega, 0);
+        async function atualizarEstatisticas() {
+            try {
+                const response = await fetch('/api/estatisticas');
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const data = result.data;
+                        
+                        document.getElementById('total-awbs').textContent = data.total_awbs || 0;
+                        document.getElementById('awbs-entregues').textContent = data.awbs_pagas || 0;
+                        document.getElementById('awbs-pendentes').textContent = data.awbs_pendentes || 0;
+                        document.getElementById('valor-total-awbs').textContent = 
+                            `R$ ${(data.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
+        }
+
+        function atualizarPaginacao() {
+            const paginacao = document.getElementById('paginacao');
+            const infoPagina = document.getElementById('info-pagina');
+            const btnAnterior = document.getElementById('btn-anterior');
+            const btnProximo = document.getElementById('btn-proximo');
             
-            document.getElementById('total-awbs').textContent = total.toLocaleString('pt-BR');
-            document.getElementById('awbs-entregues').textContent = entregues.toLocaleString('pt-BR');
-            document.getElementById('awbs-pendentes').textContent = pendentes.toLocaleString('pt-BR');
-            document.getElementById('valor-total-awbs').textContent = `R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (totalPaginas > 1) {
+                paginacao.style.display = 'flex';
+                infoPagina.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+                
+                btnAnterior.disabled = paginaAtual <= 1;
+                btnProximo.disabled = paginaAtual >= totalPaginas;
+            } else {
+                paginacao.style.display = 'none';
+            }
         }
 
         function aplicarFiltros() {
-            const termoBusca = document.getElementById('search-awb').value.toLowerCase();
+            const filters = {};
+            
+            const search = document.getElementById('search-awb').value.trim();
+            if (search) filters.search = search;
+            
             const motorista = document.getElementById('filter-motorista').value;
+            if (motorista) filters.motorista = motorista;
+            
             const status = document.getElementById('filter-status').value;
-            const tipo = document.getElementById('filter-tipo').value;
-            const dataInicio = document.getElementById('filter-data-inicio').value;
-            const dataFim = document.getElementById('filter-data-fim').value;
+            if (status) filters.status = status;
             
-            awbsFiltradas = awbs.filter(awb => {
-                const awbMatch = awb.awb.toLowerCase().includes(termoBusca) ||
-                               awb.nome_motorista.toLowerCase().includes(termoBusca);
-                const motoristaMatch = !motorista || awb.id_motorista.toString() === motorista;
-                const statusMatch = !status || awb.status === status;
-                const tipoMatch = !tipo || awb.tipo_servico.toString() === tipo;
-                
-                let dataMatch = true;
-                if (dataInicio || dataFim) {
-                    const dataAwb = new Date(awb.data_entrega);
-                    if (dataInicio) dataMatch = dataMatch && dataAwb >= new Date(dataInicio);
-                    if (dataFim) dataMatch = dataMatch && dataAwb <= new Date(dataFim);
-                }
-                
-                return awbMatch && motoristaMatch && statusMatch && tipoMatch && dataMatch;
-            });
-            
+            // Resetar para primeira página ao aplicar filtros
             paginaAtual = 1;
-            renderizarLista();
+            carregarAWBs(1, filters);
         }
 
         function limparFiltros() {
@@ -369,63 +385,82 @@
             document.getElementById('filter-motorista').value = '';
             document.getElementById('filter-status').value = '';
             document.getElementById('filter-tipo').value = '';
-            document.getElementById('filter-data-inicio').value = '';
-            document.getElementById('filter-data-fim').value = '';
             
-            awbsFiltradas = [...awbs];
             paginaAtual = 1;
-            renderizarLista();
+            carregarAWBs();
         }
 
         function paginaAnterior() {
             if (paginaAtual > 1) {
                 paginaAtual--;
-                renderizarLista();
+                const filters = obterFiltrosAtuais();
+                carregarAWBs(paginaAtual, filters);
             }
         }
 
         function proximaPagina() {
-            const totalPaginas = Math.ceil(awbsFiltradas.length / itensPorPagina);
             if (paginaAtual < totalPaginas) {
                 paginaAtual++;
-                renderizarLista();
+                const filters = obterFiltrosAtuais();
+                carregarAWBs(paginaAtual, filters);
             }
+        }
+
+        function obterFiltrosAtuais() {
+            const filters = {};
+            
+            const search = document.getElementById('search-awb').value.trim();
+            if (search) filters.search = search;
+            
+            const motorista = document.getElementById('filter-motorista').value;
+            if (motorista) filters.motorista = motorista;
+            
+            const status = document.getElementById('filter-status').value;
+            if (status) filters.status = status;
+            
+            return filters;
         }
 
         function atualizarLista() {
-            carregarAWBs();
+            const filters = obterFiltrosAtuais();
+            carregarAWBs(paginaAtual, filters);
         }
 
         function verDetalhes(awb) {
-            const item = awbs.find(a => a.awb === awb);
-            if (item) {
-                alert(`Detalhes da AWB:\n\nCódigo: ${item.awb}\nEntregador: ${item.nome_motorista} (${item.id_motorista})\nTipo: ${item.tipo_servico}\nValor: R$ ${item.valor_entrega.toFixed(2)}\nStatus: ${item.status}\nData: ${new Date(item.data_entrega).toLocaleDateString('pt-BR')}`);
+            const awbData = awbsData.find(a => a.awb === awb);
+            if (awbData) {
+                alert(`Detalhes da AWB: ${awb}\n\nEntregador: ${awbData.nome_motorista}\nValor: R$ ${parseFloat(awbData.valor_entrega).toFixed(2)}\nStatus: ${awbData.status}\nData: ${awbData.data_entrega}`);
             }
         }
 
-        function marcarPaga(awb) {
+        async function marcarComoPaga(awb) {
             if (confirm(`Marcar AWB ${awb} como PAGA?`)) {
-                // Aqui implementaria a chamada para a API
-                alert(`AWB ${awb} marcada como PAGA!`);
-                carregarAWBs(); // Recarregar lista
+                try {
+                    // Implementar API para atualizar status
+                    alert('Funcionalidade em desenvolvimento');
+                } catch (error) {
+                    alert('Erro ao atualizar status');
+                }
             }
         }
 
         function exportarDados() {
-            // Implementar exportação para CSV/Excel
-            alert('Exportação em desenvolvimento - será implementada na próxima versão');
+            // Implementar exportação
+            alert('Funcionalidade de exportação em desenvolvimento');
         }
 
-        // Event listeners para filtros em tempo real
-        document.getElementById('search-awb').addEventListener('input', aplicarFiltros);
-        document.getElementById('filter-motorista').addEventListener('change', aplicarFiltros);
-        document.getElementById('filter-status').addEventListener('change', aplicarFiltros);
-        document.getElementById('filter-tipo').addEventListener('change', aplicarFiltros);
-        document.getElementById('filter-data-inicio').addEventListener('change', aplicarFiltros);
-        document.getElementById('filter-data-fim').addEventListener('change', aplicarFiltros);
+        // Event listeners
+        document.getElementById('search-awb').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                aplicarFiltros();
+            }
+        });
 
-        // Carregar dados ao inicializar
-        document.addEventListener('DOMContentLoaded', carregarAWBs);
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarMotoristas();
+            carregarAWBs();
+        });
     </script>
 </body>
 </html>
