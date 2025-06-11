@@ -174,6 +174,82 @@
     </main>
 
     <script>
+        // Função para formatar data brasileira corretamente
+        function formatarDataBrasileira(dataStr) {
+            try {
+                if (!dataStr || dataStr.trim() === '') {
+                    return 'N/A';
+                }
+                
+                // Se a data já está no formato DD/MM/YYYY, retornar como está
+                if (dataStr.includes('/')) {
+                    // Verificar se é uma data válida no formato brasileiro
+                    const partes = dataStr.split('/');
+                    if (partes.length === 3) {
+                        const dia = parseInt(partes[0]);
+                        const mes = parseInt(partes[1]);
+                        const ano = parseInt(partes[2]);
+                        
+                        // Validar se é uma data válida
+                        if (dia >= 1 && dia <= 31 && mes >= 1 && mes <= 12 && ano >= 1900) {
+                            return dataStr; // Retornar como está (formato brasileiro)
+                        }
+                    }
+                }
+                
+                // Se está no formato ISO (YYYY-MM-DD), converter para brasileiro
+                if (dataStr.includes('-')) {
+                    const partes = dataStr.split('-');
+                    if (partes.length === 3) {
+                        const ano = partes[0];
+                        const mes = partes[1];
+                        const dia = partes[2];
+                        return `${dia}/${mes}/${ano}`;
+                    }
+                }
+                
+                // Tentar interpretar como timestamp
+                const data = new Date(dataStr);
+                if (!isNaN(data.getTime())) {
+                    return data.toLocaleDateString('pt-BR');
+                }
+                
+                return 'Data inválida';
+                
+            } catch (error) {
+                console.error('Erro ao formatar data:', dataStr, error);
+                return 'Erro na data';
+            }
+        }
+
+        // Função para converter data brasileira para objeto Date (se necessário)
+        function converterDataBrasileiraParaDate(dataStr) {
+            try {
+                if (!dataStr || dataStr.trim() === '') {
+                    return null;
+                }
+                
+                // Se está no formato DD/MM/YYYY
+                if (dataStr.includes('/')) {
+                    const partes = dataStr.split('/');
+                    if (partes.length === 3) {
+                        const dia = parseInt(partes[0]);
+                        const mes = parseInt(partes[1]) - 1; // JavaScript usa mês 0-11
+                        const ano = parseInt(partes[2]);
+                        
+                        return new Date(ano, mes, dia);
+                    }
+                }
+                
+                // Tentar como está
+                return new Date(dataStr);
+                
+            } catch (error) {
+                console.error('Erro ao converter data brasileira:', dataStr, error);
+                return null;
+            }
+        }
+
         let awbsData = [];
         let awbsFiltradas = [];
         let paginaAtual = 1;
@@ -291,9 +367,7 @@
                 const tipoTexto = awb.tipo_servico === 0 ? 'Encomenda' :
                                 awb.tipo_servico === 9 ? 'Card' : 'Revista';
                 
-                const dataFormatada = awb.data_entrega ? 
-                    new Date(awb.data_entrega).toLocaleDateString('pt-BR') : 
-                    'N/A';
+                const dataFormatada = formatarDataBrasileira(awb.data_entrega);
                 
                 html += `
                     <tr>
@@ -429,7 +503,8 @@
         function verDetalhes(awb) {
             const awbData = awbsData.find(a => a.awb === awb);
             if (awbData) {
-                alert(`Detalhes da AWB: ${awb}\n\nEntregador: ${awbData.nome_motorista}\nValor: R$ ${parseFloat(awbData.valor_entrega).toFixed(2)}\nStatus: ${awbData.status}\nData: ${awbData.data_entrega}`);
+                const dataFormatada = formatarDataBrasileira(awbData.data_entrega);
+                alert(`Detalhes da AWB: ${awb}\n\nEntregador: ${awbData.nome_motorista}\nValor: R$ ${parseFloat(awbData.valor_entrega).toFixed(2)}\nStatus: ${awbData.status}\nData: ${dataFormatada}`);
             }
         }
 
